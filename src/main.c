@@ -1,11 +1,12 @@
 /**
- * @file Robokid_test.c
+ * @file main.c
  * @author Jim Herd
- * @brief Development program for Robokid based on Pico/Trinamic devices
+ * @brief Development program for Robokid based on 
+ *          Pico/FreeRTOS/TinyUSB/1306 LCD/Trinamic devices
  * @version 0.1
- * @date 2021-11-17
+ * @date 2022-01-06
  * 
- * @copyright Copyright (c) 2021
+ * @copyright Copyright (c) 2022
  * 
  */
 
