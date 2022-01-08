@@ -21,8 +21,8 @@
 #include "task.h"
 #include "queue.h"
 
-// #include "bsp/board.h"
-// #include "tusb.h"
+#include "bsp/board.h"
+#include "tusb.h"
  
 // #include "OLED_128X64.h"
 // #include "system.h"
@@ -46,15 +46,15 @@ void blink_task(void *p) {
 
     FOREVER {
         gpio_put(LED_PIN, 1);
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(200/portTICK_PERIOD_MS);
         gpio_put(LED_PIN, 0);
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(100/portTICK_PERIOD_MS);
     }
 }
 
 int main() {
 
-//    board_init();
+    board_init();
 
     stdio_init_all();
 
