@@ -13,13 +13,12 @@ set(CMAKE_CXX_STANDARD 17)
 # initialize the Pico SDK
 pico_sdk_init()
 
-message(STATUS "Top level directory: ${CMAKE_SOURCE_DIR}")
-
 FILE(GLOB FreeRTOS_src ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/*.c)
-
 
 add_executable(${PROJECT_NAME}
     ${CMAKE_SOURCE_DIR}/src/main.c
+    ${CMAKE_SOURCE_DIR}/src/Task_read_gamepad.c
+    ${CMAKE_SOURCE_DIR}/src/Task_blink_LED.c
 #    ${CMAKE_SOURCE_DIR}/lib/tinyusb/src/tusb.c
 )
 
