@@ -13,7 +13,7 @@
 #include "pico/stdlib.h"
 #include "hardware/uart.h"
 
-#include "robokid_2.h"
+#include "system.h"
 
 //==============================================================================
 // Global variables and structures

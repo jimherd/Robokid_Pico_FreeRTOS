@@ -9,13 +9,11 @@
  * 
  */
 #include <stdio.h>
-#include <string.h>
 
 #include "system.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
-#include "hardware/spi.h"
 
 #include "FreeRTOS.h"
 

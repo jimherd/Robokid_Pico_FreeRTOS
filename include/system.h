@@ -55,6 +55,9 @@ typedef enum  { GCONF_IDX,
 #define     ENABLE_POWER_STAGE           gpio_put(TMC7300_EN_PIN, 1)
 
 #define     FOREVER     for(;;)
+#define     HANG        for(;;)
+
+//struct 
 
 //==============================================================================
 // Extern references
@@ -65,15 +68,24 @@ extern SemaphoreHandle_t semaphore_gamepad_data;
 
 extern void Task_read_gamepad(void *p);
 extern void Task_blink_LED(void *p);
+extern void Task_display_LCD(void *p);
+extern void Task_drive_motors(void *p);
 
 extern const unsigned char Terminal12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
-extern const unsigned char icon1[128];
-extern const unsigned char icon2[128];
-extern const unsigned char icon3[128];
-extern const unsigned char icon4[128];
+// extern const unsigned char icon1[128];
+// extern const unsigned char icon2[128];
+// extern const unsigned char icon3[128];
+// extern const unsigned char icon4[128];
+
+
+typedef struct {
+    uint8_t         page;
+    uint8_t         segment;
+    unsigned char   *buffer;
+} icon_data_t;
 
 
 #endif /* _SYSTEM_H_ */

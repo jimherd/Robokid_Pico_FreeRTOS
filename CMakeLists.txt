@@ -13,14 +13,19 @@ set(CMAKE_CXX_STANDARD 17)
 # initialize the Pico SDK
 pico_sdk_init()
 
-FILE(GLOB FreeRTOS_src ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/*.c)
+FILE(GLOB Robokid_Pico_Freetros_src ${CMAKE_SOURCE_DIR}/src/*.c)
 
 add_executable(${PROJECT_NAME}
-    ${CMAKE_SOURCE_DIR}/src/main.c
-    ${CMAKE_SOURCE_DIR}/src/Task_read_gamepad.c
-    ${CMAKE_SOURCE_DIR}/src/Task_blink_LED.c
+    ${Robokid_Pico_Freetros_src}
+    #${CMAKE_SOURCE_DIR}/src/main.c
+    #${CMAKE_SOURCE_DIR}/src/Task_read_gamepad.c
+    #${CMAKE_SOURCE_DIR}/src/Task_blink_LED.c
+    #${CMAKE_SOURCE_DIR}/src/Task_display_LCD.c
+    #${CMAKE_SOURCE_DIR}/src/OLED_128X64.c
 #    ${CMAKE_SOURCE_DIR}/lib/tinyusb/src/tusb.c
 )
+
+FILE(GLOB FreeRTOS_src ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/*.c)
 
 add_library( 
     FreeRTOS STATIC
@@ -33,6 +38,7 @@ target_include_directories( FreeRTOS PUBLIC
     ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/include
     ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/portable/GCC/ARM_CM0
     ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/icons
 )
 
 target_include_directories ( ${PROJECT_NAME} PUBLIC
