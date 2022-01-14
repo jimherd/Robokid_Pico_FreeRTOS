@@ -66,7 +66,7 @@ uint8_t cnt_width = 0;
 uint8_t cnt_character = 0;
 
 //==============================================================================
-// Sequence of commands to initialise SSD1036 display
+// Sequence of commands to initialise SSD1306 display
 //==============================================================================
 const uint8_t init_sequence [] = { 
     SET_DISPLAY_OFF ,               // Display OFF (sleep mode)
@@ -272,7 +272,7 @@ uint x_seg, y_pag;
             if(x_seg < 128) {
                 Oled_SetPointer(x_seg, y_pag);
                 Oled_WriteRam(*font);
-                Oled_RAM[x_seg + (y_pag * 128)] = *font;
+                Oled_RAM[x_seg + (y_pag * 128)] = *font;  // keep copy
             }
             y_pag++;
             font++;

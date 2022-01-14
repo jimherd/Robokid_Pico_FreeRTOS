@@ -34,10 +34,13 @@ void Task_display_LCD (void *p) {
     Oled_ConstText("Oled 128x64", 0, 4);
     Oled_ConstText("SSD1306  ",   0, 6);
 
-    Oled_Icon(bitmap_battery_full, 16, 0, 16,16);
+    Oled_SetFont(robokid_LCD_icons_font15x16, 15, 16, 32, 127);
+    Oled_ConstText("#&", 0,0);
+
+    // Oled_Icon(bitmap_battery_full, 16, 0, 16,16);
 
 //    sleep_ms(3000);
-//    printf("Loaded\r\n");
+//    printf("Loaded\r\n")
 
     // Oled_Demo();
 
