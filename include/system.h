@@ -31,6 +31,8 @@
 
 #define     NOS_ROBOKID_MOTORS  2
 
+#define     SPI_SPEED_5MHz      5000000
+
 //==============================================================================
 // enum definitions
 //==============================================================================
@@ -46,6 +48,21 @@ typedef enum  { GCONF_IDX,
                 DRV_STATUS_IDX,
                 PWMCONF_IDX
 } TMC7300_reg_index_t;
+
+
+//==============================================================================
+// Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
+//==============================================================================
+
+#define   TASK_PRIORITYIDLE             0
+#define   TASK_PRIORITYLOW              1
+#define   TASK_PRIORITYBELOWNORMAL      2
+#define   TASK_PRIORITYNORMAL           3
+#define   TASK_PRIORITYABOVENORMAL      4
+#define   TASK_PRIORITYHIGH             5
+#define   TASK_PRIORITYREALTIME         6
+#define   TASK_PRIORITYERROR            7
+
 
 //==============================================================================
 // Macros
@@ -71,18 +88,13 @@ extern void Task_blink_LED(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
 
-// Fonts
+// SSD1306 LCD Fonts
 
 extern const unsigned char Terminal12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 extern const unsigned char robokid_LCD_icons_font15x16[];
-// extern const unsigned char icon1[128];
-// extern const unsigned char icon2[128];
-// extern const unsigned char icon3[128];
-// extern const unsigned char icon4[128];
-
 
 typedef struct {
     uint8_t         page;

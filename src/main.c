@@ -17,22 +17,15 @@
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
-//#include "hardware/spi.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
 
-//#include "bsp/board.h"
-//#include "tusb.h"
- 
-// #include "OLED_128X64.h"
-
-
-#include "TMC7300.h"
-#include "TMC7300_Registers.h"
-#include "TMC7300_Fields.h"
+// #include "TMC7300.h"
+// #include "TMC7300_Registers.h"
+// #include "TMC7300_Fields.h"
 
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
@@ -57,32 +50,32 @@ int main() {
     xTaskCreate(Task_blink_LED,
                 "blink_task",
                 256,
-                0,
-                1,
+                NULL,
+                TASK_PRIORITYIDLE,
                 &taskhndl_Task_blink_LED
     );
 
     xTaskCreate(Task_read_gamepad,
                 "Task_read_gamepad",
                 256,
-                0,
-                1,
+                NULL,
+                TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_gamepad
     );
 
        xTaskCreate(Task_display_LCD,
                 "Task_display_LCD",
                 256,
-                0,
-                1,
+                NULL,
+                TASK_PRIORITYNORMAL,
                 &taskhndl_Task_display_LCD
     );
 
     xTaskCreate(Task_drive_motors,
                 "Task_drive_motors",
                 256,
-                0,
-                1,
+                NULL,
+                TASK_PRIORITYNORMAL,
                 &taskhndl_Task_drive_motors
     );
 

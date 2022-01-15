@@ -73,7 +73,7 @@ void Task_read_gamepad(void *p) {
     gamepad_data.state = DISABLED;
 
     FOREVER {
-       
+       vTaskDelay(500/portTICK_PERIOD_MS);
     }
 }
 

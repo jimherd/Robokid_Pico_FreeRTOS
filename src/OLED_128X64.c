@@ -19,6 +19,8 @@
 #include "hardware/spi.h"
 #include "OLED_128X64.h"
 
+#include "system.h"
+
 #include "font.h"
 #include "bitmap.h"
 
@@ -119,7 +121,7 @@ void  Oled_Init(void){
     gpio_set_function(OLED_CS, GPIO_FUNC_SPI);
     gpio_set_function(OLED_MOSI, GPIO_FUNC_SPI);
 
-    spi_init(SPI_PORT, 500 * 1000);
+    spi_init(SPI_PORT, SPI_SPEED_5MHz);
 
     Oled_Command_seq(init_sequence, sizeof(init_sequence));
 
