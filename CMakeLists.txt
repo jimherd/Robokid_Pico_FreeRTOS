@@ -49,6 +49,7 @@ target_include_directories ( ${PROJECT_NAME} PUBLIC
 
 target_link_libraries( ${PROJECT_NAME} 
     pico_stdlib 
+    pico_multicore
     hardware_gpio 
     hardware_spi
     FreeRTOS

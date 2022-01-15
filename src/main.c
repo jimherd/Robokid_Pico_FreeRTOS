@@ -16,6 +16,7 @@
 #include "system.h"
 
 #include "pico/stdlib.h"
+#include "pico/multicore.h"
 #include "pico/binary_info.h"
 
 #include "FreeRTOS.h"

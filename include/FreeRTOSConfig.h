@@ -5,16 +5,21 @@
 #define configUSE_PREEMPTION                    1
 #define configUSE_PORT_OPTIMISED_TASK_SELECTION 0
 #define configUSE_TICKLESS_IDLE                 0
-#define configCPU_CLOCK_HZ                      125000000
+#define configCPU_CLOCK_HZ                      133000000
 #define configSYSTICK_CLOCK_HZ                  1000000  
 #define configTICK_RATE_HZ                      1000      
 #define configMAX_PRIORITIES                    8
 #define configMINIMAL_STACK_SIZE                256     
 #define configMAX_TASK_NAME_LEN                 16
 #define configUSE_16_BIT_TICKS                  0
+
 #define configIDLE_SHOULD_YIELD                 1
+
+
 #define configUSE_TASK_NOTIFICATIONS            1
 #define configTASK_NOTIFICATION_ARRAY_ENTRIES   3
+
+/* synchronisation related */
 #define configUSE_MUTEXES                       1
 #define configUSE_RECURSIVE_MUTEXES             0
 #define configUSE_COUNTING_SEMAPHORES           1
@@ -52,24 +57,33 @@
 
 /* Software timer related definitions. */
 #define configUSE_TIMERS                        1
-#define configTIMER_TASK_PRIORITY               3
+#define configTIMER_TASK_PRIORITY               ( configMAX_PRIORITIES - 1 )
 #define configTIMER_QUEUE_LENGTH                10
 #define configTIMER_TASK_STACK_DEPTH            configMINIMAL_STACK_SIZE
 
 /* Interrupt nesting behaviour configuration. */
-#define configKERNEL_INTERRUPT_PRIORITY         [dependent of processor]
-#define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application]
-#define configMAX_API_CALL_INTERRUPT_PRIORITY   [dependent on processor and application]
+// #define configKERNEL_INTERRUPT_PRIORITY         [dependent of processor]
+// #define configMAX_SYSCALL_INTERRUPT_PRIORITY    [dependent on processor and application]
+// #define configMAX_API_CALL_INTERRUPT_PRIORITY   [dependent on processor and application]
 
 /* Define to trap errors during development. */
 //#define configASSERT( ( x ) ) assert()
 
 /* FreeRTOS MPU specific definitions. */
-#define configINCLUDE_APPLICATION_DEFINED_PRIVILEGED_FUNCTIONS 0
-#define configTOTAL_MPU_REGIONS                                8 /* Default value. */
-#define configTEX_S_C_B_FLASH                                  0x07UL /* Default value. */
-#define configTEX_S_C_B_SRAM                                   0x07UL /* Default value. */
-#define configENFORCE_SYSTEM_CALLS_FROM_KERNEL_ONLY            1
+// #define configINCLUDE_APPLICATION_DEFINED_PRIVILEGED_FUNCTIONS 0
+// #define configTOTAL_MPU_REGIONS                                8 /* Default value. */
+// #define configTEX_S_C_B_FLASH                                  0x07UL /* Default value. */
+// #define configTEX_S_C_B_SRAM                                   0x07UL /* Default value. */
+// #define configENFORCE_SYSTEM_CALLS_FROM_KERNEL_ONLY            1
+
+/* SMPport only */
+#define configNUM_CORES                         1
+#define configTICK_CORE                         1
+#define configRUN_MULTIPLE_PRIORITIES           1
+
+/* RP2040 specific */
+#define configSUPPORT_PICO_SYNC_INTEROP         1
+#define configSUPPORT_PICO_TIME_INTEROP         1
 
 /* Optional functions - most linkers will remove unused functions anyway. */
 #define INCLUDE_vTaskPrioritySet                1
