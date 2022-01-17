@@ -49,6 +49,7 @@ typedef enum  { GCONF_IDX,
                 PWMCONF_IDX
 } TMC7300_reg_index_t;
 
+enum  gamepad_state {DISABLED, ENABLED} ;
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
@@ -63,7 +64,6 @@ typedef enum  { GCONF_IDX,
 #define   TASK_PRIORITYREALTIME         6
 #define   TASK_PRIORITYERROR            7
 
-
 //==============================================================================
 // Macros
 //==============================================================================
@@ -74,13 +74,74 @@ typedef enum  { GCONF_IDX,
 #define     FOREVER     for(;;)
 #define     HANG        for(;;)
 
-//struct 
+//==============================================================================
+// definitions of system data structures
+//==============================================================================
+
+/**
+ * @brief data structure for report returned from gamepad
+ * 
+ */
+typedef struct TU_ATTR_PACKED  {    // packed attribute
+    uint8_t     dpad_x, dpad_y;         // dpad returned at 8-bit values
+    uint8_t     dummy2, dummy3,dummy4;
+
+    struct {
+        uint8_t dummy5      :4;
+        uint8_t BUTTON_X    :1;
+        uint8_t BUTTON_A    :1;
+        uint8_t BUTTON_B    :1;
+        uint8_t BUTTON_Y    :1;
+    };
+
+    struct {
+        uint8_t BUTTON_L      :1;
+        uint8_t BUTTON_R      :1;
+        uint8_t dummy6        :2;
+        uint8_t BUTTON_START  :1;
+        uint8_t BUTTON_SELECT :1;
+        uint8_t dummy7        :2;
+    };
+    uint8_t     dummy8;
+} SNES_gamepad_report_t;
+
+typedef struct {
+    uint8_t     state;                  // ENABLED or DISAPLED
+    uint8_t     vid, pid;
+    uint8_t     dpad_x, dpad_y;
+    uint8_t     button_X, button_Y, button_A, button_B;
+    uint8_t     button_L, button_R;
+    uint8_t     BUTTON_START, BUTTON_SELECT;
+} gamepad_data_t;
+
+typedef struct {
+    uint8_t         page;
+    uint8_t         segment;
+    unsigned char   *buffer;
+} icon_data_t;
+
+typedef struct {
+    uint8_t     error_state;
+    uint8_t     dpad_state;
+} system_status_t;
 
 //==============================================================================
 // Extern references
 //==============================================================================
 
+// System data structures
+
+extern SNES_gamepad_report_t SNES_gamepad_report;
+extern gamepad_data_t gamepad_data;
+extern system_status_t system_status;
+
+// Hardware
+
 extern const uint LED_PIN;
+
+// FreeRTOS components
+
+extern SemaphoreHandle_t semaphore_system_status;
 extern SemaphoreHandle_t semaphore_gamepad_data;
 
 extern void Task_read_gamepad(void *p);
@@ -96,11 +157,11 @@ extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 extern const unsigned char robokid_LCD_icons_font15x16[];
 
-typedef struct {
-    uint8_t         page;
-    uint8_t         segment;
-    unsigned char   *buffer;
-} icon_data_t;
+//==============================================================================
+// system definitions
+//==============================================================================
+
+
 
 
 #endif /* _SYSTEM_H_ */

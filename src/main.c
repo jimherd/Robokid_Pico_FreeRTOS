@@ -24,19 +24,25 @@
 #include "queue.h"
 #include "semphr.h"
 
-// #include "TMC7300.h"
-// #include "TMC7300_Registers.h"
-// #include "TMC7300_Fields.h"
-
+// Hardware
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+
+// FreeRTOS components
 
 TaskHandle_t taskhndl_Task_blink_LED;
 TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
 
+SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
+
+// System data structures. Protected with MUTEXES
+
+SNES_gamepad_report_t SNES_gamepad_report;
+gamepad_data_t gamepad_data;
+system_status_t system_status;
 
 //==============================================================================
 // System initiation
@@ -46,11 +52,12 @@ int main() {
 
     stdio_init_all();
  
+    semaphore_system_status = xSemaphoreCreateMutex(); 
     semaphore_gamepad_data = xSemaphoreCreateMutex();
 
     xTaskCreate(Task_blink_LED,
                 "blink_task",
-                256,
+                configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_blink_LED
@@ -58,15 +65,15 @@ int main() {
 
     xTaskCreate(Task_read_gamepad,
                 "Task_read_gamepad",
-                256,
+                configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_gamepad
     );
 
-       xTaskCreate(Task_display_LCD,
+    xTaskCreate(Task_display_LCD,
                 "Task_display_LCD",
-                256,
+                configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_display_LCD
@@ -74,11 +81,14 @@ int main() {
 
     xTaskCreate(Task_drive_motors,
                 "Task_drive_motors",
-                256,
+                configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_drive_motors
     );
+
+    semaphore_system_status  = xSemaphoreCreateMutex();
+    semaphore_gamepad_data   = xSemaphoreCreateMutex();
 
     vTaskStartScheduler();
 

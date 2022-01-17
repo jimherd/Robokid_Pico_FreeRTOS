@@ -10,47 +10,12 @@
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
+#include "semphr.h"
 
 #include "bsp/board.h"
 #include "tusb.h"
 
-/**
- * @brief data structure for report returned from gamepad
- * 
- */
-typedef struct TU_ATTR_PACKED       // packed attribute
-{
-    uint8_t     dpad_x, dpad_y;         // dpad returned at 8-bit values
-    uint8_t     dummy2, dummy3,dummy4;
 
-    struct {
-        uint8_t dummy5      :4;
-        uint8_t BUTTON_X    :1;
-        uint8_t BUTTON_A    :1;
-        uint8_t BUTTON_B    :1;
-        uint8_t BUTTON_Y    :1;
-    };
-
-    struct {
-        uint8_t BUTTON_L      :1;
-        uint8_t BUTTON_R      :1;
-        uint8_t dummy6        :2;
-        uint8_t BUTTON_START  :1;
-        uint8_t BUTTON_SELECT :1;
-        uint8_t dummy7        :2;
-    };
-    uint8_t     dummy8;
-} SNES_gamepad_report_t;
-
-enum  gamepad_state {DISABLED, ENABLED} ;
-
-struct {
-    uint8_t     state;                  // ENABLED or DISAPLED
-    uint8_t     dpad_x, dpad_y;
-    uint8_t     button_X, button_Y, button_A, button_B;
-    uint8_t     button_L, button_R;
-    uint8_t     BUTTON_START, BUTTON_SELECT;
-} gamepad_data;
 
 //==============================================================================
 // USB gamepad function prototypes
@@ -149,7 +114,10 @@ void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_re
 uint16_t  vid, pid;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
-    printf("VID = %04x, PID = %04x\r\n", vid, pid);
+        xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
+            gamepad_data.vid = vid;
+            gamepad_data.pid = pid;
+        xSemaphoreGive(semaphore_gamepad_data);
     if (is_generic_gamepad(dev_addr)) {
         if ( !tuh_hid_receive_report(dev_addr, instance)) {
             printf("Error : cannot request to receive report\r\n");

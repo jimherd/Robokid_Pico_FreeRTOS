@@ -30,7 +30,7 @@ void Task_display_LCD (void *p) {
 
     Oled_SetFont(Terminal12x16, 12, 16, 32,127);
     // Oled_ConstText("Test code",   0, 0);
-    Oled_ConstText("Robikid 2b",   0, 2);
+    Oled_ConstText("Robikid 2c",   0, 2);
     Oled_ConstText("Oled 128x64", 0, 4);
     Oled_ConstText("SSD1306  ",   0, 6);
 
@@ -40,7 +40,7 @@ void Task_display_LCD (void *p) {
     // Oled_Icon(bitmap_battery_full, 16, 0, 16,16);
 
 //    sleep_ms(3000);
-//    printf("Loaded\r\n")
+    printf("Loaded\r\n");
 
     // Oled_Demo();
 
