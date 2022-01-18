@@ -19,12 +19,11 @@
 // Constants
 //==============================================================================
 
+// TMC7300 H-bridge
+
 #define     TMC7300_UART_PORT   uart1  
 #define     BAUD_RATE           115200   
 
-#define     GENERIC_GAMEPAD_VID     0x081F
-#define     GENERIC_GAMEPAD_PID     0xE401
-                                                                             
 #define     UART_TX_PIN         GP8          // Pin 11
 #define     UART_RX_PIN         GP9          // Pin 12
 #define     TMC7300_EN_PIN      GP10         // Pin 14
@@ -32,6 +31,19 @@
 #define     NOS_ROBOKID_MOTORS  2
 
 #define     SPI_SPEED_5MHz      5000000
+
+// SNES Gamepad
+
+#define     GENERIC_GAMEPAD_VID     0x081F
+#define     GENERIC_GAMEPAD_PID     0xE401
+
+#define     GAMEPAD_DPAD_X_AXIS_LEFT    0x00
+#define     GAMEPAD_DPAD_X_AXIS_NULL    0x7F
+#define     GAMEPAD_DPAD_X_AXIS_RIGHT   0xFF
+
+#define     GAMEPAD_DPAD_Y_AXIS_UP      0x00
+#define     GAMEPAD_DPAD_Y_AXIS_NULL    0x7F
+#define     GAMEPAD_DPAD_Y_AXIS_DOWN    0xFF
 
 //==============================================================================
 // enum definitions
@@ -50,6 +62,10 @@ typedef enum  { GCONF_IDX,
 } TMC7300_reg_index_t;
 
 enum  gamepad_state {DISABLED, ENABLED} ;
+enum  gamepad_switch_state {released, pressed};
+enum  gamepad_dpad_X_axis {X_AXIS_OFF, X_AXIS_LEFT, X_AXIS_RIGHT};
+enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
+
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
@@ -123,6 +139,7 @@ typedef struct {
 typedef struct {
     uint8_t     error_state;
     uint8_t     dpad_state;
+
 } system_status_t;
 
 //==============================================================================

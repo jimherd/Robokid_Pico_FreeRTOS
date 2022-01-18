@@ -48,8 +48,6 @@ void Task_read_gamepad(void *p) {
 //    }
 //}
 
-
-
 //==============================================================================
 // USB gamepad functions
 //==============================================================================
@@ -60,7 +58,8 @@ void Task_read_gamepad(void *p) {
  * @return true 
  * @return false 
  */
-static inline bool is_generic_gamepad(uint8_t dev_addr) {
+static inline bool is_generic_gamepad(uint8_t dev_addr) 
+{
 uint16_t  vid, pid;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
@@ -80,8 +79,9 @@ bool diff_report(SNES_gamepad_report_t const* report1,   SNES_gamepad_report_t c
 }
 
 /**
- * @brief 
- * 
+ * @brief Extract data from gamepad USB report and put in
+ *        global data structure for access by other tasks.
+ *        Access protected by MUTEX "semaphore_gamepad_data".
  * @param report 
  * @param len 
  */
@@ -92,8 +92,18 @@ static SNES_gamepad_report_t previous_gamepad_report = { 0 };
 
     memcpy(&gamepad_report, report, sizeof(gamepad_report));
     if (diff_report(&previous_gamepad_report, &gamepad_report)) {
-        printf("Report length = %d\r\n", len);
-        printf("DPAD:X = %04x :: DPAD:Y = %04x\r\n", gamepad_report.dpad_x, gamepad_report.dpad_y);
+
+        xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
+            gamepad_data.dpad_x        = SNES_gamepad_report.dpad_x;
+            gamepad_data.dpad_y        = SNES_gamepad_report.dpad_y;
+            gamepad_data.button_X      = SNES_gamepad_report.BUTTON_X;
+            gamepad_data.button_Y      = SNES_gamepad_report.BUTTON_Y;
+            gamepad_data.button_A      = SNES_gamepad_report.BUTTON_A;
+            gamepad_data.button_L      = SNES_gamepad_report.BUTTON_L;
+            gamepad_data.button_R      = SNES_gamepad_report.BUTTON_R;
+            gamepad_data.BUTTON_START  = SNES_gamepad_report.BUTTON_START;
+            gamepad_data.BUTTON_SELECT = SNES_gamepad_report.BUTTON_SELECT;
+        xSemaphoreGive(semaphore_gamepad_data);
     }
     previous_gamepad_report = gamepad_report;
 }
@@ -115,6 +125,7 @@ uint16_t  vid, pid;
 
     tuh_vid_pid_get(dev_addr, &vid, &pid);
         xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
+            gamepad_data.state = ENABLED;
             gamepad_data.vid = vid;
             gamepad_data.pid = pid;
         xSemaphoreGive(semaphore_gamepad_data);
