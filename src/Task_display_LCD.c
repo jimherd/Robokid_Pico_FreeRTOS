@@ -28,7 +28,7 @@ void Task_display_LCD (void *p) {
 //
 // print hello message 
 
-    Oled_SetFont(Terminal12x16, 12, 16, 32,127);
+    Oled_SetFont(Terminal9x16, 9, 16, 32,127);
     // Oled_ConstText("Test code",   0, 0);
     Oled_ConstText("Robikid 2d",   0, 2);
     Oled_ConstText("Oled 128x64", 0, 4);

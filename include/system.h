@@ -173,6 +173,7 @@ extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 extern const unsigned char robokid_LCD_icons_font15x16[];
+extern const unsigned char Terminal9x16[];
 
 //==============================================================================
 // system definitions
