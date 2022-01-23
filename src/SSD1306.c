@@ -55,7 +55,7 @@ uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
 
     char_cnt = strlen(buffer);
     pixel_count = 0;
-    font_base = (uint8_t*)&Terminal9x16[0];
+    font_base = (uint8_t*)&Terminal_9x16[0];
 
 // outer page loop
     for (uint8_t i=0 ; i < nos_pages ; i++) {

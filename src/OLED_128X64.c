@@ -723,7 +723,7 @@ char buffer2[20];
         sprintf(buffer2,"%03d",i);
         Oled_SetFont(Segment_25x40, 25, 40, 46, 58);
         Oled_Text(buffer2, 0, 3);
-        Oled_SetFont(Terminal12x16, 12, 16, 32 ,127);
+        Oled_SetFont(Terminal_12x16, 12, 16, 32 ,127);
         Oled_Text(buffer2, 90, 3);
         Oled_SetFont(Font_6x8, 6, 8, 32, 127);
         Oled_Text(buffer2, 99, 6);
@@ -735,7 +735,7 @@ char buffer2[20];
 
     sleep_ms(5000);
     Oled_FillScreen(0x00);
-    Oled_SetFont(Terminal12x16, 12, 16, 32 ,127);
+    Oled_SetFont(Terminal_12x16, 12, 16, 32 ,127);
     Oled_ResetScroll();
     for(k=0; k<500; k++) {
         Oled_ConstTextScroll("This is a new scroll function  ");
@@ -746,7 +746,7 @@ char buffer2[20];
     i=10; j=0;
     Oled_ResetScroll();
     while(1) {
-        Oled_SetFont(Terminal12x16, 12, 16, 32,127); 
+        Oled_SetFont(Terminal_12x16, 12, 16, 32,127); 
         Oled_ConstTextScroll("The Serial Peripheral Interface (SPI) bus is a synchronous serial data communication bus that operates in Full-Duplex mode.   ");
         if(i==10) { 
             sprintf(buffer2,"%03d",j);
