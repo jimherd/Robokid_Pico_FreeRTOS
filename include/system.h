@@ -45,6 +45,11 @@
 #define     GAMEPAD_DPAD_Y_AXIS_NULL    0x7F
 #define     GAMEPAD_DPAD_Y_AXIS_DOWN    0xFF
 
+// SSD1306 display
+
+#define SSD1306_LCDWIDTH 128
+#define SSD1306_LCDHEIGHT 64
+
 //==============================================================================
 // enum definitions
 //==============================================================================
@@ -83,6 +88,9 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 //==============================================================================
 // Macros
 //==============================================================================
+
+#define     START_PULSE                 gpio_put(LOG_PIN, 1)
+#define     STOP_PULSE                  gpio_put(LOG_PIN, 0)
 
 #define     DISABLE_POWER_STAGE          gpio_put(TMC7300_EN_PIN, 0)
 #define     ENABLE_POWER_STAGE           gpio_put(TMC7300_EN_PIN, 1)
@@ -139,7 +147,6 @@ typedef struct {
 typedef struct {
     uint8_t     error_state;
     uint8_t     dpad_state;
-
 } system_status_t;
 
 //==============================================================================
@@ -155,6 +162,7 @@ extern system_status_t system_status;
 // Hardware
 
 extern const uint LED_PIN;
+extern const uint LOG_PIN;
 
 // FreeRTOS components
 
@@ -168,6 +176,7 @@ extern void Task_drive_motors(void *p);
 
 // SSD1306 LCD Fonts
 
+extern const uint8_t *font_table[];
 extern const unsigned char Terminal12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];

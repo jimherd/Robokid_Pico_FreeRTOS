@@ -19,8 +19,7 @@
 
 #include "Pico_IO.h"
 
-#define SSD1306_LCDWIDTH 128
-#define SSD1306_LCDHEIGHT 64
+
 
 //==============================================================================
 // SPI Connection of module OLED.

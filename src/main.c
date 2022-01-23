@@ -1,10 +1,10 @@
 /**
- * @file main.c
- * @author Jim Herd
- * @brief Development program for Robokid based on 
+ * @file    main.c
+ * @author  Jim Herd
+ * @brief   Development program for Robokid based on 
  *          Pico/FreeRTOS/TinyUSB/1306 LCD/Trinamic devices
  * @version 0.1
- * @date 2022-01-06
+ * @date    2022-01-06
  * 
  * @copyright Copyright (c) 2022
  * 
@@ -31,6 +31,7 @@
 // Hardware
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
+const uint LOG_PIN = 14;
 
 // FreeRTOS components
 
@@ -55,6 +56,10 @@ system_status_t         system_status;
 int main() {
 
     stdio_init_all();
+
+    gpio_init(LOG_PIN);
+    gpio_set_dir(LOG_PIN, GPIO_OUT);
+    gpio_pull_down(LOG_PIN);         // should default but just make sure
  
     xTaskCreate(Task_blink_LED,
                 "blink_task",
