@@ -177,7 +177,7 @@ extern void Task_drive_motors(void *p);
 // SSD1306 LCD Fonts
 
 extern const unsigned char Terminal_9x16[];
-extern const unsigned char robokid_LCD_icons_font15x16[];
+extern const unsigned char robokid_LCD_icons_font_15x16[];
 
 extern const uint8_t *font_table[];
 extern const unsigned char Terminal_12x16[];

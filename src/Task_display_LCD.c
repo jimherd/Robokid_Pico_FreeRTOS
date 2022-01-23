@@ -29,7 +29,7 @@ void Task_display_LCD (void *p) {
 //
 // print hello message 
   START_PULSE;
-    SSD1306_write_string("Robikid 2d");
+    SSD1306_write_string(0, 0, "Robikid 2d");
     // Oled_SetFont(Terminal9x16, 9, 16, 32,127);
     // Oled_ConstText("Test code",   0, 0);
     // Oled_ConstText("Robikid 2d",   0, 2);

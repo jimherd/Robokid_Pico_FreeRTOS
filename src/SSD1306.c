@@ -19,7 +19,7 @@ struct {
     uint8_t     seg_value;
     uint8_t     pag_value;
     uint8_t     pixel_length;
-} page_window_table[6] = {
+} page_window_table[] = {
         {0, 0, 128}
 };
 
@@ -41,36 +41,45 @@ uint8_t SSD1306_write_pag_buf(uint8_t font_index, uint8_t *buffer, uint8_t len){
     return 0;
 }
 
-uint8_t SSD1306_write_string(/* uint8_t font_code, uint8_t pag_window, */ uint8_t *buffer) {
+uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer) {
 
-uint8_t     nos_pages = 2;      // tmp : pixel_height / 2;
-uint8_t     nos_x_pixels = 9;   // tmp : pixel_width
-uint8_t     seg = 0;            // tmp : get from window data
-uint8_t     pag = 0;            // tmp : get from window data
-uint8_t     font_chr_1 = ' ';   // tmp : get from font file
-uint8_t     pixel_count = 0;
+uint8_t     pixel_width, pixel_height, nos_pages;
+uint8_t     segment, page;
+uint8_t     first_char, last_char;
+uint8_t     pixel_count;
 uint8_t     char_cnt, character;
 uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
 
+    font_base    =  font_table[font_code];
+    pixel_width  = *font_base;
+    pixel_height = *(font_base + 1);
+    first_char   = *(font_base + 2);
+    last_char    = *(font_base + 3);
+    font_base    = font_base + 4;       // skip  font header
+
+    segment = page_window_table[window].seg_value;
+    page    = page_window_table[window].pag_value;
+
+    nos_pages = pixel_height/8;
 
     char_cnt = strlen(buffer);
     pixel_count = 0;
-    font_base = (uint8_t*)&Terminal_9x16[0];
+    
 
 // outer page loop
     for (uint8_t i=0 ; i < nos_pages ; i++) {
         ch_pt = buffer;
 // string loop
-        Oled_SetPointer(seg, pag);
+        Oled_SetPointer(segment, page);
         for (uint8_t j=0 ; j<char_cnt ; j++) {
             character = *ch_pt++;
-            font_index = (uint8_t*)(font_base + ((character - font_chr_1) * (nos_x_pixels * nos_pages)));
+            font_index = (uint8_t*)(font_base + ((character - first_char) * (pixel_width * nos_pages)));
 // write character
-            for (uint8_t k=i; k < (nos_x_pixels * nos_pages); k=k+nos_pages) {
+            for (uint8_t k=i; k < (pixel_width * nos_pages); k=k+nos_pages) {
                 Oled_WriteRam(*(font_index + k));
             }
         }
-        pag++;
+        page++;
     }
     return  0;
 }
