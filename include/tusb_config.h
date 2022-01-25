@@ -46,7 +46,7 @@
 #endif
 
 #ifndef CFG_TUSB_OS
-#define CFG_TUSB_OS                 OPT_OS_NONE
+#define CFG_TUSB_OS                 OPT_OS_FreeRTOS
 #endif
 
 // CFG_TUSB_DEBUG is defined by compiler in DEBUG build

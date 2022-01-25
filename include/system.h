@@ -130,8 +130,8 @@ typedef struct TU_ATTR_PACKED  {    // packed attribute
 } SNES_gamepad_report_t;
 
 typedef struct {
-    uint8_t     state;                  // ENABLED or DISAPLED
-    uint8_t     vid, pid;
+    uint8_t     state;                  // ENABLED or DISABLED
+    uint32_t    vid, pid;
     uint8_t     dpad_x, dpad_y;
     uint8_t     button_X, button_Y, button_A, button_B;
     uint8_t     button_L, button_R;
@@ -163,6 +163,7 @@ extern system_status_t system_status;
 
 extern const uint LED_PIN;
 extern const uint LOG_PIN;
+extern const uint BLINK_PIN;
 
 // FreeRTOS components
 

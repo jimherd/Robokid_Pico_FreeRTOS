@@ -19,13 +19,13 @@
 
 void Task_blink_LED(void *p) {
 
-    gpio_init(LED_PIN);
-    gpio_set_dir(LED_PIN, GPIO_OUT);
+    gpio_init(BLINK_PIN);
+    gpio_set_dir(BLINK_PIN, GPIO_OUT);
 
     FOREVER {
-        gpio_put(LED_PIN, 1);
+        gpio_put(BLINK_PIN, 1);
         vTaskDelay(500/portTICK_PERIOD_MS);
-        gpio_put(LED_PIN, 0);
+        gpio_put(BLINK_PIN, 0);
         vTaskDelay(100/portTICK_PERIOD_MS);
     }
 }

@@ -20,7 +20,8 @@ struct {
     uint8_t     pag_value;
     uint8_t     pixel_length;
 } page_window_table[] = {
-        {0, 0, 128}
+        {0, 0, 128},
+        {20, 3, 24},
 };
 
 /**

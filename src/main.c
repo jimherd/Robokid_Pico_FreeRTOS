@@ -32,6 +32,7 @@
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 const uint LOG_PIN = 14;
+const uint BLINK_PIN = 16;
 
 // FreeRTOS components
 

@@ -16,9 +16,10 @@
 #define FONT_H
 
 const uint8_t *font_table[] = {
-    Terminal_9x16,                  // font 0
-    &Terminal_12x16[0],                 // font 1
-    &robokid_LCD_icons_font_15x16[0],   // font 2
+    Terminal_9x16,                      // font 0
+    &robokid_LCD_icons_font_15x16[0],   // font 1
+
+    &Terminal_12x16[0],                 // font 2
     &Font_6x8[0],                       // font 3
     &Segment_25x40[0],                  // font 4
 };

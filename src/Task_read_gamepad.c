@@ -21,6 +21,7 @@
 // USB gamepad function prototypes
 //==============================================================================
 void Task_read_gamepad(void *p);
+
 static inline bool is_generic_gamepad(uint8_t dev_addr);
 bool diff_report(SNES_gamepad_report_t const* report1,   SNES_gamepad_report_t const* report2);
 void process_gamepad_report(uint8_t const* report, uint16_t len);
@@ -38,15 +39,10 @@ void Task_read_gamepad(void *p) {
     gamepad_data.state = DISABLED;
 
     FOREVER {
-       vTaskDelay(500/portTICK_PERIOD_MS);
+       vTaskDelay(100/portTICK_PERIOD_MS);
+       tuh_task();
     }
 }
-
-//    while(1){
-//        sleep_ms(100);
-//        tuh_task();
-//    }
-//}
 
 //==============================================================================
 // USB gamepad functions
@@ -99,6 +95,7 @@ static SNES_gamepad_report_t previous_gamepad_report = { 0 };
             gamepad_data.button_X      = SNES_gamepad_report.BUTTON_X;
             gamepad_data.button_Y      = SNES_gamepad_report.BUTTON_Y;
             gamepad_data.button_A      = SNES_gamepad_report.BUTTON_A;
+            gamepad_data.button_B      = SNES_gamepad_report.BUTTON_B;
             gamepad_data.button_L      = SNES_gamepad_report.BUTTON_L;
             gamepad_data.button_R      = SNES_gamepad_report.BUTTON_R;
             gamepad_data.BUTTON_START  = SNES_gamepad_report.BUTTON_START;
@@ -146,6 +143,11 @@ uint16_t  vid, pid;
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
 {
     gpio_put(LED_PIN, 0);
+    xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
+            gamepad_data.state = DISABLED;
+            gamepad_data.vid = 0;
+            gamepad_data.pid = 0;
+        xSemaphoreGive(semaphore_gamepad_data);
 }
 
 /**
