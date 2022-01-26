@@ -38,13 +38,16 @@ void Task_display_LCD (void *p) {
 
 //
 // print hello message 
-  START_PULSE;
-    SSD1306_write_string(0, 0, "Robokid 2");
+
+    SSD1306_set_window(0, 0xff);
+START_PULSE;
+    SSD1306_write_string(0, 1, "Robokid 2");
+    STOP_PULSE;  
     // Oled_SetFont(Terminal9x16, 9, 16, 32,127);
     // Oled_ConstText("Test code",   0, 0);
     // Oled_ConstText("Robikid 2d",   0, 2);
 
-  STOP_PULSE;
+
 //  SSD1306_write_string(1, 1,"#&\%2<>?");
 //     Oled_ConstText("Oled 128x64", 0, 4);
 //     Oled_ConstText("SSD1306  ",   0, 6);
@@ -116,7 +119,7 @@ char    buffer[10], buffer_pt;
     xSemaphoreGive(semaphore_gamepad_data);
 
     buffer[buffer_pt] = '\0';
-    SSD1306_write_string(1, 1, buffer);
+    SSD1306_write_string(1, 2, buffer);
 
     return;
 }

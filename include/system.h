@@ -30,7 +30,7 @@
 
 #define     NOS_ROBOKID_MOTORS  2
 
-#define     SPI_SPEED_5MHz      5000000
+#define     SSD1306_SPI_SPEED      5000000
 
 // SNES Gamepad
 

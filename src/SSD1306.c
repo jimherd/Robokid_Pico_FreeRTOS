@@ -16,11 +16,13 @@ uint8_t  page_buffer[128];
 // Table of virtual windows in SSD1306 display
 //
 struct {
-    uint8_t     seg_value;
-    uint8_t     pag_value;
-    uint8_t     pixel_length;
+    uint8_t     X1_seg_value;
+    uint8_t     Y1_pag_value;
+    uint8_t     X2_seg_value;
+    uint8_t     Y2_pag_value;
 } page_window_table[] = {
-        {0, 0, 128},
+        {0, 0, 127, 7}, // window 0 is full display
+        {0, 0, 127,0},
         {20, 3, 24},
 };
 
@@ -42,6 +44,14 @@ uint8_t SSD1306_write_pag_buf(uint8_t font_index, uint8_t *buffer, uint8_t len){
     return 0;
 }
 
+/**
+ * @brief output string to SSD1306 using horizontal indexing
+ * 
+ * @param font_code Index into table of available fonts
+ * @param window    Index into table of defined windows
+ * @param buffer    null terminated string to be output
+ * @return uint8_t 
+ */
 uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer) {
 
 uint8_t     pixel_width, pixel_height, nos_pages;
@@ -58,8 +68,8 @@ uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
     last_char    = *(font_base + 3);
     font_base    = font_base + 4;       // skip  font header
 
-    segment = page_window_table[window].seg_value;
-    page    = page_window_table[window].pag_value;
+    segment = page_window_table[window].X1_seg_value;
+    page    = page_window_table[window].Y1_pag_value;
 
     nos_pages = pixel_height/8;
 
@@ -83,4 +93,23 @@ uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
         page++;
     }
     return  0;
+}
+
+/**
+ * @brief 
+ * 
+ * @param window        Index into table of defined windows
+ * @param byte_value     
+ */
+void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
+
+    uint8_t nos_pages  = ((page_window_table[window].Y2_pag_value - page_window_table[window].Y1_pag_value) + 1);
+    uint8_t nos_pixels = ((page_window_table[window].X2_seg_value - page_window_table[window].X1_seg_value) + 1);
+
+    for (uint8_t i = page_window_table[window].Y1_pag_value ; i <= page_window_table[window].Y2_pag_value ; i++) {
+        Oled_SetPointer(page_window_table[window].X1_seg_value, i);
+        for (uint8_t j = page_window_table[window].X1_seg_value; j <= page_window_table[window].X2_seg_value ; j++){
+            Oled_WriteRam(byte_value);
+        }
+    }
 }

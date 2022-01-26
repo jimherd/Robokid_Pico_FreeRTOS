@@ -121,7 +121,7 @@ void  Oled_Init(void){
     gpio_set_function(OLED_CS, GPIO_FUNC_SPI);
     gpio_set_function(OLED_MOSI, GPIO_FUNC_SPI);
 
-    spi_init(SPI_PORT, 5000000);   // SPI_SPEED_5MHz
+    spi_init(SPI_PORT, 80000000);   // SPI_SPEED_5MHz
 
     Oled_Command_seq(init_sequence, sizeof(init_sequence));
 
