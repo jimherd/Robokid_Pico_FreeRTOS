@@ -46,7 +46,6 @@ SemaphoreHandle_t semaphore_gamepad_data ;
 
 // System data structures. Protected with MUTEXES
 
-SNES_gamepad_report_t   SNES_gamepad_report;
 gamepad_data_t          gamepad_data;
 system_status_t         system_status;
 

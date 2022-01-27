@@ -30,7 +30,7 @@
 
 #define     NOS_ROBOKID_MOTORS  2
 
-#define     SSD1306_SPI_SPEED      5000000
+#define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
 
 // SNES Gamepad
 
@@ -98,6 +98,8 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     FOREVER     for(;;)
 #define     HANG        for(;;)
 
+#define     ATTRIBUTE_PACKED     __attribute__ ((__packed__))
+
 //==============================================================================
 // definitions of system data structures
 //==============================================================================
@@ -107,35 +109,35 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
  * 
  */
 typedef struct TU_ATTR_PACKED  {    // packed attribute
-    uint8_t     dpad_x, dpad_y;         // dpad returned at 8-bit values
+    uint8_t     dpad_x, dpad_y;         // dpad returned as 8-bit values
     uint8_t     dummy2, dummy3,dummy4;
 
     struct {
         uint8_t dummy5      :4;
-        uint8_t BUTTON_X    :1;
-        uint8_t BUTTON_A    :1;
-        uint8_t BUTTON_B    :1;
-        uint8_t BUTTON_Y    :1;
+        uint8_t button_X    :1;
+        uint8_t button_A    :1;
+        uint8_t button_B    :1;
+        uint8_t button_Y    :1;
     };
 
     struct {
-        uint8_t BUTTON_L      :1;
-        uint8_t BUTTON_R      :1;
+        uint8_t button_L      :1;
+        uint8_t button_R      :1;
         uint8_t dummy6        :2;
-        uint8_t BUTTON_START  :1;
-        uint8_t BUTTON_SELECT :1;
+        uint8_t button_START  :1;
+        uint8_t button_SELECT :1;
         uint8_t dummy7        :2;
     };
     uint8_t     dummy8;
 } SNES_gamepad_report_t;
 
-typedef struct {
+typedef struct ATTRIBUTE_PACKED {
     uint8_t     state;                  // ENABLED or DISABLED
     uint32_t    vid, pid;
     uint8_t     dpad_x, dpad_y;
     uint8_t     button_X, button_Y, button_A, button_B;
     uint8_t     button_L, button_R;
-    uint8_t     BUTTON_START, BUTTON_SELECT;
+    uint8_t     button_START, button_SELECT;
 } gamepad_data_t;
 
 typedef struct {
@@ -155,7 +157,6 @@ typedef struct {
 
 // System data structures
 
-extern SNES_gamepad_report_t SNES_gamepad_report;
 extern gamepad_data_t gamepad_data;
 extern system_status_t system_status;
 

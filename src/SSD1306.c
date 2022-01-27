@@ -23,7 +23,7 @@ struct {
 } page_window_table[] = {
         {0, 0, 127, 7}, // window 0 is full display
         {0, 0, 127,0},
-        {20, 3, 24},
+        {0, 6, 127, 7},
 };
 
 /**
@@ -96,7 +96,7 @@ uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
 }
 
 /**
- * @brief 
+ * @brief Set each byte (1024) of the display
  * 
  * @param window        Index into table of defined windows
  * @param byte_value     

@@ -84,22 +84,22 @@ bool diff_report(SNES_gamepad_report_t const* report1,   SNES_gamepad_report_t c
 void process_gamepad_report(uint8_t const* report, uint16_t len) 
 {
 SNES_gamepad_report_t  gamepad_report;
-static SNES_gamepad_report_t previous_gamepad_report = { 0 };
+static SNES_gamepad_report_t previous_gamepad_report = { 127,127,0 };
 
     memcpy(&gamepad_report, report, sizeof(gamepad_report));
     if (diff_report(&previous_gamepad_report, &gamepad_report)) {
 
         xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
-            gamepad_data.dpad_x        = SNES_gamepad_report.dpad_x;
-            gamepad_data.dpad_y        = SNES_gamepad_report.dpad_y;
-            gamepad_data.button_X      = SNES_gamepad_report.BUTTON_X;
-            gamepad_data.button_Y      = SNES_gamepad_report.BUTTON_Y;
-            gamepad_data.button_A      = SNES_gamepad_report.BUTTON_A;
-            gamepad_data.button_B      = SNES_gamepad_report.BUTTON_B;
-            gamepad_data.button_L      = SNES_gamepad_report.BUTTON_L;
-            gamepad_data.button_R      = SNES_gamepad_report.BUTTON_R;
-            gamepad_data.BUTTON_START  = SNES_gamepad_report.BUTTON_START;
-            gamepad_data.BUTTON_SELECT = SNES_gamepad_report.BUTTON_SELECT;
+            gamepad_data.dpad_x        = gamepad_report.dpad_x;
+            gamepad_data.dpad_y        = gamepad_report.dpad_y;
+            gamepad_data.button_X      = gamepad_report.button_X;
+            gamepad_data.button_Y      = gamepad_report.button_Y;
+            gamepad_data.button_A      = gamepad_report.button_A;
+            gamepad_data.button_B      = gamepad_report.button_B;
+            gamepad_data.button_L      = gamepad_report.button_L;
+            gamepad_data.button_R      = gamepad_report.button_R;
+            gamepad_data.button_START  = gamepad_report.button_START;
+            gamepad_data.button_SELECT = gamepad_report.button_SELECT;
         xSemaphoreGive(semaphore_gamepad_data);
     }
     previous_gamepad_report = gamepad_report;
