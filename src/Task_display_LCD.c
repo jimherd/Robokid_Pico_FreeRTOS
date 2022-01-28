@@ -79,6 +79,7 @@ STOP_PULSE;
 #define BUTTON_R        58  // ':'
 
 #define GAMEPAD_CONNECTED   61  // '='
+#define ERROR_ICON      63  // '?'
 
 
 /**
@@ -88,9 +89,19 @@ STOP_PULSE;
 void process_icons(void) {
 
 char    buffer[10], buffer_pt;
+int8_t  error;
 
     buffer_pt = 0;
     SSD1306_set_window(2, 0x00);  // clear ICON window
+
+// Error state
+
+    xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
+        error = system_status.error_state;
+    xSemaphoreGive(semaphore_system_status);
+    if (error <= OK) {
+        buffer[buffer_pt++] = ERROR_ICON;
+    }
 
 // Battery icon
 

@@ -1,14 +1,18 @@
 /**
  * @file Task_blink_LED.c
  * @author Jim Herd
- * @brief Simple teask to flash Pico on-board LED
+ * @brief Flash error code
  * @version 0.1
  * @date 2022-01-10
  * 
  * @copyright Copyright (c) 2022
  * 
+ * @note    Errors are flashed as decimal values.
+ *          errors are negative and flashed as positive numbers.
+ *          If all well one long flash every 5 seconds.
  */
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "system.h"
 
@@ -17,15 +21,54 @@
 
 #include "FreeRTOS.h"
 
+extern void flash(uint8_t nos_flashes);
+
+#define     FLASH_TIME      (300/portTICK_PERIOD_MS)
+#define     FLASH_DELAY     (300/portTICK_PERIOD_MS)
+
 void Task_blink_LED(void *p) {
+
+uint8_t     tens, units, count;
+int8_t      error;
 
     gpio_init(BLINK_PIN);
     gpio_set_dir(BLINK_PIN, GPIO_OUT);
 
     FOREVER {
+        xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
+            error = system_status.error_state;
+        xSemaphoreGive(semaphore_system_status);
+
+        if (error >= OK) {                          // no error 
+            gpio_put(BLINK_PIN, 1);
+            vTaskDelay(1000/portTICK_PERIOD_MS);
+            gpio_put(BLINK_PIN, 0);
+            vTaskDelay(4000/portTICK_PERIOD_MS);
+        } else {                                     // error
+            error = abs(error);
+            tens = error/10;
+            units = error % 10;
+            flash(tens);
+            vTaskDelay(1000/portTICK_PERIOD_MS);
+            flash(units);
+            vTaskDelay(3000/portTICK_PERIOD_MS);
+        }
+    }
+}
+
+/**
+ * @brief Generate sequence of flashes
+ * 
+ * @param nos_flashes 
+ */
+void flash(uint8_t nos_flashes) {
+
+uint8_t  count;
+
+    for (count = 0 ; count < nos_flashes ; count++) {
         gpio_put(BLINK_PIN, 1);
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(FLASH_TIME);
         gpio_put(BLINK_PIN, 0);
-        vTaskDelay(100/portTICK_PERIOD_MS);
+        vTaskDelay(FLASH_DELAY);
     }
 }

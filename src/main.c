@@ -2,7 +2,7 @@
  * @file    main.c
  * @author  Jim Herd
  * @brief   Development program for Robokid based on 
- *          Pico/FreeRTOS/TinyUSB/1306 LCD/Trinamic devices
+ *          Pico/FreeRTOS/TinyUSB/1306 LCD/Trinamic H-bridge
  * @version 0.1
  * @date    2022-01-06
  * 
@@ -60,6 +60,8 @@ int main() {
     gpio_init(LOG_PIN);
     gpio_set_dir(LOG_PIN, GPIO_OUT);
     gpio_pull_down(LOG_PIN);         // should default but just make sure
+
+    system_status.error_state = -26;
  
     xTaskCreate(Task_blink_LED,
                 "blink_task",

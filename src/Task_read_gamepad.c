@@ -128,7 +128,8 @@ uint16_t  vid, pid;
         xSemaphoreGive(semaphore_gamepad_data);
     if (is_generic_gamepad(dev_addr)) {
         if ( !tuh_hid_receive_report(dev_addr, instance)) {
-            printf("Error : cannot request to receive report\r\n");
+            
+            //printf("Error : cannot request to receive report\r\n");
         }
     }
     gpio_put(LED_PIN, 1);

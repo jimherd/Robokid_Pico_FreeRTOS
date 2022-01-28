@@ -50,6 +50,10 @@
 #define SSD1306_LCDWIDTH 128
 #define SSD1306_LCDHEIGHT 64
 
+// errors
+
+#define     OK      0
+
 //==============================================================================
 // enum definitions
 //==============================================================================
@@ -147,8 +151,7 @@ typedef struct {
 } icon_data_t;
 
 typedef struct {
-    uint8_t     error_state;
-    uint8_t     dpad_state;
+    int8_t     error_state;
 } system_status_t;
 
 //==============================================================================
@@ -159,6 +162,8 @@ typedef struct {
 
 extern gamepad_data_t gamepad_data;
 extern system_status_t system_status;
+
+extern const uint8_t *error_strings[];
 
 // Hardware
 
@@ -186,7 +191,6 @@ extern const unsigned char Terminal_12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
-
 
 //==============================================================================
 // system definitions
