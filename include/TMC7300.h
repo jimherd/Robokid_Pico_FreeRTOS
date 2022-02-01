@@ -147,12 +147,18 @@ typedef struct TMC7300_read_reply_datagram {
     uint8_t     crc;
 } TMC7300_read_reply_datagram_t;
 
-typedef struct register_data {
+typedef struct  {
     uint8_t       register_address;
     reg_access_t  RW_mode;
     uint32_t      init_value;
     uint32_t      shadow_value;
 } register_data_t;
+
+typedef struct  {
+    uint16_t    system_voltage;
+    uint8_t     button[NOS_ROBOKID_SWITCHES];
+    uint8_t     floor_sensor[NOS_ROBOKID_FLOOR_SENSORS];
+} system_sensors_t;
 
 
 //==============================================================================

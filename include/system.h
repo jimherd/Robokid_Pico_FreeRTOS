@@ -30,7 +30,9 @@
 #define     UART_RX_PIN         GP9          // Pin 12
 #define     TMC7300_EN_PIN      GP10         // Pin 14
 
-#define     NOS_ROBOKID_MOTORS  2
+#define     NOS_ROBOKID_MOTORS          2
+#define     NOS_ROBOKID_SWITCHES        4
+#define     NOS_ROBOKID_FLOOR_SENSORS   2
 
 #define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
 
