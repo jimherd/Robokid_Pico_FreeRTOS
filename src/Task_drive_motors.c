@@ -1,5 +1,3 @@
-#include <stdio.h>
-#include <string.h>
 
 #include "system.h"
 
@@ -20,9 +18,13 @@
 //==============================================================================
 void Task_drive_motors(void *p) {
 
+motor_cmd_t  command;
+
     TMC7300_Init();
 
     FOREVER {
-       vTaskDelay(500/portTICK_PERIOD_MS);
+        xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
+
+        
     }
 }

@@ -10,9 +10,6 @@
  * 
  */
 
-#include <stdio.h>
-#include <string.h>
-
 #include "system.h"
 
 #include "pico/stdlib.h"
@@ -43,6 +40,8 @@ TaskHandle_t taskhndl_Task_drive_motors;
 
 SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
+
+QueueHandle_t queue_motor_cmds;
 
 // System data structures. Protected with MUTEXES
 
@@ -97,6 +96,8 @@ int main() {
 
     semaphore_system_status  = xSemaphoreCreateMutex();
     semaphore_gamepad_data   = xSemaphoreCreateMutex();
+
+    queue_motor_cmds = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_t));   
 
     vTaskStartScheduler();
 

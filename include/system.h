@@ -9,6 +9,8 @@
  * 
  */
 
+#include    "pico/stdlib.h"
+
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
 
@@ -52,7 +54,19 @@
 
 // errors
 
-#define     OK      0
+typedef enum {
+    OK                  =  0,
+    FAULT               = -1,
+    
+    BAD_MOTOR_NUMBER    = -10, 
+    BAD_PWM_PERCENT     = -11,
+    CRC_ERROR           = -12,
+} error_codes_t;
+
+// Freertos
+
+#define  MOTOR_CMD_QUEUE_LENGTH     8
+
 
 //==============================================================================
 // enum definitions
@@ -135,6 +149,10 @@ typedef struct TU_ATTR_PACKED  {    // packed attribute
     uint8_t     dummy8;
 } SNES_gamepad_report_t;
 
+/**
+ * @brief data structure to hold current gamepad information
+ * 
+ */
 typedef struct ATTRIBUTE_PACKED {
     uint8_t     state;                  // ENABLED or DISABLED
     uint32_t    vid, pid;
@@ -145,14 +163,34 @@ typedef struct ATTRIBUTE_PACKED {
 } gamepad_data_t;
 
 typedef struct {
-    uint8_t         page;
-    uint8_t         segment;
-    unsigned char   *buffer;
-} icon_data_t;
-
-typedef struct {
     int8_t     error_state;
 } system_status_t;
+
+typedef union {
+    uint32_t    command;
+    struct  {
+        uint8_t     cmd;
+        int8_t      param1, param2, param3;
+    };
+} motor_cmd_t;
+
+typedef enum {
+    LEFT_MOTOR,
+    RIGHT_MOTOR,
+} motor_t;
+
+typedef enum {
+    MOTOR_OFF, 
+    MOTOR_FORWARD, 
+    MOTOR_BACKWARD,
+    MOTOR_BRAKE
+} motor_state_t;
+
+typedef struct motor_config_data {
+    motor_state_t   stop_mode;
+    uint8_t         left_motor_mode;
+    uint8_t         right_motor_mode;
+} motor_config_data_t;
 
 //==============================================================================
 // Extern references
@@ -173,13 +211,15 @@ extern const uint BLINK_PIN;
 
 // FreeRTOS components
 
-extern SemaphoreHandle_t semaphore_system_status;
-extern SemaphoreHandle_t semaphore_gamepad_data;
-
-extern void Task_read_gamepad(void *p);
+extern void Task_read_gamepad(void *p);             // tasks
 extern void Task_blink_LED(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
+
+extern SemaphoreHandle_t semaphore_system_status;   //semaphores
+extern SemaphoreHandle_t semaphore_gamepad_data;
+
+extern QueueHandle_t queue_motor_cmds;              // queues
 
 // SSD1306 LCD Fonts
 
@@ -191,12 +231,5 @@ extern const unsigned char Terminal_12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
-
-//==============================================================================
-// system definitions
-//==============================================================================
-
-
-
 
 #endif /* _SYSTEM_H_ */

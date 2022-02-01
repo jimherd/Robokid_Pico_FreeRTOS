@@ -5,7 +5,8 @@
  * @version 0.1
  * @date    2021-10-31
  */
-#include <stdlib.h>
+
+#include    <stdlib.h>
 
 #include "TMC7300.h"
 #include "TMC7300_Registers.h"
@@ -22,7 +23,7 @@
 TMC7300_write_datagram_t        write_datagram;
 TMC7300_read_datagram_t         read_datagram;
 TMC7300_read_reply_datagram_t   read_reply_datagram;
-TMC7300_errors_t                TMC7300_sys_error;      // global error flag
+error_codes_t                   TMC7300_sys_error;      // global error flag
 
 //
 // Structure to hold data relevant to the 10 registers in the TMC7300 device
@@ -44,19 +45,15 @@ register_data_t TMC7300_reg_data[TMC7300_NOS_registers] = {
 //==============================================================================
 // Functions
 //==============================================================================
-// TMC7300_Init
-//==============================================================================
+
+//----------------------------------------------------------------------------
 /**
  * @brief Configure TMC7300 H-bridge chip
  * 
- * @param       none
- * @return      void
- * 
  */
-
 void  TMC7300_Init(void) {
 
-    TMC7300_sys_error = NO_ERROR;       // clear global error variable
+    TMC7300_sys_error = OK;       // clear global error variable
     
     uart_init(TMC7300_UART_PORT, BAUD_RATE);
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
@@ -74,9 +71,7 @@ void  TMC7300_Init(void) {
     }
 }
 
-//==============================================================================
-// Initialise TMC7300 registers and shadow registers
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
  * @brief Initialise TMC7300 registers and shadow registers
  * 
@@ -96,10 +91,7 @@ void reset_TMC7300(void) {
     }
 }
 
-
-//==============================================================================
-// create_write_datagram
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
  * @brief Create an 8-byte write datagram for TMC7300
  * 
@@ -117,12 +109,9 @@ void create_write_datagram(TMC7300_write_datagram_t *datagram, uint8_t register_
     datagram->register_address = register_address | TMC7300_WRITE_BIT;
     datagram->data             = register_value;
     datagram->crc              = TMC7300_CRC8((uint8_t *)datagram, LENGTH_WRITE_DATAGRAM);
-
 }
 
-//==============================================================================
-// create_read_datagram
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
  * @brief Create an 8-byte write datagram for TMC7300
  * 
@@ -139,17 +128,17 @@ void create_read_datagram(TMC7300_read_datagram_t *datagram, uint8_t register_ad
     datagram->crc              = TMC7300_CRC8((uint8_t *)datagram, LENGTH_WRITE_DATAGRAM-1);
 }
 
-//==============================================================================
-// TMC7300_CRC8 
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
  * @brief  calculate 8-bit CRC on array of bytes
+ * 
+ * Uses a fast lookup table method to calculate 8-bit CRC.  Table inclues
+ * precalculated values.
  * 
  * @param[in] data      array of 8-bit values
  * @param[in] length    number of array
  * @return              8-bit CRC value
  * 
- * @note    Fast CRC generation using table lookup
  * @author  Trinamic
  * @date    Oct 2021
  */
@@ -163,31 +152,32 @@ uint8_t crc = 0;
     return crc;
 }
 
-//==============================================================================
-// TMC7300_write_reg
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
- * @brief Transmit 8 byte datagram to TMC7300 to write to a device register
+ * @brief   Write to a TMC7300 register
  * 
- * @param   datagram    pointer to 8-byte array 
- * @return              no value returned
+ * Transmit 8 byte datagram to TMC7300 to write to a device register. No reply
+ * will occur.
+ * 
+ * @param[in]   datagram    pointer to 8-byte array 
+ * @return                  no value returned
  */
 void TMC7300_write_reg(TMC7300_write_datagram_t *datagram) {
 
     uart_write_blocking(TMC7300_UART_PORT, (uint8_t *)datagram, sizeof(TMC7300_write_datagram_t));
 }
 
-//==============================================================================
-// TMC7300_read_reg
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
- * @brief Transmit 4 byte datagram to TMC7300 to read a device register and
- *        recieve a 12 byte reply
+ * @brief       Read a TMC7300 register    
  * 
- * @param datagram  pointer to 4-byte array
+ * Transmit 4 byte datagram to TMC7300 to read a device register and recieve 
+ * a 12 byte reply.
+ * 
+ * @param[in]       datagram  pointer to 4-byte array
  * @return          error code
  */
-TMC7300_errors_t  TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_read_reply_datagram_t *reply_datagram) {
+error_codes_t  TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_read_reply_datagram_t *reply_datagram) {
 
     uart_write_blocking(TMC7300_UART_PORT, (uint8_t *)datagram, sizeof(TMC7300_read_datagram_t));
     uart_read_blocking(TMC7300_UART_PORT, (uint8_t *)&read_reply_datagram, sizeof(TMC7300_read_reply_datagram_t));
@@ -195,12 +185,10 @@ TMC7300_errors_t  TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_re
     if (crc != read_reply_datagram.crc) {
         return CRC_ERROR;
     }
-    return NO_ERROR;
+    return OK;
 }
 
-//==============================================================================
-// TMC7300_command
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
  *
  * @brief execute the set of TMC7300 commands
@@ -214,15 +202,13 @@ TMC7300_errors_t  TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_re
  * @return                  error code ; OK if no errors detected
  * 
  */
-TMC7300_errors_t execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value) {
-
+error_codes_t execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value) 
+{
 uint32_t tmp_value, target_register, *shadow_register;
 
     switch(command) {
         case SET_PWM_A : {
-            if (abs(value > 100)) {     // check PWM % value is legal
-                return BAD_PWM_PERCENT;
-            }
+            
             target_register = TMC7300_reg_data[PWM_AB_IDX].register_address;
             shadow_register = &TMC7300_reg_data[PWM_AB_IDX].shadow_value; 
             switch (RW_mode) {
@@ -237,9 +223,7 @@ uint32_t tmp_value, target_register, *shadow_register;
             break;
         }
         case SET_PWM_B : {
-            if (abs(value > 100)) {
-                return BAD_PWM_PERCENT;
-            }
+            
             target_register = TMC7300_reg_data[PWM_AB_IDX].register_address;
             shadow_register = &TMC7300_reg_data[PWM_AB_IDX].shadow_value;
             switch (RW_mode) {
@@ -264,6 +248,28 @@ uint32_t tmp_value, target_register, *shadow_register;
                 }
             }
         }
+        case  ENABLE_MOTORS : {
+            target_register = TMC7300_reg_data[CHOPCONF_IDX].register_address;
+            shadow_register = &TMC7300_reg_data[CHOPCONF_IDX].shadow_value;
+            tmp_value = 1;
+            switch (RW_mode) {
+                case WRITE_CMD : {
+                    MERGE_REG_VALUE(*shadow_register, tmp_value, TMC7300_ENABLEDRV_MASK, TMC7300_ENABLEDRV_SHIFT);
+                    break;
+                }
+            }
+        }
+        case  DISABLE_MOTORS : {
+            target_register = TMC7300_reg_data[CHOPCONF_IDX].register_address;
+            shadow_register = &TMC7300_reg_data[CHOPCONF_IDX].shadow_value;
+            tmp_value = 0;
+            switch (RW_mode) {
+                case WRITE_CMD : {
+                    MERGE_REG_VALUE(*shadow_register, tmp_value, TMC7300_ENABLEDRV_MASK, TMC7300_ENABLEDRV_SHIFT);
+                    break;
+                }
+            }
+        }
     //
     // format datagram, send to TMC7300, and update shadow register
     
@@ -284,14 +290,9 @@ uint32_t tmp_value, target_register, *shadow_register;
     }   // end command switch
 }
 
-//==============================================================================
-// set_master_slave_delay
-//==============================================================================
+//----------------------------------------------------------------------------
 /**
- * @brief 
- * 
- *
- * @brief set delay between recieving a read datagram and sending a reply
+ * @brief       set delay between recieving a read datagram and sending a reply
  * 
  * @param[in]   delay in units of UART bit times 
  * @return      no value returned
@@ -313,13 +314,104 @@ uint32_t  tmp_bit_times, master_slave_delay;
     TMC7300_write_reg(&write_datagram);
 }
 
+void set_break_mode(brake_mode_t mode)
+{
+uint32_t  tmp_value, *shadow_register;
 
-// /* *
-//  * @brief compute absolute valus of a 32 bit integer
-//  * 
-//  * @param value 
-//  * @return int32_t 
-//  */
-// int32_t abs_int32(int32_t value) {
-//     return ((value < 0) ? -value : value);
-// }
+    switch (mode) {
+        FREEWHEEL:
+                shadow_register = &TMC7300_reg_data[TMC7300_CURRENT_LIMIT].shadow_value;
+                MERGE_REG_VALUE(*shadow_register, tmp_value, TMC7300_FREEWHEEL_MODE_OP, TMC7300_MOTORRUN_SHIFT);
+                break;
+        BRAKE_LS_DRIVER:
+                break;
+        BRAKE_HS_DRIVER:
+                break;
+    }
+}
+
+//----------------------------------------------------------------------------
+/**
+ * @brief Set the motor object
+ * @note                The motor speed is specified in the range of 0 to 100% 
+ *                      which is converted to the range 0 to 255
+ * @param[in] unit      LEFT_MOTOR or RIGHT_MOTOR
+ * @param[in] state     MOTOR_OFF, MOTOR_FORWARD, MOTOR_BACKWARD
+ * @param[in] pwm_width 0% to 100%
+ * 
+ * @return    error_code_t  error code
+ */
+error_codes_t  set_motor(motor_t unit, uint8_t pwm_width) 
+{
+motor_t  left_motor_state, right_motor_state;
+
+    
+   // uint32_t pulse_count = (period_count/100) * (100 - pwm_width);
+    if (unit >= NOS_ROBOKID_MOTORS) {
+        return BAD_MOTOR_NUMBER;
+    }
+    if (abs(pwm_width > 100)) {
+        return BAD_PWM_PERCENT;
+    }
+
+    if (unit == LEFT_MOTOR) {
+        
+    }
+    
+    if (unit == RIGHT_MOTOR) {
+        // switch (state) {
+        //     case MOTOR_OFF :        // set FREEWHEEL condition
+                
+        //         left_motor_state = MOTOR_OFF;
+        //         break;
+        //     case MOTOR_FORWARD :    // set LOW on RM_PWM2 and pwm on LM_PWM1
+                
+        //         left_motor_state = MOTOR_FORWARD;
+        //         break;
+        //     case MOTOR_BACKWARD :   // set LOW on RM_PWM1 and RM_PWM2
+                
+        //         left_motor_state = MOTOR_BACKWARD;
+        //         break;
+        //     case MOTOR_BRAKE :      // set BRAKE condition
+                
+        //         left_motor_state = MOTOR_BRAKE;
+        //         break;
+        // }
+    }
+//    set_vehicle_state(); 
+}
+
+//----------------------------------------------------------------------------
+/**
+ * @brief Set the motor config object
+ * 
+ * @param   motor_config_data 
+ * @return  error_codes_t   OK, or fault code (-ve value)
+ */
+error_codes_t  set_motor_config(motor_config_data_t  *motor_config_data) 
+{
+
+    return OK;
+}
+
+//----------------------------------------------------------------------------
+/**
+ * @brief   Enable TMC7300 H-bridge drivers
+ * 
+ * @return  error_codes_t   OK, or fault code (-ve value)
+ */
+error_codes_t  enable_motors(void)
+{
+    return OK;
+} 
+
+//----------------------------------------------------------------------------
+/**
+ * @brief   Disable TMC7300 H-bridge drivers
+ * 
+ * @return  error_codes_t   OK, or fault code (-ve value)
+ */
+error_codes_t  disable_motors(void)
+{
+    return OK;
+} 
