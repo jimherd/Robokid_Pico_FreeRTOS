@@ -77,8 +77,8 @@
 // Register CURRENT_LIMIT
 #define TMC7300_MOTORRUN_MASK      0x00000001
 #define TMC7300_MOTORRUN_SHIFT     0
-    #define TMC7300_NORMAL_MODE_OP      0x00
-    #define TMC7300_FREEWHEEL_MODE_OP   0x01    // default
+    #define TMC7300_NORMAL_MODE_OP      0x01    // default
+    #define TMC7300_FREEWHEEL_MODE_OP   0x00
 #define TMC7300_IRUN_MASK          0x00001F00
 #define TMC7300_IRUN_SHIFT         8
     #define TMC7300_IRUN_MAX            0x1F    //default
@@ -95,6 +95,8 @@
 //Register CHOPCONF
 #define TMC7300_ENABLEDRV_MASK     0x00000001
 #define TMC7300_ENABLEDRV_SHIFT    0
+    #define TMC7300_ENABLEDRV_DISABLE   0
+    #define TMC7300_ENABLEDRV_ENABLE    1
 #define TMC7300_TBL_MASK           0x00018000
 #define TMC7300_TBL_SHIFT          15
 #define TMC7300_DISS2G_MASK        0x40000000

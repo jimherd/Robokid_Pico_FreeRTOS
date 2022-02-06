@@ -40,13 +40,11 @@ void Task_display_LCD (void *p) {
 // print hello message 
 
     SSD1306_set_window(0, 0x00);
-START_PULSE;
     SSD1306_write_string(0, 1, "Robokid 2");
-STOP_PULSE;  
-    
+
     FOREVER {
         process_icons();
-        vTaskDelay(500/portTICK_PERIOD_MS);
+        vTaskDelay(500 / portTICK_PERIOD_MS);
     }
 }
 

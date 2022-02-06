@@ -59,10 +59,6 @@
 typedef enum {
     OK                  =  0,
     FAULT               = -1,
-    
-    BAD_MOTOR_NUMBER    = -10, 
-    BAD_PWM_PERCENT     = -11,
-    CRC_ERROR           = -12,
 } error_codes_t;
 
 // Freertos
@@ -70,21 +66,6 @@ typedef enum {
 #define  MOTOR_CMD_QUEUE_LENGTH     8
 
 
-//==============================================================================
-// enum definitions
-//==============================================================================
-
-typedef enum  { GCONF_IDX,
-                GSTAT_IDX,
-                IFCNT_IDX,
-                SLAVECONF_IDX,
-                IOIN_IDX,
-                CURRENT_LIMIT_IDX,
-                PWM_AB_IDX,
-                CHOPCONF_IDX,
-                DRV_STATUS_IDX,
-                PWMCONF_IDX
-} TMC7300_reg_index_t;
 
 enum  gamepad_state {DISABLED, ENABLED} ;
 enum  gamepad_switch_state {released, pressed};
@@ -176,23 +157,11 @@ typedef union {
     };
 } motor_cmd_t;
 
-typedef enum {
-    LEFT_MOTOR,
-    RIGHT_MOTOR,
-} motor_t;
-
-typedef enum {
-    MOTOR_OFF, 
-    MOTOR_FORWARD, 
-    MOTOR_BACKWARD,
-    MOTOR_BRAKE
-} motor_state_t;
-
-typedef struct motor_config_data {
-    motor_state_t   stop_mode;
-    uint8_t         left_motor_mode;
-    uint8_t         right_motor_mode;
-} motor_config_data_t;
+typedef struct  {
+    uint16_t    system_voltage;
+    uint8_t     button[NOS_ROBOKID_SWITCHES];
+    uint8_t     floor_sensor[NOS_ROBOKID_FLOOR_SENSORS];
+} system_sensors_t;
 
 //==============================================================================
 // Extern references

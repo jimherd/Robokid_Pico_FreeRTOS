@@ -7,8 +7,6 @@
 #ifndef __TMC7300_H__
 #define __TMC3700_H__
 
-#include    "system.h"
-
 #include    "Pico_IO.h"
 #include    "pico/binary_info.h"
 
@@ -27,8 +25,8 @@
 #define     TMC7300_CHIP_2          2
 #define     TMC7300_CHIP_3          3
 
-#define     DEFAULT_DELAY_TO_SEND_US        8
-#define     BIT_TIMES_MAX                 120
+#define     DEFAULT_DELAY_TO_SEND           1
+//#define     BIT_TIMES_MAX                 120
 
 //==============================================================================
 // Macros
@@ -74,20 +72,45 @@ static const uint8_t TMC7300_crc_table[] = {
     0xfa, 0xfd, 0xf4, 0xf3
 };
 
+//==============================================================================
+// enum definitions
+//==============================================================================
 //
-// initial values of TMC7300 registers
+// logical number of each of the 10 TMC7300 registers
+//
+// Used to index into array "TMC7300_reg_data" to get access to per register data
+//
+typedef enum  { GCONF,
+                GSTAT,
+                IFCNT,
+                SLAVECONF,
+                IOIN_IDX,
+                CURRENT_LIMIT,
+                PWM_AB,
+                CHOPCONF,
+                DRV_STATUS,
+                PWMCONF
+} TMC7300_reg_index_t;
+
+
+//
+// initial values of TMC7300 registers (power-on mode)
+//
+// Added setting of bit-0 of GCONF
 
 static const uint32_t TMC7300_init_data[] = {
-    0x00000000,     // GCONF
-    0x00000000,     // GSTAT
-    0x00000000,     // IFCNT
-    0x00000000,     // SLAVECONF
-    0x00000000,     // IOIN
-    ((TMC7300_IRUN_MAX << TMC7300_IRUN_SHIFT) | TMC7300_FREEWHEEL_MODE_OP),  // CURRENT_LIMIT
-    0x00000000,     // PWM_AB
-    0x13008001,     // CHOPCONF
-    0x00000000,     // DRV_STATUS
-    0xC40D1024      // PWMCONF
+    0x00000000 || TMC7300_NORMAL_MODE,  // GCONF 
+    0x00000000,                         // GSTAT
+    0x00000000,                         // IFCNT
+    0x00000000,                         // SLAVECONF
+    0x00000000,                         // IOIN
+    ((TMC7300_IRUN_MAX << TMC7300_IRUN_SHIFT) 
+         || TMC7300_NORMAL_MODE_OP),    // CURRENT_LIMIT
+    0x00000000,                         // PWM_AB
+    0x13008001,                         // CHOPCONF
+    0x00000000,                         // DRV_STATUS
+    0xC40D1024 ||
+       (TMC7300_STOP_BRAKE_LS << TMC7300_FREEWHEEL_SHIFT)    // PWMCONF
 };
 
 //==============================================================================
@@ -113,18 +136,30 @@ typedef enum command {
     DISABLE_MOTORS,
 } command_t;
 
-typedef enum brake_mode {
+typedef enum  {
     FREEWHEEL,
     BRAKE_LS_DRIVER,
     BRAKE_HS_DRIVER,
 } brake_mode_t;
 
+typedef enum {
+    BAD_MOTOR_NUMBER    = -10, 
+    BAD_PWM_PERCENT     = -11,
+    CRC_ERROR           = -12,
+} TMC7300_error_codes_t;
+
+typedef enum {
+    MOTOR_OFF, 
+    MOTOR_FORWARD, 
+    MOTOR_BACKWARD,
+    MOTOR_BRAKE
+} motor_state_t;
 
 //==============================================================================
 // datagram typedef definitions
 //==============================================================================
 
-typedef struct TMC7300_write_datagram {
+typedef struct  {
     uint8_t     sync_byte;
     uint8_t     slave_address;
     uint8_t     register_address;
@@ -132,14 +167,14 @@ typedef struct TMC7300_write_datagram {
     uint8_t     crc;
 } TMC7300_write_datagram_t;
 
-typedef struct TMC7300_read_datagram {
+typedef struct  {
     uint8_t     sync_byte;
     uint8_t     slave_address;
     uint8_t     register_address;
     uint8_t     crc;
 } TMC7300_read_datagram_t;
 
-typedef struct TMC7300_read_reply_datagram {
+typedef struct  {
     uint8_t     sync_byte;
     uint8_t     master_address;
     uint8_t     register_address;
@@ -155,11 +190,15 @@ typedef struct  {
 } register_data_t;
 
 typedef struct  {
-    uint16_t    system_voltage;
-    uint8_t     button[NOS_ROBOKID_SWITCHES];
-    uint8_t     floor_sensor[NOS_ROBOKID_FLOOR_SENSORS];
-} system_sensors_t;
+    brake_mode_t    stop_mode;
+    bool            left_motor_mode;
+    bool            right_motor_mode;
+} motor_config_data_t;
 
+typedef enum {
+    LEFT_MOTOR,
+    RIGHT_MOTOR,
+} motor_t;
 
 //==============================================================================
 // Function prototypes.
@@ -168,15 +207,17 @@ typedef struct  {
 void              TMC7300_Init(void);
 void              reset_TMC7300(void);
 void              TMC7300_write_reg(TMC7300_write_datagram_t *datagram);
-error_codes_t     TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_read_reply_datagram_t *reply_datagram);
+TMC7300_error_codes_t     TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_read_reply_datagram_t *reply_datagram);
 uint8_t           TMC7300_CRC8(uint8_t *data, uint32_t bytes);
 void              create_write_datagram(TMC7300_write_datagram_t *datagram, uint8_t register_address, uint32_t register_value);
 void              create_read_datagram(TMC7300_read_datagram_t *datagram, uint8_t register_address);
-void              set_master_slave_delay(uint32_t bit_times);
-error_codes_t     execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value);
-error_codes_t     set_motor(motor_t unit, uint8_t pwm_width);
-error_codes_t     set_motor_config(motor_config_data_t  *motor_config_data);
-error_codes_t     enable_motors(void);
-error_codes_t     disable_motors(void);
+TMC7300_error_codes_t     execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value);
+TMC7300_error_codes_t     set_motor(motor_t unit, uint8_t pwm_width);
+TMC7300_error_codes_t     set_motor_config(motor_config_data_t  *motor_config_data);
+TMC7300_error_codes_t     enable_motors(void);
+TMC7300_error_codes_t     disable_motors(void);
+TMC7300_error_codes_t TMC7300_write_register(uint8_t register_index, uint32_t value);
+TMC7300_error_codes_t TMC7300_read_register(uint8_t register_index, uint32_t *reg_value);
+void UART_write_datagram(TMC7300_write_datagram_t *datagram);
 
 #endif
