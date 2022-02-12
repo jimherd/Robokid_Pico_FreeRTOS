@@ -12,7 +12,7 @@
 
 #include    "TMC7300_FIELDS.h"
 
-#define     TMC7300_SYNC_BYTE       0x50
+#define     TMC7300_SYNC_BYTE       0x05
 #define     TMC7300_WRITE_BIT       0x80
 #define     TMC7300_READ_BIT        0x00
 
@@ -20,20 +20,21 @@
 #define     LENGTH_READ_DATAGRAM        sizeof(TMC7300_read_datagram_t)
 #define     LENGTH_READ_REPLY_DATAGRAM  sizeof(TMC7300_read_reply_datagram_t)
 
+#define     MASTER_ADDRESS          0xFF
+
 #define     TMC7300_CHIP_0          0
 #define     TMC7300_CHIP_1          1
 #define     TMC7300_CHIP_2          2
 #define     TMC7300_CHIP_3          3
 
 #define     DEFAULT_DELAY_TO_SEND           1
-//#define     BIT_TIMES_MAX                 120
 
 //==============================================================================
 // Macros
 //==============================================================================
 
-#define MERGE_REG_VALUE(REGISTER, VALUE, MASK, SHIFT)  VALUE = ((REGISTER && (~MASK)) || (VALUE << SHIFT))
-#define EXTRACT_REG_VALUE(VALUE, MASK, SHIFT)          ((VALUE && MASK) >> SHIFT)
+#define MERGE_REG_VALUE(REGISTER, VALUE, MASK, SHIFT)  VALUE = ((REGISTER & (~MASK)) | (VALUE << SHIFT))
+#define EXTRACT_REG_VALUE(VALUE, MASK, SHIFT)          ((VALUE & MASK) >> SHIFT)
 
 //==============================================================================
 // Look-up table for CRC8 calculation.
@@ -84,34 +85,13 @@ typedef enum  { GCONF,
                 GSTAT,
                 IFCNT,
                 SLAVECONF,
-                IOIN_IDX,
+                IOIN,
                 CURRENT_LIMIT,
                 PWM_AB,
                 CHOPCONF,
                 DRV_STATUS,
-                PWMCONF
+                PWMCONF,
 } TMC7300_reg_index_t;
-
-
-//
-// initial values of TMC7300 registers (power-on mode)
-//
-// Added setting of bit-0 of GCONF
-
-static const uint32_t TMC7300_init_data[] = {
-    0x00000000 || TMC7300_NORMAL_MODE,  // GCONF 
-    0x00000000,                         // GSTAT
-    0x00000000,                         // IFCNT
-    0x00000000,                         // SLAVECONF
-    0x00000000,                         // IOIN
-    ((TMC7300_IRUN_MAX << TMC7300_IRUN_SHIFT) 
-         || TMC7300_NORMAL_MODE_OP),    // CURRENT_LIMIT
-    0x00000000,                         // PWM_AB
-    0x13008001,                         // CHOPCONF
-    0x00000000,                         // DRV_STATUS
-    0xC40D1024 ||
-       (TMC7300_STOP_BRAKE_LS << TMC7300_FREEWHEEL_SHIFT)    // PWMCONF
-};
 
 //==============================================================================
 // enum typedef definitions
@@ -159,7 +139,7 @@ typedef enum {
 // datagram typedef definitions
 //==============================================================================
 
-typedef struct  {
+typedef struct __attribute__ ((__packed__)) {
     uint8_t     sync_byte;
     uint8_t     slave_address;
     uint8_t     register_address;
@@ -167,14 +147,14 @@ typedef struct  {
     uint8_t     crc;
 } TMC7300_write_datagram_t;
 
-typedef struct  {
+typedef struct __attribute__ ((__packed__)) {
     uint8_t     sync_byte;
     uint8_t     slave_address;
     uint8_t     register_address;
     uint8_t     crc;
 } TMC7300_read_datagram_t;
 
-typedef struct  {
+typedef struct __attribute__ ((__packed__)) {
     uint8_t     sync_byte;
     uint8_t     master_address;
     uint8_t     register_address;
@@ -185,7 +165,8 @@ typedef struct  {
 typedef struct  {
     uint8_t       register_address;
     reg_access_t  RW_mode;
-    uint32_t      init_value;
+    uint32_t      power_on_init_value;
+    uint32_t      robokid_init_value;
     uint32_t      shadow_value;
 } register_data_t;
 
@@ -204,20 +185,20 @@ typedef enum {
 // Function prototypes.
 //==============================================================================
 
-void              TMC7300_Init(void);
-void              reset_TMC7300(void);
-void              TMC7300_write_reg(TMC7300_write_datagram_t *datagram);
-TMC7300_error_codes_t     TMC7300_read_reg(TMC7300_read_datagram_t *datagram, TMC7300_read_reply_datagram_t *reply_datagram);
-uint8_t           TMC7300_CRC8(uint8_t *data, uint32_t bytes);
-void              create_write_datagram(TMC7300_write_datagram_t *datagram, uint8_t register_address, uint32_t register_value);
-void              create_read_datagram(TMC7300_read_datagram_t *datagram, uint8_t register_address);
-TMC7300_error_codes_t     execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value);
-TMC7300_error_codes_t     set_motor(motor_t unit, uint8_t pwm_width);
-TMC7300_error_codes_t     set_motor_config(motor_config_data_t  *motor_config_data);
-TMC7300_error_codes_t     enable_motors(void);
-TMC7300_error_codes_t     disable_motors(void);
-TMC7300_error_codes_t TMC7300_write_register(uint8_t register_index, uint32_t value);
-TMC7300_error_codes_t TMC7300_read_register(uint8_t register_index, uint32_t *reg_value);
-void UART_write_datagram(TMC7300_write_datagram_t *datagram);
+void        TMC7300_Init(void);
+void        reset_TMC7300(void);
+void        robokid_init(void);
+uint8_t     TMC7300_CRC8(uint8_t *data, uint32_t bytes);
+void        create_write_datagram(TMC7300_write_datagram_t *datagram, uint8_t register_address, uint32_t register_value);
+void        create_read_datagram(TMC7300_read_datagram_t *datagram, uint8_t register_address);
+TMC7300_error_codes_t   execute_cmd(command_t command, RW_mode_t RW_mode, uint32_t value);
+TMC7300_error_codes_t   set_motor(motor_t unit, uint8_t pwm_width);
+TMC7300_error_codes_t   set_motor_config(motor_config_data_t  *motor_config_data);
+TMC7300_error_codes_t   enable_motors(void);
+TMC7300_error_codes_t   disable_motors(void);
+TMC7300_error_codes_t   TMC7300_write_register(uint8_t register_index, uint32_t value);
+TMC7300_error_codes_t   TMC7300_read_register(uint8_t register_index, uint32_t *reg_value);
+
+uint8_t calcCRC(uint8_t *data, uint8_t dataLength);
 
 #endif

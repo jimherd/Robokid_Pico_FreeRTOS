@@ -101,6 +101,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define     ATTRIBUTE_PACKED     __attribute__ ((__packed__))
 
+
 //==============================================================================
 // definitions of system data structures
 //==============================================================================

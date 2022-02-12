@@ -20,6 +20,7 @@
 void Task_drive_motors(void *p) {
 
 motor_cmd_t  command;
+uint32_t     value;
 
     TMC7300_Init();             // to power-on condition
 
@@ -27,8 +28,9 @@ motor_cmd_t  command;
     FOREVER {
     //    xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
         for (uint32_t i=0 ; i<100 ; i++) {
-            execute_cmd(SET_PWM_A, WRITE_CMD, i);
-            execute_cmd(SET_PWM_B, WRITE_CMD, i);
+            vTaskDelay(5/portTICK_PERIOD_MS);
+            TMC7300_read_register(IOIN, &value);
+//            execute_cmd(SET_PWM_A, WRITE_CMD, 50);
             vTaskDelay(50/portTICK_PERIOD_MS);
         }
         START_PULSE;
