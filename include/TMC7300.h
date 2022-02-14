@@ -10,9 +10,12 @@
 #include    "Pico_IO.h"
 #include    "pico/binary_info.h"
 
+#include    "system.h"
+
+
 #include    "TMC7300_FIELDS.h"
 
-#define     TMC7300_SYNC_BYTE       0x05
+#define     TMC7300_SYNC_BYTE       0x55
 #define     TMC7300_WRITE_BIT       0x80
 #define     TMC7300_READ_BIT        0x00
 
@@ -128,12 +131,12 @@ typedef enum {
     CRC_ERROR           = -12,
 } TMC7300_error_codes_t;
 
-typedef enum {
-    MOTOR_OFF, 
-    MOTOR_FORWARD, 
-    MOTOR_BACKWARD,
-    MOTOR_BRAKE
-} motor_state_t;
+// typedef enum {
+//     MOTOR_OFF, 
+//     MOTOR_FORWARD, 
+//     MOTOR_BACKWARD,
+//     MOTOR_BRAKE
+// } motor_state_t;
 
 //==============================================================================
 // datagram typedef definitions
@@ -176,10 +179,7 @@ typedef struct  {
     bool            right_motor_mode;
 } motor_config_data_t;
 
-typedef enum {
-    LEFT_MOTOR,
-    RIGHT_MOTOR,
-} motor_t;
+
 
 //==============================================================================
 // Function prototypes.

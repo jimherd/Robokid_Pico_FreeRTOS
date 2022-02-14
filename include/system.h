@@ -10,6 +10,7 @@
  */
 
 #include    "pico/stdlib.h"
+#include    "Pico_IO.h"
 
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
@@ -20,19 +21,26 @@
 //==============================================================================
 // Constants
 //==============================================================================
-
-// TMC7300 H-bridge
-
-#define     TMC7300_UART_PORT   uart1  
-#define     BAUD_RATE           115200   
-
-#define     UART_TX_PIN         GP8          // Pin 11
-#define     UART_RX_PIN         GP9          // Pin 12
-#define     TMC7300_EN_PIN      GP10         // Pin 14
-
+// Robokid parameters
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_SWITCHES        4
 #define     NOS_ROBOKID_FLOOR_SENSORS   2
+
+// TMC7300 H-bridge
+#define     TMC7300_UART_PORT   uart1  
+#define     BAUD_RATE           115200   
+
+#define     UART_TX_PIN         GP8         // Pin 11
+#define     UART_RX_PIN         GP9         // Pin 12
+#define     TMC7300_EN_PIN      GP10        // Pin 14
+
+// DRV8833 H-bridge
+#define     LEFT_MOTOR_CONTROL_PIN_A    GP18  // Pin 18 : PWM slice 1, channel A
+#define     LEFT_MOTOR_CONTROL_PIN_B    GP19  // Pin 19 : PWM slice 1, channel B
+
+#define     RIGHT_MOTOR_CONTROL_PIN_A   GP20  // Pin 20 : PWM slice 2, channel A
+#define     RIGHT_MOTOR_CONTROL_PIN_B   GP21  // Pin 21 : PWM slice 2, channel B
+
 
 #define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
 
@@ -71,6 +79,16 @@ enum  gamepad_state {DISABLED, ENABLED} ;
 enum  gamepad_switch_state {released, pressed};
 enum  gamepad_dpad_X_axis {X_AXIS_OFF, X_AXIS_LEFT, X_AXIS_RIGHT};
 enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
+
+//----------------------------------------------------------------------------
+// Motor action/state definitions
+//
+typedef enum {FULL_SPEED=100, HALF_SPEED=50} speed_t;
+typedef enum {STOPPED, MOVING_FORWARD, MOVING_BACKWARD, TURNING_LEFT, TURNING_RIGHT} vehicle_state_t;
+typedef enum {LEFT_MOTOR, RIGHT_MOTOR} motor_t;
+typedef enum {FORWARD, BACKWARD, SPIN_RIGHT, SPIN_LEFT} direction_t;
+typedef enum {MODE_INIT, MODE_RUNNING, MODE_STOPPED} mode_state_t;
+typedef enum {MOTOR_OFF, MOTOR_FORWARD, MOTOR_BACKWARD, MOTOR_BRAKE} motor_cmd_t;
 
 
 //==============================================================================
@@ -156,7 +174,7 @@ typedef union {
         uint8_t     cmd;
         int8_t      param1, param2, param3;
     };
-} motor_cmd_t;
+} vehicle_cmd_t;
 
 typedef struct  {
     uint16_t    system_voltage;

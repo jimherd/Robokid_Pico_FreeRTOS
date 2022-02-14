@@ -20,7 +20,7 @@
 // Global variables and structures
 //==============================================================================
 
-error_codes_t                   TMC7300_sys_error;      // global error flag
+error_codes_t   TMC7300_sys_error;      // global error flag
 
 // power on initial values for writeable TMC7300 registers
 //
@@ -78,10 +78,14 @@ void  TMC7300_Init(void) {
     gpio_init(TMC7300_EN_PIN);
     gpio_set_dir(TMC7300_EN_PIN, GPIO_OUT);
     gpio_pull_down(TMC7300_EN_PIN);         // should default but just make sure
+
+    vTaskDelay(1);
     
-    DISABLE_POWER_STAGE;                    // essential before chip configuration
+    DISABLE_POWER_STAGE; 
+    vTaskDelay(1);  // temp test                   // essential before chip configuration
     reset_TMC7300();
     robokid_init();
+    vTaskDelay(1);  // temp test
     ENABLE_POWER_STAGE;
 }
 
@@ -97,6 +101,7 @@ void reset_TMC7300(void)
     for (uint8_t i = 0; i < TMC7300_NOS_registers ; i++) {
         if ((TMC7300_reg_data[i].RW_mode == READ_WRITE) || (TMC7300_reg_data[i].RW_mode == WRITE_ONLY)) {
             TMC7300_write_register(i, TMC7300_reg_data[i].power_on_init_value);
+            vTaskDelay(1);  // temp test
         } 
     }
 }
@@ -111,6 +116,7 @@ void robokid_init(void) {
     for (uint8_t i = 0; i < TMC7300_NOS_registers ; i++) {
         if ((TMC7300_reg_data[i].RW_mode == READ_WRITE) || (TMC7300_reg_data[i].RW_mode == WRITE_ONLY)) {
             TMC7300_write_register(i, TMC7300_reg_data[i].robokid_init_value);
+            vTaskDelay(1);   // temp test
         } 
     }
 }

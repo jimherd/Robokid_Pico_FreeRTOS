@@ -52,6 +52,7 @@ target_link_libraries( ${PROJECT_NAME}
     pico_multicore
     hardware_gpio 
     hardware_spi
+    hardware_pwm
     FreeRTOS
     tinyusb_board 
     tinyusb_host

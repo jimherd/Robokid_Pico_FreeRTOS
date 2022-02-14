@@ -13,6 +13,8 @@
 #include "TMC7300_Registers.h"
 #include "TMC7300_Fields.h"
 
+#include "DRV8833_pwm.h"
+
 
 //==============================================================================
 // Main task routine
@@ -28,13 +30,15 @@ uint32_t     value;
     FOREVER {
     //    xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
         for (uint32_t i=0 ; i<100 ; i++) {
-            vTaskDelay(5/portTICK_PERIOD_MS);
-            TMC7300_read_register(IOIN, &value);
-//            execute_cmd(SET_PWM_A, WRITE_CMD, 50);
+            DRV8833_set_motor(LEFT_MOTOR, MOTOR_FORWARD, i);
+            DRV8833_set_motor(LEFT_MOTOR, MOTOR_FORWARD, i);
             vTaskDelay(50/portTICK_PERIOD_MS);
         }
-        START_PULSE;
         vTaskDelay(3000/portTICK_PERIOD_MS);
-        STOP_PULSE;
     }
 }
+
+//            vTaskDelay(1/portTICK_PERIOD_MS);
+//            TMC7300_read_register(IFCNT, &value);
+//            execute_cmd(SET_PWM_A, WRITE_CMD, i);
+//            vTaskDelay(50/portTICK_PERIOD_MS);
