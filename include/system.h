@@ -26,6 +26,10 @@
 #define     NOS_ROBOKID_SWITCHES        4
 #define     NOS_ROBOKID_FLOOR_SENSORS   2
 
+#define     LEFT_MOTOR_FLIP_MODE        false
+#define     RIGHT_MOTOR_FLIP_MODE       true
+
+
 // TMC7300 H-bridge
 #define     TMC7300_UART_PORT   uart1  
 #define     BAUD_RATE           115200   
@@ -86,10 +90,8 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 typedef enum {FULL_SPEED=100, HALF_SPEED=50} speed_t;
 typedef enum {STOPPED, MOVING_FORWARD, MOVING_BACKWARD, TURNING_LEFT, TURNING_RIGHT} vehicle_state_t;
 typedef enum {LEFT_MOTOR, RIGHT_MOTOR} motor_t;
-typedef enum {FORWARD, BACKWARD, SPIN_RIGHT, SPIN_LEFT} direction_t;
 typedef enum {MODE_INIT, MODE_RUNNING, MODE_STOPPED} mode_state_t;
-typedef enum {MOTOR_OFF, MOTOR_FORWARD, MOTOR_BACKWARD, MOTOR_BRAKE} motor_cmd_t;
-
+typedef enum {MOTOR_OFF, MOTOR_BRAKE, MOVE} motor_cmd_t;
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)

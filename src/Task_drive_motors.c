@@ -24,14 +24,15 @@ void Task_drive_motors(void *p) {
 motor_cmd_t  command;
 uint32_t     value;
 
-    TMC7300_Init();             // to power-on condition
+    //TMC7300_Init();             // to power-on condition
+    DRV8833_init();
 
     //execute_cmd(ENABLE_MOTORS, WRITE_CMD, 0);
     FOREVER {
     //    xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
-        for (uint32_t i=0 ; i<100 ; i++) {
-            DRV8833_set_motor(LEFT_MOTOR, MOTOR_FORWARD, i);
-            DRV8833_set_motor(LEFT_MOTOR, MOTOR_FORWARD, i);
+        for (int32_t i=-100 ; i<101 ; i++) {
+            DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
+            DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
             vTaskDelay(50/portTICK_PERIOD_MS);
         }
         vTaskDelay(3000/portTICK_PERIOD_MS);
