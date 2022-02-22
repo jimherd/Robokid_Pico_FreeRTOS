@@ -58,9 +58,7 @@ void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle)
 
 }
 
-typedef enum {FORWARD, BACKWARD} direction_t;
-typedef enum {NO_FLIP, FLIP} motor_orientation_t;
-typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
+
 
 /**
  * @fn      DRV8833_set_motor(...)

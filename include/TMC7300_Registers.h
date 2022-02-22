@@ -5,8 +5,8 @@
  *      Author: LH (Trinamic)
  */
 
-#ifndef TMC7300_REGISTER_H
-#define TMC7300_REGISTER_H
+#ifndef __TMC7300_REGISTER_H__
+#define __TMC7300_REGISTER_H__
 
 // ===== TMC7300 register set =====
 

@@ -6,8 +6,8 @@
  * 
  */
 
-#ifndef BITMAP_H
-#define BITMAP_H
+#ifndef __BITMAP_H__
+#define __BITMAP_H__
 //#include <xc.h>
 // ------------------------------------------------------
 // GLCD Picture name: truck.bmp

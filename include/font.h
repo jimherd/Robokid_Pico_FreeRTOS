@@ -12,8 +12,8 @@
  * 
  */
 
-#ifndef FONT_H
-#define FONT_H
+#ifndef __FONT_H__
+#define __FONT_H__
 
 const uint8_t *font_table[] = {
     Terminal_9x16,                      // font 0

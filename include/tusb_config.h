@@ -23,8 +23,8 @@
  *
  */
 
-#ifndef _TUSB_CONFIG_H_
-#define _TUSB_CONFIG_H_
+#ifndef __TUSB_CONFIG_H__
+#define __TUSB_CONFIG_H__
 
 #ifdef __cplusplus
  extern "C" {

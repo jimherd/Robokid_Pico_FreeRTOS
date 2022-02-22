@@ -1,12 +1,9 @@
 /**
- * @file system.h
- * @author Jim Herd 
- * @brief  Constants relating to Robokid robot
+ * @file    system.h
+ * @author  Jim Herd 
+ * @brief   Constants relating to Robokid robot
  * @version 0.1
- * @date 2022-01-09
- * 
- * @copyright Copyright (c) 2022
- * 
+ * @date    2022-01-09
  */
 
 #include    "pico/stdlib.h"
@@ -15,8 +12,8 @@
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
 
-#ifndef _SYSTEM_H_
-#define _SYSTEM_H_
+#ifndef __SYSTEM_H__
+#define __SYSTEM_H__
 
 //==============================================================================
 // Constants
@@ -24,12 +21,13 @@
 // Robokid parameters
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_SWITCHES        4
+#define     NOS_ROBOKID_LEDS            4
 #define     NOS_ROBOKID_FLOOR_SENSORS   2
 
 #define     LEFT_MOTOR_FLIP_MODE        false
 #define     RIGHT_MOTOR_FLIP_MODE       true
 
-
+//==============================================================================
 // TMC7300 H-bridge
 #define     TMC7300_UART_PORT   uart1  
 #define     BAUD_RATE           115200   
@@ -38,6 +36,7 @@
 #define     UART_RX_PIN         GP9         // Pin 12
 #define     TMC7300_EN_PIN      GP10        // Pin 14
 
+//==============================================================================
 // DRV8833 H-bridge
 #define     LEFT_MOTOR_CONTROL_PIN_A    GP18  // Pin 18 : PWM slice 1, channel A
 #define     LEFT_MOTOR_CONTROL_PIN_B    GP19  // Pin 19 : PWM slice 1, channel B
@@ -45,11 +44,31 @@
 #define     RIGHT_MOTOR_CONTROL_PIN_A   GP20  // Pin 20 : PWM slice 2, channel A
 #define     RIGHT_MOTOR_CONTROL_PIN_B   GP21  // Pin 21 : PWM slice 2, channel B
 
+typedef enum {FULL_SPEED=100, HALF_SPEED=50} speed_t;
+typedef enum {STOPPED, MOVING_FORWARD, MOVING_BACKWARD, TURNING_LEFT, TURNING_RIGHT} vehicle_state_t;
+typedef enum {LEFT_MOTOR, RIGHT_MOTOR} motor_t;
+typedef enum {MODE_INIT, MODE_RUNNING, MODE_STOPPED} mode_state_t;
+typedef enum {MOTOR_OFF, MOTOR_BRAKE, MOVE} motor_cmd_t;
 
-#define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
+typedef enum {OFF, FORWARD, BACKWARD} direction_t;
+typedef enum {NO_FLIP, FLIP} motor_orientation_t;
+typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 
+//==============================================================================
+// 4 push switches + 4 LEDs
+
+#define     SWITCH_0_PIN    GP12
+#define     SWITCH_1_PIN    GP13
+#define     SWITCH_2_PIN    GP14
+#define     SWITCH_3_PIN    GP15
+
+#define     LED_0_PIN       GP16
+#define     LED_1_PIN       GP17
+#define     LED_2_PIN       GP27
+#define     LED_3_PIN       GP28
+
+//==============================================================================
 // SNES Gamepad
-
 #define     GENERIC_GAMEPAD_VID     0x081F
 #define     GENERIC_GAMEPAD_PID     0xE401
 
@@ -61,11 +80,20 @@
 #define     GAMEPAD_DPAD_Y_AXIS_NULL    0x7F
 #define     GAMEPAD_DPAD_Y_AXIS_DOWN    0xFF
 
+enum  gamepad_state {DISABLED, ENABLED} ;
+enum  gamepad_switch_state {released, pressed};
+enum  gamepad_dpad_X_axis {X_AXIS_OFF, X_AXIS_LEFT, X_AXIS_RIGHT};
+enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
+
+//==============================================================================
 // SSD1306 display
 
 #define SSD1306_LCDWIDTH 128
 #define SSD1306_LCDHEIGHT 64
 
+#define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
+
+//==============================================================================
 // errors
 
 typedef enum {
@@ -73,25 +101,10 @@ typedef enum {
     FAULT               = -1,
 } error_codes_t;
 
+//==============================================================================
 // Freertos
 
 #define  MOTOR_CMD_QUEUE_LENGTH     8
-
-
-
-enum  gamepad_state {DISABLED, ENABLED} ;
-enum  gamepad_switch_state {released, pressed};
-enum  gamepad_dpad_X_axis {X_AXIS_OFF, X_AXIS_LEFT, X_AXIS_RIGHT};
-enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
-
-//----------------------------------------------------------------------------
-// Motor action/state definitions
-//
-typedef enum {FULL_SPEED=100, HALF_SPEED=50} speed_t;
-typedef enum {STOPPED, MOVING_FORWARD, MOVING_BACKWARD, TURNING_LEFT, TURNING_RIGHT} vehicle_state_t;
-typedef enum {LEFT_MOTOR, RIGHT_MOTOR} motor_t;
-typedef enum {MODE_INIT, MODE_RUNNING, MODE_STOPPED} mode_state_t;
-typedef enum {MOTOR_OFF, MOTOR_BRAKE, MOVE} motor_cmd_t;
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
@@ -176,13 +189,30 @@ typedef union {
         uint8_t     cmd;
         int8_t      param1, param2, param3;
     };
-} vehicle_cmd_t;
+} motor_cmd_packet_t;
 
+/**
+ * @brief   Central store of system data. Access by muex.
+ * 
+ */
 typedef struct  {
     uint16_t    system_voltage;
-    uint8_t     button[NOS_ROBOKID_SWITCHES];
+
+    uint8_t     push_button[NOS_ROBOKID_SWITCHES];
+
+    struct  {
+        uint8_t     led[NOS_ROBOKID_LEDS];
+        bool        flash;
+    } push_button_data[NOS_ROBOKID_SWITCHES];
+
     uint8_t     floor_sensor[NOS_ROBOKID_FLOOR_SENSORS];
-} system_sensors_t;
+
+    struct  {
+        direction_t             motor_state;
+        int8_t                  motor_PWM;  
+        motor_orientation_t     motor_orientation;  
+    } motor_data[NOS_ROBOKID_MOTORS];
+} system_IO_data_t;
 
 //==============================================================================
 // Extern references
@@ -190,8 +220,9 @@ typedef struct  {
 
 // System data structures
 
-extern gamepad_data_t gamepad_data;
-extern system_status_t system_status;
+extern gamepad_data_t   gamepad_data;
+extern system_status_t  system_status;
+extern system_IO_data_t system_sensor_data;
 
 extern const uint8_t *error_strings[];
 
@@ -203,11 +234,14 @@ extern const uint BLINK_PIN;
 
 // FreeRTOS components
 
+extern void Task_Robokid(void *p);
+extern void Task_read_sensors(void *p);
 extern void Task_read_gamepad(void *p);             // tasks
 extern void Task_blink_LED(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
 
+extern SemaphoreHandle_t semaphore_system_IO_data;
 extern SemaphoreHandle_t semaphore_system_status;   //semaphores
 extern SemaphoreHandle_t semaphore_gamepad_data;
 

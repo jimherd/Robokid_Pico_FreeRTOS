@@ -1,4 +1,11 @@
-
+/**
+ * @file Task_drive_motors.c
+ * @author Jim Herd
+ * @brief   Execute motor move commands
+ * @version 0.1
+ * @date 2022-02-16
+ * 
+ */
 #include "system.h"
 
 #include "pico/stdlib.h"
@@ -23,6 +30,7 @@ void Task_drive_motors(void *p) {
 
 motor_cmd_t  command;
 uint32_t     value;
+uint8_t     i;
 
     //TMC7300_Init();             // to power-on condition
     DRV8833_init();
@@ -30,11 +38,27 @@ uint32_t     value;
     //execute_cmd(ENABLE_MOTORS, WRITE_CMD, 0);
     FOREVER {
     //    xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
-        for (int32_t i=-100 ; i<101 ; i++) {
+        for (i=0 ; i<=100 ; i++) {
             DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
             DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
             vTaskDelay(50/portTICK_PERIOD_MS);
         }
+        for (i=100 ; i>=0 ; i--) {
+            DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
+            DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
+            vTaskDelay(50/portTICK_PERIOD_MS);
+        }
+         for (i=0 ; i>=-100 ; i--) {
+            DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
+            DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
+            vTaskDelay(50/portTICK_PERIOD_MS);
+        }
+        for (i=-100 ; i<=0 ; i++) {
+            DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
+            DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
+            vTaskDelay(50/portTICK_PERIOD_MS);
+        }
+
         vTaskDelay(3000/portTICK_PERIOD_MS);
     }
 }

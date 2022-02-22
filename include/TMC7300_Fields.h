@@ -9,8 +9,8 @@
  * 
  */
 
-#ifndef TMC7300_FIELDS
-#define TMC7300_FIELDS
+#ifndef __TMC7300_FIELDS__
+#define __TMC7300_FIELDS__
 
 // Register GCONF
 #define TMC7300_PWM_DIRECT_MASK    0x00000001

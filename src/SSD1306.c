@@ -59,7 +59,8 @@ uint8_t     segment, page;
 uint8_t     first_char, last_char;
 uint8_t     pixel_count;
 uint8_t     char_cnt, character;
-uint8_t     *ch_pt, *font_index, *font_pt, *font_base;
+uint8_t     *ch_pt, *font_index, *font_pt;
+uint8_t const *font_base;
 
     font_base    =  font_table[font_code];
     pixel_width  = *font_base;

@@ -16,6 +16,8 @@
 #include "pico/multicore.h"
 #include "pico/binary_info.h"
 
+#include  "Pico_IO.h"
+
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
@@ -28,16 +30,19 @@
 // Hardware
 
 const uint LED_PIN = PICO_DEFAULT_LED_PIN;
-const uint LOG_PIN = 14;
-const uint BLINK_PIN = 16;
+const uint LOG_PIN = GP2;
+const uint BLINK_PIN = LED_PIN;
 
 // FreeRTOS components
 
-TaskHandle_t taskhndl_Task_blink_LED;
+TaskHandle_t taskhndl_Task_Robokid;
+TaskHandle_t taskhndl_Task_read_sensors;
 TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
+TaskHandle_t taskhndl_Task_blink_LED;
 
+SemaphoreHandle_t semaphore_system_IO_data;
 SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
 
@@ -45,8 +50,9 @@ QueueHandle_t queue_motor_cmds;
 
 // System data structures. Protected with MUTEXES
 
-gamepad_data_t          gamepad_data;
-system_status_t         system_status;
+system_IO_data_t    system_IO_data;
+gamepad_data_t      gamepad_data;
+system_status_t     system_status;
 
 //==============================================================================
 // System initiation
@@ -62,12 +68,12 @@ int main() {
 
     system_status.error_state = -26;
  
-    xTaskCreate(Task_blink_LED,
-                "blink_task",
+    xTaskCreate(Task_Robokid,
+                "Robokid_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
-                &taskhndl_Task_blink_LED
+                &taskhndl_Task_Robokid
     );
 
     xTaskCreate(Task_read_gamepad,
@@ -94,10 +100,27 @@ int main() {
                 &taskhndl_Task_drive_motors
     );
 
-    semaphore_system_status  = xSemaphoreCreateMutex();
-    semaphore_gamepad_data   = xSemaphoreCreateMutex();
+    xTaskCreate(Task_read_sensors,
+                "Task_read_sensors",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYNORMAL,
+                &taskhndl_Task_read_sensors
+    );
 
-    queue_motor_cmds = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_t));   
+     xTaskCreate(Task_blink_LED,
+                "blink_task",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_blink_LED
+    );
+
+    semaphore_system_IO_data    = xSemaphoreCreateMutex();
+    semaphore_system_status     = xSemaphoreCreateMutex();
+    semaphore_gamepad_data      = xSemaphoreCreateMutex();
+
+    queue_motor_cmds = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
 
     vTaskStartScheduler();
 
