@@ -62,6 +62,13 @@ typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 #define     SWITCH_2_PIN    GP14
 #define     SWITCH_3_PIN    GP15
 
+#define     SWITCH_0_MASK           (1 << SWITCH_0_PIN)
+#define     SWITCH_1_MASK           (1 << SWITCH_1_PIN)
+#define     SWITCH_2_MASK           (1 << SWITCH_2_PIN)
+#define     SWITCH_3_MASK           (1 << SWITCH_3_PIN)
+#define     SWITCH_MASK             (SWITCH_0_MASK | SWITCH_1_MASK | SWITCH_2_MASK | SWITCH_3_MASK)
+#define     NOS_SWITCH_SAMPLES      3
+
 #define     LED_0_PIN       GP16
 #define     LED_1_PIN       GP17
 #define     LED_2_PIN       GP27
@@ -104,7 +111,15 @@ typedef enum {
 //==============================================================================
 // Freertos
 
-#define  MOTOR_CMD_QUEUE_LENGTH     8
+typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, 
+                TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_BLINK} task_t;
+
+#define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
+
+#define     Task_read_sensors_frequency                 50  //Hz
+#define     Task_read_sensors_frequency_tick_count      ((1000/Task_read_sensors_frequency) * portTICK_PERIOD_MS)
+
+#define     MOTOR_CMD_QUEUE_LENGTH     8
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
@@ -134,11 +149,9 @@ typedef enum {
 
 #define     ATTRIBUTE_PACKED     __attribute__ ((__packed__))
 
-
 //==============================================================================
 // definitions of system data structures
 //==============================================================================
-
 /**
  * @brief data structure for report returned from gamepad
  * 
@@ -166,6 +179,7 @@ typedef struct TU_ATTR_PACKED  {    // packed attribute
     uint8_t     dummy8;
 } SNES_gamepad_report_t;
 
+//==============================================================================
 /**
  * @brief data structure to hold current gamepad information
  * 
@@ -186,43 +200,76 @@ typedef struct {
 typedef union {
     uint32_t    command;
     struct  {
-        uint8_t     cmd;
-        int8_t      param1, param2, param3;
+        motor_cmd_t   cmd;
+        int8_t        param1, param2, param3;
     };
 } motor_cmd_packet_t;
 
+typedef struct {
+    direction_t     motor_state;
+    uint8_t         pwm_width;
+    bool            flip;
+} motor_data_t;
+
+typedef struct  {
+        bool      switch_value;
+        uint32_t  on_time;
+} push_button_data_t;
+
+typedef struct {
+    vehicle_state_t     vehicle_state;
+    uint32_t            speed;
+} vehicle_data_t;
+
+typedef struct {
+    uint8_t   pin_number;
+    bool      value;
+    bool      flash;
+    uint8_t   flash_time;    // units of 20mS
+    uint8_t   flash_counter;
+    bool      flash_value;
+} LED_data_t;
+
+typedef struct {
+    uint8_t     raw_value;
+    uint8_t     threshhold;
+    bool        binary_value;
+} floor_sensor_data_t;
+
+//==============================================================================
 /**
- * @brief   Central store of system data. Access by muex.
- * 
+ * @brief   Central store of system data. Access by mutex.
  */
 typedef struct  {
-    uint16_t    system_voltage;
-
-    uint8_t     push_button[NOS_ROBOKID_SWITCHES];
-
-    struct  {
-        uint8_t     led[NOS_ROBOKID_LEDS];
-        bool        flash;
-    } push_button_data[NOS_ROBOKID_SWITCHES];
-
-    uint8_t     floor_sensor[NOS_ROBOKID_FLOOR_SENSORS];
-
-    struct  {
-        direction_t             motor_state;
-        int8_t                  motor_PWM;  
-        motor_orientation_t     motor_orientation;  
-    } motor_data[NOS_ROBOKID_MOTORS];
+    system_status_t     system_status;      // error codes
+    uint16_t            system_voltage;
+    motor_data_t        motor_data[NOS_ROBOKID_MOTORS];
+    LED_data_t          LED_data[NOS_ROBOKID_LEDS];
+    push_button_data_t  push_button_data[NOS_ROBOKID_SWITCHES];
+    floor_sensor_data_t   floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
+    vehicle_data_t      vehicle_data;
 } system_IO_data_t;
+
+//==============================================================================
+typedef struct {
+    uint8_t     priority;
+    struct {
+        uint32_t    last_exec_time;
+        uint32_t    lowest_exec_time;
+        uint32_t    highest_exec_time;
+    };
+} task_data_t;
 
 //==============================================================================
 // Extern references
 //==============================================================================
-
 // System data structures
+
+extern task_data_t task_data[];
 
 extern gamepad_data_t   gamepad_data;
 extern system_status_t  system_status;
-extern system_IO_data_t system_sensor_data;
+extern system_IO_data_t system_IO_data;
 
 extern const uint8_t *error_strings[];
 
@@ -258,4 +305,4 @@ extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 
-#endif /* _SYSTEM_H_ */
+#endif /* __SYSTEM_H__ */

@@ -15,17 +15,7 @@
 #define     MOTOR_PWM_CLK_DIV       (125000000/25000000)
 #define     MOTOR_PWM_FULL_COUNT    (MOTOR_COUNT_FREQ/MOTOR_PWM_FREQ)
 
-typedef struct {
-    uint8_t     motor_state;
-    uint8_t     pwm_width;
-    bool        flip;
-} motor_data_t;
 
-typedef struct {
-    vehicle_state_t     vehicle_state;
-    uint32_t            speed;
-    
-} vehicle_data_t;
 
 void DRV8833_init(void );
 void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle);

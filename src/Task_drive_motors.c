@@ -28,16 +28,30 @@
 //==============================================================================
 void Task_drive_motors(void *p) {
 
-motor_cmd_t  command;
+motor_cmd_packet_t  command;
 uint32_t     value;
 uint8_t     i;
 
-    //TMC7300_Init();             // to power-on condition
     DRV8833_init();
 
-    //execute_cmd(ENABLE_MOTORS, WRITE_CMD, 0);
     FOREVER {
-    //    xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
+        xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
+
+        switch (command.cmd) {
+            case MOTOR_OFF : {
+                break;
+            }
+            case MOTOR_BRAKE : {
+                break;
+            }
+            case MOVE : {
+                break;
+            }
+        }
+
+
+
+
         for (i=0 ; i<=100 ; i++) {
             DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
             DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
@@ -58,6 +72,9 @@ uint8_t     i;
             DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
             vTaskDelay(50/portTICK_PERIOD_MS);
         }
+        //
+        // update central system data store
+        //
 
         vTaskDelay(3000/portTICK_PERIOD_MS);
     }

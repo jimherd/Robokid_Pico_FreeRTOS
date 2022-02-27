@@ -5,18 +5,19 @@
  * @version 0.1
  * @date 2022-02-13
  */
-#include    <stdlib.h>
+#include <stdlib.h>
+#include <string.h>
 
-#include    "hardware/pwm.h"
+#include "hardware/pwm.h"
 
-#include    "system.h"
-#include    "DRV8833_pwm.h"
+#include "system.h"
+#include "DRV8833_pwm.h"
 
-vehicle_data_t vehicle_data;
-motor_data_t    motor_data[NOS_ROBOKID_MOTORS] = {
-    {0, 0, LEFT_MOTOR_FLIP_MODE},      // LEFT MOTOR
-    {0, 0, RIGHT_MOTOR_FLIP_MODE},     // RIGHT  MOTOR
-};
+#include "FreeRTOS.h"
+#include "semphr.h"
+
+motor_data_t    temp_motor_data;
+
 
 uint8_t  LM_slice_num, RM_slice_num;
 
@@ -58,8 +59,6 @@ void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle)
 
 }
 
-
-
 /**
  * @fn      DRV8833_set_motor(...)
  * @brief   configure a motor
@@ -97,6 +96,12 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
             return FAULT;  // return BAD_MOTOR_NUMBER;
         }  
     }
+
+    // get motor data
+
+    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+        memcpy(&temp_motor_data, &system_IO_data.motor_data[motor_number], sizeof(motor_data_t));
+    xSemaphoreGive(semaphore_system_IO_data);
  
     direction = (pwm_width >= 0) ? FORWARD : BACKWARD;
     pulse_count = (abs(pwm_width) * MOTOR_PWM_FULL_COUNT) / 100;
@@ -127,7 +132,7 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
         
         // flip motor control signals if physical motor is opposite orientation
         
-            if (motor_data[motor_number].flip == true){
+            if (temp_motor_data.flip == true){
                 temp = DRV8833_in2;
                 DRV8833_in2 = DRV8833_in1;
                 DRV8833_in2 = temp;
@@ -146,8 +151,15 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
  
     // log state
 
-    motor_data[motor_number].pwm_width = pwm_width;         // log pulse width
-    set_vehicle_state(); 
+    temp_motor_data.pwm_width   = pwm_width;         // log pulse width
+    temp_motor_data.motor_state = direction;
+
+    // update central data store
+
+    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+        memcpy(&system_IO_data.motor_data[motor_number], &temp_motor_data, sizeof(motor_data_t));
+    xSemaphoreGive(semaphore_system_IO_data);
+
     return OK;
 }
 
@@ -160,8 +172,8 @@ void vehicle_stop(void) {
     DRV8833_set_motor(LEFT_MOTOR , MOTOR_BRAKE, 0);
     DRV8833_set_motor(RIGHT_MOTOR, MOTOR_BRAKE, 0);
   
-    motor_data[LEFT_MOTOR].motor_state = STOPPED;
-    motor_data[RIGHT_MOTOR].motor_state = STOPPED;
+//    motor_data[LEFT_MOTOR].motor_state = STOPPED;
+//    motor_data[RIGHT_MOTOR].motor_state = STOPPED;
 }
 
 //----------------------------------------------------------------------------
@@ -176,8 +188,8 @@ void vehicle_stop(void) {
 void set_vehicle_state(void) 
 {
 
-    uint8_t LM_state = motor_data[LEFT_MOTOR].motor_state;
-    uint8_t RM_state = motor_data[RIGHT_MOTOR].motor_state;
+ //   uint8_t LM_state = motor_data[LEFT_MOTOR].motor_state;
+ //   uint8_t RM_state = motor_data[RIGHT_MOTOR].motor_state;
 
     // if ((LM_state == MOTOR_FORWARD) && (RM_state == MOTOR_FORWARD)) { 
     //     vehicle_data.vehicle_state = MOVING_FORWARD;
