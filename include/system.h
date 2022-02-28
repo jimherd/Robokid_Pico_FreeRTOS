@@ -197,12 +197,9 @@ typedef struct {
     int8_t     error_state;
 } system_status_t;
 
-typedef union {
-    uint32_t    command;
-    struct  {
-        motor_cmd_t   cmd;
-        int8_t        param1, param2, param3;
-    };
+typedef struct {
+    motor_cmd_t   cmd;
+    int8_t        param1, param2, param3;
 } motor_cmd_packet_t;
 
 typedef struct {

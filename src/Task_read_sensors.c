@@ -63,6 +63,7 @@ uint32_t    start_time, end_time;
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, Task_read_sensors_frequency_tick_count );
+START_PULSE;
         start_time = time_us_32();
     //
     // Get currect switch and LED data
@@ -74,7 +75,6 @@ uint32_t    start_time, end_time;
     //
     // read push switches and debounce
     //
-START_PULSE;
         switch_samples[switch_sample_index] = gpio_get_all() & SWITCH_MASK;
         uint32_t switch_value = 0xFFFF;
         for (index=0; index < NOS_SWITCH_SAMPLES ; index++) {
