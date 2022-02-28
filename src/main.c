@@ -101,6 +101,13 @@ uint8_t     index;
     // Vehicle data
         system_IO_data.vehicle_data.vehicle_state = STOPPED;
         system_IO_data.vehicle_data.speed = 0;
+    // Task execution data
+        for (index=0 ; index < NOS_TASKS ; index++) {
+            task_data[index].priority = TASK_PRIORITYNORMAL;
+            task_data[index].last_exec_time    = 0;
+            task_data[index].lowest_exec_time  = UINT32_MAX;
+            task_data[index].highest_exec_time = 0;
+        };
 }
 //==============================================================================
 /**

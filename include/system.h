@@ -112,7 +112,7 @@ typedef enum {
 // Freertos
 
 typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, 
-                TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_BLINK} task_t;
+                    TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_BLINK} task_t;
 
 #define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
 

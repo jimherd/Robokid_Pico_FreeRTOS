@@ -13,8 +13,27 @@
 //==============================================================================
 void Task_Robokid(void *p) {
 
-    FOREVER {
+motor_cmd_packet_t  motor_cmd_packet;
 
-        vTaskDelay(100/portTICK_PERIOD_MS);
+    FOREVER {
+        motor_cmd_packet.command = MOVE;
+        motor_cmd_packet.param1  = RIGHT_MOTOR;
+        motor_cmd_packet.param2  = 75;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+        motor_cmd_packet.command = MOVE;
+        motor_cmd_packet.param1  = LEFT_MOTOR;
+        motor_cmd_packet.param2  = 75;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+        vTaskDelay(3000/portTICK_PERIOD_MS);
+
+        motor_cmd_packet.command = MOTOR_BRAKE;
+        motor_cmd_packet.param1  = RIGHT_MOTOR;
+        motor_cmd_packet.param2  = 0;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+        motor_cmd_packet.command = MOTOR_BRAKE;
+        motor_cmd_packet.param1  = LEFT_MOTOR;
+        motor_cmd_packet.param2  = 0;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+        vTaskDelay(3000/portTICK_PERIOD_MS);
     }
 }
