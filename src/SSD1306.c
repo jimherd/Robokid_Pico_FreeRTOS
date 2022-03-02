@@ -26,8 +26,8 @@ struct {
         {0, 0, 127, 7}, // window 0 is full display
         {0, 0, 127, 1}, // window 1 : rows 0 and 1 - ICON area
         {0, 2, 127, 3}, // window 2 : rows 2 and 3 - important message area
-        {0, 4, 127, 5}, // window 3 : rows 4 and 5
-        {0, 6, 127, 7}, // window 4 : rows 6 and 7
+        {0, 4, 127, 5}, // window 3 : rows 4 and 5 - upper scroll page
+        {0, 6, 127, 7}, // window 4 : rows 6 and 7 - lower scroll page
         {0, 4, 127, 7}, // window 5 : rows 4 to 7 - info scroll area
 };
 

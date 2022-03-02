@@ -28,10 +28,10 @@ void process_icons(void);       // prototype
 void process_scroller(void);
 
 char        *test_scroll_string_data[4] = {
-    "First line",
-    " Second Line",
-    "  Third line",
-    "   Fourth line"
+    "SWA: Exit",
+    "SWB: Start",
+    "SWC: Reset",
+    "SWD: Stop"
 };
 
 //==============================================================================
@@ -54,16 +54,16 @@ BaseType_t  xWasDelayed;
 
     SSD1306_set_window(0, 0x00);
 //    SSD1306_write_string(0, MESSAGE_WINDOW, "Robokid 2");
+    SSD1306_set_text_area_scroller(SCROLL_WINDOW, 4, test_scroll_string_data);
+    ENABLE_SCROLLER;
     
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
         process_icons();
-        SSD1306_set_text_area_scroller(SCROLL_WINDOW, 4, test_scroll_string_data);
     //  process_message
-ENABLE_SCROLLER;
         process_scroller();
-        vTaskDelay(20000 / portTICK_PERIOD_MS);
+        vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
@@ -199,7 +199,7 @@ int8_t  error;
  */
 void process_scroller(void)
 {
-uint8_t index;
+uint8_t window, index;
 
     if (LCD_scroll_data.enable == false) {
         return;
@@ -210,13 +210,15 @@ uint8_t index;
     } else {
         LCD_scroll_data.scroll_delay_count = LCD_scroll_data.scroll_delay;  // reset delay count
     }
+    window = 3;  // SCROLL_WINDOW;
+    SSD1306_set_window(SCROLL_WINDOW, 0x00);  // clear scroll area
     for (index = 0; index < LCD_scroll_data.nos_LCD_rows; index++) {
-        ////////////// issue with 2nd parameter : window number !!
-        SSD1306_write_string(0, LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[LCD_scroll_data.string_count++]);
-        LCD_scroll_data.first_LCD_row++;
+        SSD1306_write_string(0, window, LCD_scroll_data.string_data[LCD_scroll_data.string_count++]);
         if (LCD_scroll_data.string_count >= LCD_scroll_data.nos_strings) {
             LCD_scroll_data.string_count = 0;
         }
+        window++;
     }
+    LCD_scroll_data.string_count--;
     return;
 }

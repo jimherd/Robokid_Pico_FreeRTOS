@@ -125,7 +125,7 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 
 #define     TASK_DISPLAY_LCD_FREQUENCY                  10  //Hz
 #define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
-#define     SCROLL_DELAY_MS                     1000
+#define     SCROLL_DELAY_MS                     2000
 #define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)                      
 
 #define     MOTOR_CMD_QUEUE_LENGTH     8
