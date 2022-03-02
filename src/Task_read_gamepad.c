@@ -32,7 +32,8 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 //==============================================================================
 // Main task routine
 //==============================================================================
-void Task_read_gamepad(void *p) {
+void Task_read_gamepad(void *p) 
+{
 
     board_init();
     tusb_init();

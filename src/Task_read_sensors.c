@@ -62,7 +62,7 @@ uint32_t    start_time, end_time;
 //
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
-        xWasDelayed = xTaskDelayUntil( &xLastWakeTime, Task_read_sensors_frequency_tick_count );
+        xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_READ_SENSORS_FREQUENCY_TICK_COUNT );
 START_PULSE;
         start_time = time_us_32();
     //
@@ -93,7 +93,7 @@ START_PULSE;
     //
         for (index = 0 ; index < NOS_ROBOKID_SWITCHES ; index++) {
             if (temp_push_button_data[index].switch_value == true) {
-                temp_push_button_data[index].on_time += Task_read_sensors_frequency_tick_count;
+                temp_push_button_data[index].on_time += TASK_READ_SENSORS_FREQUENCY_TICK_COUNT;
             } else {
                 temp_push_button_data[index].on_time = 0;
             }

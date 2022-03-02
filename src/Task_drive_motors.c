@@ -33,6 +33,7 @@ motor_cmd_packet_t  command;
 uint32_t     value;
 uint8_t     i;
 motor_data_t   temp_motor_data;
+uint32_t    start_time, end_time;
 
     DRV8833_init();
 

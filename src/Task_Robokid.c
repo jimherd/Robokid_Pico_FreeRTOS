@@ -17,7 +17,9 @@
 //==============================================================================
 // Main task routine
 //==============================================================================
-void Task_Robokid(void *p) {
+void Task_Robokid(void *p) 
+{
+uint32_t    start_time, end_time;
 
 motor_cmd_packet_t  motor_cmd_packet;
 

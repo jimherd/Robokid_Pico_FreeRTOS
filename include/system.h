@@ -98,6 +98,10 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define SSD1306_LCDWIDTH 128
 #define SSD1306_LCDHEIGHT 64
 
+#define ICON_WINDOW         1
+#define MESSAGE_WINDOW      2
+#define SCROLL_WINDOW       5
+
 #define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
 
 //==============================================================================
@@ -116,8 +120,13 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 
 #define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
 
-#define     Task_read_sensors_frequency                 50  //Hz
-#define     Task_read_sensors_frequency_tick_count      ((1000/Task_read_sensors_frequency) * portTICK_PERIOD_MS)
+#define     TASK_READ_SENSORS_FREQUENCY                 50  //Hz
+#define     TASK_READ_SENSORS_FREQUENCY_TICK_COUNT      ((1000/TASK_READ_SENSORS_FREQUENCY) * portTICK_PERIOD_MS)
+
+#define     TASK_DISPLAY_LCD_FREQUENCY                  10  //Hz
+#define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
+#define     SCROLL_DELAY_MS                     1000
+#define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)                      
 
 #define     MOTOR_CMD_QUEUE_LENGTH     8
 
@@ -148,6 +157,9 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 #define     HANG        for(;;)
 
 #define     ATTRIBUTE_PACKED     __attribute__ ((__packed__))
+
+#define     ENABLE_SCROLLER     LCD_scroll_data.enable = true
+#define     DISABLE_SCROLLER    LCD_scroll_data.enable = false
 
 //==============================================================================
 // definitions of system data structures
@@ -248,6 +260,9 @@ typedef struct  {
 } system_IO_data_t;
 
 //==============================================================================
+/**
+ * @brief Task data
+ */
 typedef struct {
     uint8_t     priority;
     struct {
@@ -256,6 +271,20 @@ typedef struct {
         uint32_t    highest_exec_time;
     };
 } task_data_t;
+
+#define     MAX_SCROLL_STRINGS             8
+#define     MAX_SSD1306_STRING_LENGTH     15
+
+typedef struct {
+    bool        enable;
+    uint8_t     nos_strings;
+    uint8_t     string_count;
+    uint8_t     nos_LCD_rows;
+    uint8_t     first_LCD_row;
+    uint8_t     scroll_delay;       // in units of LCD task (typ 100mS)
+    uint8_t     scroll_delay_count;
+    char        string_data[MAX_SCROLL_STRINGS][MAX_SSD1306_STRING_LENGTH];     // pointer  to list of strings
+} LCD_scroll_data_t;
 
 //==============================================================================
 // Extern references
@@ -301,5 +330,7 @@ extern const unsigned char Terminal_12x16[];
 extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
+
+extern LCD_scroll_data_t   LCD_scroll_data;
 
 #endif /* __SYSTEM_H__ */

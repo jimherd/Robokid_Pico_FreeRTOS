@@ -24,27 +24,46 @@
 //==============================================================================
 // function prototypes
 //==============================================================================
-void process_icons(void);
+void process_icons(void);       // prototype
+void process_scroller(void);
 
+char        *test_scroll_string_data[4] = {
+    "First line",
+    " Second Line",
+    "  Third line",
+    "   Fourth line"
+};
 
+//==============================================================================
+// Task code
+//==============================================================================
 /**
  * @brief Task to control display of SSD1306 display
  * 
  * @param p 
  */
-void Task_display_LCD (void *p) {
+void Task_display_LCD (void *p) 
+{
+uint32_t    start_time, end_time;
+TickType_t  xLastWakeTime;
+BaseType_t  xWasDelayed;
 
     Oled_Init();
-
 //
 // print hello message 
 
     SSD1306_set_window(0, 0x00);
-    SSD1306_write_string(0, 1, "Robokid 2");
-
+//    SSD1306_write_string(0, MESSAGE_WINDOW, "Robokid 2");
+    
+    xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
+        xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
         process_icons();
-        vTaskDelay(500 / portTICK_PERIOD_MS);
+        SSD1306_set_text_area_scroller(SCROLL_WINDOW, 4, test_scroll_string_data);
+    //  process_message
+ENABLE_SCROLLER;
+        process_scroller();
+        vTaskDelay(20000 / portTICK_PERIOD_MS);
     }
 }
 
@@ -79,7 +98,6 @@ void Task_display_LCD (void *p) {
 #define GAMEPAD_CONNECTED   61  // '='
 #define ERROR_ICON      63  // '?'
 
-
 /**
  * @brief Generate set of diplay icons.
  * 
@@ -90,7 +108,7 @@ char    buffer[10], buffer_pt;
 int8_t  error;
 
     buffer_pt = 0;
-    SSD1306_set_window(2, 0x00);  // clear ICON window
+    SSD1306_set_window(ICON_WINDOW, 0x00);  // clear ICON window
 
 // Error state
 
@@ -170,7 +188,35 @@ int8_t  error;
     xSemaphoreGive(semaphore_gamepad_data);
 
     buffer[buffer_pt] = '\0';
-    SSD1306_write_string(1, 2, buffer);
+    SSD1306_write_string(1, ICON_WINDOW, buffer);
 
+    return;
+}
+
+/**
+ * @brief Manage scroll display
+ * 
+ */
+void process_scroller(void)
+{
+uint8_t index;
+
+    if (LCD_scroll_data.enable == false) {
+        return;
+    }
+    if (LCD_scroll_data.scroll_delay_count > 0) {
+        LCD_scroll_data.scroll_delay_count--;
+        return;
+    } else {
+        LCD_scroll_data.scroll_delay_count = LCD_scroll_data.scroll_delay;  // reset delay count
+    }
+    for (index = 0; index < LCD_scroll_data.nos_LCD_rows; index++) {
+        ////////////// issue with 2nd parameter : window number !!
+        SSD1306_write_string(0, LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[LCD_scroll_data.string_count++]);
+        LCD_scroll_data.first_LCD_row++;
+        if (LCD_scroll_data.string_count >= LCD_scroll_data.nos_strings) {
+            LCD_scroll_data.string_count = 0;
+        }
+    }
     return;
 }

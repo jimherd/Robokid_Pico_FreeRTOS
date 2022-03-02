@@ -12,6 +12,8 @@
 
 uint8_t  page_buffer[128];
 
+LCD_scroll_data_t   LCD_scroll_data;
+
 //
 // Table of virtual windows in SSD1306 display
 //
@@ -22,8 +24,11 @@ struct {
     uint8_t     Y2_pag_value;
 } page_window_table[] = {
         {0, 0, 127, 7}, // window 0 is full display
-        {0, 0, 127,0},
-        {0, 6, 127, 7},
+        {0, 0, 127, 1}, // window 1 : rows 0 and 1 - ICON area
+        {0, 2, 127, 3}, // window 2 : rows 2 and 3 - important message area
+        {0, 4, 127, 5}, // window 3 : rows 4 and 5
+        {0, 6, 127, 7}, // window 4 : rows 6 and 7
+        {0, 4, 127, 7}, // window 5 : rows 4 to 7 - info scroll area
 };
 
 /**
@@ -67,7 +72,7 @@ uint8_t const *font_base;
     pixel_height = *(font_base + 1);
     first_char   = *(font_base + 2);
     last_char    = *(font_base + 3);
-    font_base    = font_base + 4;       // skip  font header
+    font_base    =  font_base + 4;       // skip  font header
 
     segment = page_window_table[window].X1_seg_value;
     page    = page_window_table[window].Y1_pag_value;
@@ -77,7 +82,6 @@ uint8_t const *font_base;
     char_cnt = strlen(buffer);
     pixel_count = 0;
     
-
 // outer page loop
     for (uint8_t i=0 ; i < nos_pages ; i++) {
         ch_pt = buffer;
@@ -113,4 +117,34 @@ void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
             Oled_WriteRam(byte_value);
         }
     }
+}
+
+/**
+ * @brief Load scroller data structure
+ * 
+ * @param LCD_scroll_data 
+ */
+void SSD1306_set_text_area_scroller(uint8_t window, uint8_t nos_strings, char **scroll_strings)
+{
+uint8_t index, string_length;
+
+    LCD_scroll_data.enable = false;
+
+    LCD_scroll_data.nos_strings = nos_strings;
+    for (index = 0; index < nos_strings; index++) {
+        string_length = strlen(scroll_strings[index]);
+        if (string_length >= MAX_SSD1306_STRING_LENGTH) {
+            string_length = MAX_SSD1306_STRING_LENGTH;
+            scroll_strings[index][MAX_SSD1306_STRING_LENGTH] = '\0';
+        }
+        strcpy(LCD_scroll_data.string_data[index], scroll_strings[index]);
+    }
+    LCD_scroll_data.string_count = 0;
+    LCD_scroll_data.nos_LCD_rows = page_window_table[window].Y2_pag_value - page_window_table[window].Y1_pag_value - 1;
+    LCD_scroll_data.first_LCD_row = page_window_table[window].Y1_pag_value;
+
+    LCD_scroll_data.scroll_delay_count = 0;
+    LCD_scroll_data.scroll_delay = SCROLL_DELAY_TICK_COUNT;
+
+    return;
 }

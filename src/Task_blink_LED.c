@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 #include "system.h"
+#include "common.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -30,11 +31,13 @@ void Task_blink_LED(void *p) {
 
 uint8_t     tens, units, count;
 int8_t      error;
+uint32_t    start_time, end_time;
 
     gpio_init(BLINK_PIN);
     gpio_set_dir(BLINK_PIN, GPIO_OUT);
 
     FOREVER {
+        start_time = time_us_32();
         xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
             error = system_status.error_state;
         xSemaphoreGive(semaphore_system_status);
@@ -53,6 +56,8 @@ int8_t      error;
             flash(units);
             vTaskDelay(3000/portTICK_PERIOD_MS);
         }
+    end_time = time_us_32();
+    update_task_execution_time(TASK_BLINK, start_time, end_time);
     }
 }
 
