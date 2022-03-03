@@ -118,7 +118,7 @@ typedef enum {
 // Freertos
 
 typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, 
-                    TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_BLINK} task_t;
+                    TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_ERROR, TASK_BLINK} task_t;
 
 #define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
 
@@ -130,7 +130,8 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 #define     SCROLL_DELAY_MS                     2000
 #define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)                      
 
-#define     MOTOR_CMD_QUEUE_LENGTH     8
+#define     MOTOR_CMD_QUEUE_LENGTH          8
+#define     ERROR_MESSAGE_QUEUE_LENGTH      8
 
 //==============================================================================
 // Set of 8 priority levels (set 8 in FreeRTOSconfig.h)
@@ -247,6 +248,11 @@ typedef struct {
     bool        binary_value;
 } floor_sensor_data_t;
 
+typedef struct {
+    error_codes_t   error_code;
+    task_t          task;
+} error_message_t;
+
 //==============================================================================
 /**
  * @brief   Central store of system data. Access by mutex.
@@ -312,15 +318,17 @@ extern const uint BLINK_PIN;
 extern void Task_Robokid(void *p);
 extern void Task_read_sensors(void *p);
 extern void Task_read_gamepad(void *p);             // tasks
-extern void Task_blink_LED(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
+extern void Task_error(void *p);
+extern void Task_blink_LED(void *p);
 
 extern SemaphoreHandle_t semaphore_system_IO_data;
 extern SemaphoreHandle_t semaphore_system_status;   //semaphores
 extern SemaphoreHandle_t semaphore_gamepad_data;
 
 extern QueueHandle_t queue_motor_cmds;              // queues
+extern QueueHandle_t queue_error_messages;
 
 // SSD1306 LCD Fonts
 

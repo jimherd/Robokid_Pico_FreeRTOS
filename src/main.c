@@ -37,6 +37,7 @@ TaskHandle_t taskhndl_Task_read_sensors;
 TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
+TaskHandle_t taskhndl_Task_error;
 TaskHandle_t taskhndl_Task_blink_LED;
 
 SemaphoreHandle_t semaphore_system_IO_data;
@@ -44,6 +45,7 @@ SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
 
 QueueHandle_t queue_motor_cmds;
+QueueHandle_t queue_error_messages;
 
 task_data_t     task_data[NOS_TASKS];
 
@@ -167,7 +169,15 @@ int main()
                 &taskhndl_Task_read_sensors
     );
 
-     xTaskCreate(Task_blink_LED,
+    xTaskCreate(Task_error,
+                "Task_error",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_error
+    );
+
+    xTaskCreate(Task_blink_LED,
                 "blink_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
@@ -179,7 +189,8 @@ int main()
     semaphore_system_status     = xSemaphoreCreateMutex();
     semaphore_gamepad_data      = xSemaphoreCreateMutex();
 
-    queue_motor_cmds = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
+    queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
+    queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(error_message_t));
 
     vTaskStartScheduler();
 

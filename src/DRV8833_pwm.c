@@ -138,8 +138,8 @@ bool            zero_cross_over;
     }
 
     pulse_count = (abs(pwm_width) * MOTOR_PWM_MAX_COUNT) / 100;
-    DRV8833_in1 = LOW;
-    DRV8833_in2 = LOW;
+    DRV8833_in1 = MOTOR_PWM_MIN_COUNT;
+    DRV8833_in2 = MOTOR_PWM_MIN_COUNT;
 
     // calculate in1 and in2 motor control signals
 
