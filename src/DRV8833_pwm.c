@@ -40,8 +40,8 @@ void DRV8833_init(void )
     pwm_set_clkdiv(LM_slice_num, MOTOR_PWM_CLK_DIV);
     pwm_set_clkdiv(RM_slice_num, MOTOR_PWM_CLK_DIV);
 
-    pwm_set_wrap(LM_slice_num, MOTOR_PWM_FULL_COUNT);
-    pwm_set_wrap(RM_slice_num, MOTOR_PWM_FULL_COUNT);
+    pwm_set_wrap(LM_slice_num, MOTOR_PWM_MAX_COUNT);
+    pwm_set_wrap(RM_slice_num, MOTOR_PWM_MAX_COUNT);
     
     // Ensure both A and B channels have 0% duty cycle.
     pwm_set_chan_level(LM_slice_num, PWM_CHAN_A, 0);
@@ -74,8 +74,9 @@ uint8_t  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm
 uint32_t        pulse_count, period_count ;
 motor_cmd_t     left_motor_state, right_motor_state;
 uint8_t         pwm_slice;
-direction_t     direction;
+direction_t     new_direction;
 uint32_t        DRV8833_in1, DRV8833_in2, temp;
+bool            zero_cross_over;
 
     // check parameters
 
@@ -103,8 +104,40 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
         memcpy(&temp_motor_data, &system_IO_data.motor_data[motor_number], sizeof(motor_data_t));
     xSemaphoreGive(semaphore_system_IO_data);
  
-    direction = (pwm_width >= 0) ? FORWARD : BACKWARD;
-    pulse_count = (abs(pwm_width) * MOTOR_PWM_FULL_COUNT) / 100;
+    if (pwm_width > 0) {
+        new_direction = FORWARD;
+    } else if (pwm_width < 0) {
+        new_direction = BACKWARD;
+    } else {
+        new_direction = OFF;
+    }
+    zero_cross_over = false;
+    switch (temp_motor_data.motor_state) {
+        case FORWARD : {
+            if (new_direction == BACKWARD) {
+                zero_cross_over = true;
+            }
+            break;
+        }
+        case BACKWARD : {
+            if (new_direction == FORWARD) {
+                zero_cross_over = true;
+            }
+            break;
+        }
+        default :
+            break;
+    }
+
+// if changing direction go to zero speed first
+
+    if (zero_cross_over == true) {
+        pwm_set_chan_level(pwm_slice, PWM_CHAN_A, MOTOR_PWM_MAX_COUNT);
+        pwm_set_chan_level(pwm_slice, PWM_CHAN_B, MOTOR_PWM_MAX_COUNT);
+        vTaskDelay(ZERO_CROSS_OVER_DELAY_MS);
+    }
+
+    pulse_count = (abs(pwm_width) * MOTOR_PWM_MAX_COUNT) / 100;
     DRV8833_in1 = LOW;
     DRV8833_in2 = LOW;
 
@@ -112,17 +145,17 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
 
     switch (command) {
         case MOTOR_OFF : {       // stop with FREEWHEEL condition
-            DRV8833_in1 = LOW;
-            DRV8833_in2 = LOW;
+            DRV8833_in1 = MOTOR_PWM_MIN_COUNT;
+            DRV8833_in2 = MOTOR_PWM_MIN_COUNT;
             break;
         }
         case MOTOR_BRAKE : {     // stop with BRAKE condition
-            DRV8833_in1 = 100;
-            DRV8833_in2 = 100;
+            DRV8833_in1 = MOTOR_PWM_MAX_COUNT;
+            DRV8833_in2 = MOTOR_PWM_MAX_COUNT;
             break;
         } 
         case MOVE : {
-            if (direction == FORWARD) {
+            if (new_direction == FORWARD) {
                 DRV8833_in1 = pulse_count;
                 DRV8833_in2 = LOW;
             } else {
@@ -152,7 +185,7 @@ uint32_t        DRV8833_in1, DRV8833_in2, temp;
     // log state
 
     temp_motor_data.pwm_width   = pwm_width;         // log pulse width
-    temp_motor_data.motor_state = direction;
+    temp_motor_data.motor_state = new_direction;
 
     // update central data store
 

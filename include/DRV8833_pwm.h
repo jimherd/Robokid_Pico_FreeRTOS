@@ -13,8 +13,8 @@
 #define     MOTOR_PWM_FREQ      5000        // 5KHz
 
 #define     MOTOR_PWM_CLK_DIV       (125000000/25000000)
-#define     MOTOR_PWM_FULL_COUNT    (MOTOR_COUNT_FREQ/MOTOR_PWM_FREQ)
-
+#define     MOTOR_PWM_MAX_COUNT    (MOTOR_COUNT_FREQ/MOTOR_PWM_FREQ)
+#define     MOTOR_PWM_MIN_COUNT     0
 
 
 void DRV8833_init(void );

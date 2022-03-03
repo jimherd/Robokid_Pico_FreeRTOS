@@ -54,6 +54,8 @@ typedef enum {OFF, FORWARD, BACKWARD} direction_t;
 typedef enum {NO_FLIP, FLIP} motor_orientation_t;
 typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 
+#define     ZERO_CROSS_OVER_DELAY_MS    (1000/portTICK_PERIOD_MS)
+
 //==============================================================================
 // 4 push switches + 4 LEDs
 
