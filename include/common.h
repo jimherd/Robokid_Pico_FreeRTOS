@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include "system.h"
 
-void update_task_execution_time(task_t task, uint32_t start_time, uint32_t end_time) ;
+void update_task_execution_time(task_t task, uint32_t start_time, uint32_t end_time);
+void log_error(uint8_t error_code, task_t task);
 
 #endif

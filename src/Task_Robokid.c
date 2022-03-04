@@ -5,6 +5,7 @@
  * @date   2022-02-28
  */
 #include "system.h"
+#include "common.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"

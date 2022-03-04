@@ -114,6 +114,8 @@ typedef enum {
     FAULT               = -1,
 } error_codes_t;
 
+#define     LOG_SIZE    50
+
 //==============================================================================
 // Freertos
 
@@ -251,6 +253,7 @@ typedef struct {
 typedef struct {
     error_codes_t   error_code;
     task_t          task;
+    uint32_t        log_time;
 } error_message_t;
 
 //==============================================================================
@@ -329,6 +332,8 @@ extern SemaphoreHandle_t semaphore_gamepad_data;
 
 extern QueueHandle_t queue_motor_cmds;              // queues
 extern QueueHandle_t queue_error_messages;
+
+extern error_message_t     error_message_log[LOG_SIZE];
 
 // SSD1306 LCD Fonts
 

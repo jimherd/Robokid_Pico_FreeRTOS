@@ -42,7 +42,7 @@ uint32_t    start_time, end_time;
             error = system_status.error_state;
         xSemaphoreGive(semaphore_system_status);
 
-        if (error >= OK) {                          // no error 
+        if (error == OK) {                          // no error 
             gpio_put(BLINK_PIN, 1);
             vTaskDelay(1000/portTICK_PERIOD_MS);
             gpio_put(BLINK_PIN, 0);

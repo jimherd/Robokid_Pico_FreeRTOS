@@ -5,7 +5,9 @@
  * @date    2022-02-26
  */
 
-#include    "common.h"
+#include "FreeRTOS.h"
+
+#include "common.h"
 
 /**
  * @brief Calculate task execution time and record
@@ -33,4 +35,19 @@ uint32_t delta_time;
     if (delta_time > task_data[task].highest_exec_time) {
         task_data[task].highest_exec_time = delta_time;
     }
+}
+/**
+ * @brief Send error into error queue
+ * 
+ * @param error_code 
+ * @param task 
+ */
+void log_error(uint8_t error_code, task_t task)
+{
+error_message_t error_message;
+
+    error_message.error_code = error_code;
+    error_message.task       = task;
+    xQueueSend(queue_motor_cmds, &error_message, portMAX_DELAY);
+    return;
 }

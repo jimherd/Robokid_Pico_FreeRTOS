@@ -2,6 +2,7 @@
 #include <string.h>
 
 #include "system.h"
+#include "common.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"

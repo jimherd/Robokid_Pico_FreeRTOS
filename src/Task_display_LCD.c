@@ -11,6 +11,7 @@
 #include <stdio.h>
 
 #include "system.h"
+#include "common.h"
 #include "OLED_128X64.h"
 #include "SSD1306.h"
 #include "images.h"
