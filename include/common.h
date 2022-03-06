@@ -12,5 +12,6 @@
 
 void update_task_execution_time(task_t task, uint32_t start_time, uint32_t end_time);
 void log_error(uint8_t error_code, task_t task);
+uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out);
 
 #endif

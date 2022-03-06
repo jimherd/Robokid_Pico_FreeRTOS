@@ -21,6 +21,7 @@
 error_message_t     error_message_log[LOG_SIZE];
 uint8_t error_log_ptr;
 
+//==============================================================================
 void Task_error(void *p) 
 {
     error_log_ptr = 0;

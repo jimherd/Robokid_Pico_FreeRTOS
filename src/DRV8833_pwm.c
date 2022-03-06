@@ -21,6 +21,7 @@ motor_data_t    temp_motor_data;
 
 uint8_t  LM_slice_num, RM_slice_num;
 
+//==============================================================================
 void DRV8833_init(void )
 {
     // Left motor PWM control outputs
@@ -54,11 +55,13 @@ void DRV8833_init(void )
     pwm_set_enabled(RM_slice_num, true);
 }
 
+//==============================================================================
 void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle) 
 {
 
 }
 
+//==============================================================================
 /**
  * @fn      DRV8833_set_motor(...)
  * @brief   configure a motor
@@ -196,7 +199,7 @@ bool            zero_cross_over;
     return OK;
 }
 
-//----------------------------------------------------------------------------
+//==============================================================================
 // vehicle_stop : set both motor to brake
 // ============
 //
@@ -209,7 +212,7 @@ void vehicle_stop(void) {
 //    motor_data[RIGHT_MOTOR].motor_state = STOPPED;
 }
 
-//----------------------------------------------------------------------------
+//==============================================================================
 // set_vehicle_state : update state of vehicle
 // =================
 //

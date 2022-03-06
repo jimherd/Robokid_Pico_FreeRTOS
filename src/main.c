@@ -19,6 +19,7 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "event_groups.h"
 
 //==============================================================================
 // Global data
@@ -30,7 +31,7 @@ const uint LED_PIN = PICO_DEFAULT_LED_PIN;
 const uint LOG_PIN = GP2;
 const uint BLINK_PIN = LED_PIN;
 
-// FreeRTOS components and task data
+// FreeRTOS components handles
 
 TaskHandle_t taskhndl_Task_Robokid;
 TaskHandle_t taskhndl_Task_read_sensors;
@@ -46,6 +47,10 @@ SemaphoreHandle_t semaphore_gamepad_data ;
 
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
+
+EventGroupHandle_t eventgroup_push_buttons;
+
+// Task data
 
 task_data_t     task_data[NOS_TASKS];
 
@@ -78,7 +83,7 @@ uint8_t     index;
         system_IO_data.motor_data[RIGHT_MOTOR].pwm_width = 0;
         system_IO_data.motor_data[RIGHT_MOTOR].flip = RIGHT_MOTOR_FLIP_MODE;
     // Push button data
-        for (index=0; index < NOS_ROBOKID_SWITCHES ; index++ ) {
+        for (index=0; index < NOS_ROBOKID_PUSH_BUTTONS ; index++ ) {
             system_IO_data.push_button_data[index].switch_value = false;
             system_IO_data.push_button_data[index].on_time = 0;
         };
@@ -191,6 +196,8 @@ int main()
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(error_message_t));
+
+    eventgroup_push_buttons = xEventGroupCreate (); 
 
     vTaskStartScheduler();
 

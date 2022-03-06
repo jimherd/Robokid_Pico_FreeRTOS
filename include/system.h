@@ -11,6 +11,7 @@
 
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
+#include    "event_groups.h"
 
 #ifndef __SYSTEM_H__
 #define __SYSTEM_H__
@@ -20,7 +21,7 @@
 //==============================================================================
 // Robokid parameters
 #define     NOS_ROBOKID_MOTORS          2
-#define     NOS_ROBOKID_SWITCHES        4
+#define     NOS_ROBOKID_PUSH_BUTTONS    4
 #define     NOS_ROBOKID_LEDS            4
 #define     NOS_ROBOKID_FLOOR_SENSORS   2
 
@@ -59,17 +60,28 @@ typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 //==============================================================================
 // 4 push switches + 4 LEDs
 
-#define     SWITCH_0_PIN    GP12
-#define     SWITCH_1_PIN    GP13
-#define     SWITCH_2_PIN    GP14
-#define     SWITCH_3_PIN    GP15
+#define     PUSH_BUTTON_A       0
+#define     PUSH_BUTTON_B       (PUSH_BUTTON_A + 1)
+#define     PUSH_BUTTON_C       (PUSH_BUTTON_A + 2)
+#define     PUSH_BUTTON_D       (PUSH_BUTTON_A + 3)
 
-#define     SWITCH_0_MASK           (1 << SWITCH_0_PIN)
-#define     SWITCH_1_MASK           (1 << SWITCH_1_PIN)
-#define     SWITCH_2_MASK           (1 << SWITCH_2_PIN)
-#define     SWITCH_3_MASK           (1 << SWITCH_3_PIN)
-#define     SWITCH_MASK             (SWITCH_0_MASK | SWITCH_1_MASK | SWITCH_2_MASK | SWITCH_3_MASK)
-#define     NOS_SWITCH_SAMPLES      3
+#define     PUSH_BUTTON_A_PIN    GP12
+#define     PUSH_BUTTON_B_PIN    GP13
+#define     PUSH_BUTTON_C_PIN    GP14
+#define     PUSH_BUTTON_D_PIN    GP15
+
+#define     PUSH_BUTTON_A_MASK          (1 << PUSH_BUTTON_A_PIN)
+#define     PUSH_BUTTON_B_MASK          (1 << PUSH_BUTTON_B_PIN)
+#define     PUSH_BUTTON_C_MASK          (1 << PUSH_BUTTON_C_PIN)
+#define     PUSH_BUTTON_D_MASK          (1 << PUSH_BUTTON_D_PIN)
+#define     SWITCH_MASK         (PUSH_BUTTON_A_MASK | PUSH_BUTTON_B_MASK | PUSH_BUTTON_C_MASK | PUSH_BUTTON_D_MASK)
+
+#define     NOS_SWITCH_SAMPLES          3
+
+#define     PUSH_BUTTON_A_EVENT_BIT     0
+#define     PUSH_BUTTON_B_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 1)
+#define     PUSH_BUTTON_C_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 2)
+#define     PUSH_BUTTON_D_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 3)
 
 #define     LED_0_PIN       GP16
 #define     LED_1_PIN       GP17
@@ -78,8 +90,9 @@ typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 
 //==============================================================================
 // SNES Gamepad
-#define     GENERIC_GAMEPAD_VID     0x081F
-#define     GENERIC_GAMEPAD_PID     0xE401
+
+#define     GENERIC_GAMEPAD_VID         0x081F
+#define     GENERIC_GAMEPAD_PID         0xE401
 
 #define     GAMEPAD_DPAD_X_AXIS_LEFT    0x00
 #define     GAMEPAD_DPAD_X_AXIS_NULL    0x7F
@@ -97,14 +110,47 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 //==============================================================================
 // SSD1306 display
 
-#define SSD1306_LCDWIDTH 128
-#define SSD1306_LCDHEIGHT 64
+#define SSD1306_LCDWIDTH    128
+#define SSD1306_LCDHEIGHT   64
 
 #define ICON_WINDOW         1
 #define MESSAGE_WINDOW      2
 #define SCROLL_WINDOW       5
 
-#define     SSD1306_SPI_SPEED      8000000   // SSD1306 SPIMax=10MHz
+#define SSD1306_SPI_SPEED   8000000   // SSD1306 SPIMax=10MHz
+
+// ICON  character codes
+
+#define BLANK           32  // ' '
+#define BATTERY_FULL    33  // '!'
+#define BATTERY_75      34  // '"'
+#define BATTERY_HALF    35  // '#'
+#define BATTERY_25      36  // '$'
+#define BATTERY_EMPTY   37  // '%'
+
+#define DPAD_UP         38  // '&'
+#define DPAD_DOWN       39  // '\''
+#define DPAD_LEFT       40  // '('
+#define DPAD_RIGHT      41  // ')'
+
+#define SELECT_START    47  // '/'
+#define SELECT          48  // '0'
+#define START           49  // '1'
+
+#define BUTTON_A_B      50  // '2'
+#define BUTTON_A        51  // '3'
+#define BUTTON_B        52  // '4'
+
+#define BUTTON_X_Y      53  // '5'
+#define BUTTON_X        54  // '6'
+#define BUTTON_Y        55  // '7'
+
+#define BUTTON_L_R      56  // '8'
+#define BUTTON_L        57  // '9'
+#define BUTTON_R        58  // ':'
+
+#define GAMEPAD_CONNECTED   61  // '='
+#define ERROR_ICON      63  // '?'
 
 //==============================================================================
 // errors
@@ -152,11 +198,11 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 // Macros
 //==============================================================================
 
-#define     START_PULSE                 gpio_put(LOG_PIN, 1)
-#define     STOP_PULSE                  gpio_put(LOG_PIN, 0)
+#define     START_PULSE         gpio_put(LOG_PIN, 1)
+#define     STOP_PULSE          gpio_put(LOG_PIN, 0)
 
-#define     DISABLE_POWER_STAGE          gpio_put(TMC7300_EN_PIN, 0)
-#define     ENABLE_POWER_STAGE           gpio_put(TMC7300_EN_PIN, 1)
+#define     DISABLE_POWER_STAGE gpio_put(TMC7300_EN_PIN, 0)
+#define     ENABLE_POWER_STAGE  gpio_put(TMC7300_EN_PIN, 1)
 
 #define     FOREVER     for(;;)
 #define     HANG        for(;;)
@@ -265,7 +311,7 @@ typedef struct  {
     uint16_t            system_voltage;
     motor_data_t        motor_data[NOS_ROBOKID_MOTORS];
     LED_data_t          LED_data[NOS_ROBOKID_LEDS];
-    push_button_data_t  push_button_data[NOS_ROBOKID_SWITCHES];
+    push_button_data_t  push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
     floor_sensor_data_t   floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
     vehicle_data_t      vehicle_data;
 } system_IO_data_t;
@@ -332,6 +378,8 @@ extern SemaphoreHandle_t semaphore_gamepad_data;
 
 extern QueueHandle_t queue_motor_cmds;              // queues
 extern QueueHandle_t queue_error_messages;
+
+extern EventGroupHandle_t eventgroup_push_buttons;
 
 extern error_message_t     error_message_log[LOG_SIZE];
 

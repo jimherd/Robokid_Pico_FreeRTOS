@@ -63,6 +63,8 @@ uint16_t  vid, pid;
     tuh_vid_pid_get(dev_addr, &vid, &pid);
     return ((vid == GENERIC_GAMEPAD_VID) && (pid == GENERIC_GAMEPAD_PID));
 }
+
+//==============================================================================
 /**
  * @brief Compare current repot with previous report
  * 
@@ -76,6 +78,7 @@ bool diff_report(SNES_gamepad_report_t const* report1,   SNES_gamepad_report_t c
     return  memcmp(report1, report2, sizeof(SNES_gamepad_report_t));
 }
 
+//==============================================================================
 /**
  * @brief Extract data from gamepad USB report and put in
  *        global data structure for access by other tasks.
@@ -137,6 +140,7 @@ uint16_t  vid, pid;
     gpio_put(LED_PIN, 1);
 }
 
+//==============================================================================
 /**
  * @brief Callback routine when USB device is removed
  * 
@@ -153,6 +157,7 @@ void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance)
         xSemaphoreGive(semaphore_gamepad_data);
 }
 
+//==============================================================================
 /**
  * @brief Callback routine when data packet received from USB device
  * 

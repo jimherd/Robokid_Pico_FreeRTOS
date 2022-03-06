@@ -19,8 +19,9 @@
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
+#include "event_groups.h"
 
-push_button_data_t  temp_push_button_data[NOS_ROBOKID_SWITCHES];
+push_button_data_t  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
 LED_data_t          temp_LED_data[NOS_ROBOKID_LEDS];
 
 uint32_t            switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
@@ -43,10 +44,10 @@ uint32_t    start_time, end_time;
 //
 // Task init
 //
-    gpio_init(SWITCH_0_PIN); gpio_set_dir(SWITCH_0_PIN, GPIO_IN); gpio_pull_down(SWITCH_0_PIN); 
-    gpio_init(SWITCH_1_PIN); gpio_set_dir(SWITCH_1_PIN, GPIO_IN); gpio_pull_down(SWITCH_1_PIN); 
-    gpio_init(SWITCH_2_PIN); gpio_set_dir(SWITCH_2_PIN, GPIO_IN); gpio_pull_down(SWITCH_2_PIN);  
-    gpio_init(SWITCH_3_PIN); gpio_set_dir(SWITCH_3_PIN, GPIO_IN); gpio_pull_down(SWITCH_3_PIN);  
+    gpio_init(PUSH_BUTTON_A_PIN); gpio_set_dir(PUSH_BUTTON_A_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_A_PIN); 
+    gpio_init(PUSH_BUTTON_B_PIN); gpio_set_dir(PUSH_BUTTON_B_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_B_PIN); 
+    gpio_init(PUSH_BUTTON_C_PIN); gpio_set_dir(PUSH_BUTTON_C_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_C_PIN);  
+    gpio_init(PUSH_BUTTON_D_PIN); gpio_set_dir(PUSH_BUTTON_D_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_D_PIN);  
 
     gpio_init(LED_0_PIN); gpio_set_dir(LED_0_PIN, GPIO_OUT);
     gpio_init(LED_1_PIN); gpio_set_dir(LED_1_PIN, GPIO_OUT);
@@ -69,7 +70,7 @@ START_PULSE;
     // Get currect switch and LED data
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-            memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_SWITCHES *  sizeof(push_button_data_t)));
+            memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(push_button_data_t)));
             memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(LED_data_t)));
         xSemaphoreGive(semaphore_system_IO_data);
     //
@@ -84,14 +85,25 @@ START_PULSE;
         if (switch_sample_index >= NOS_SWITCH_SAMPLES) {
             switch_sample_index = 0;
         }
-        temp_push_button_data[0].switch_value = (switch_value & SWITCH_0_MASK) >> SWITCH_0_PIN;
-        temp_push_button_data[1].switch_value = (switch_value & SWITCH_1_MASK) >> SWITCH_1_PIN;
-        temp_push_button_data[2].switch_value = (switch_value & SWITCH_2_MASK) >> SWITCH_2_PIN;
-        temp_push_button_data[3].switch_value = (switch_value & SWITCH_3_MASK) >> SWITCH_3_PIN;
+        temp_push_button_data[0].switch_value = (switch_value & PUSH_BUTTON_A_MASK) >> PUSH_BUTTON_A_PIN;
+        temp_push_button_data[1].switch_value = (switch_value & PUSH_BUTTON_B_MASK) >> PUSH_BUTTON_B_PIN;
+        temp_push_button_data[2].switch_value = (switch_value & PUSH_BUTTON_C_MASK) >> PUSH_BUTTON_C_PIN;
+        temp_push_button_data[3].switch_value = (switch_value & PUSH_BUTTON_D_MASK) >> PUSH_BUTTON_D_PIN;
+
+
+
+// maybe form into a loop
+        if (temp_push_button_data[0].switch_value == 1) {
+            xEventGroupSetBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
+            xEventGroupClearBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
+        } else {
+            xEventGroupClearBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
+            xEventGroupSetBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
+        }
     //
     // update on-time counter
     //
-        for (index = 0 ; index < NOS_ROBOKID_SWITCHES ; index++) {
+        for (index = 0 ; index < NOS_ROBOKID_PUSH_BUTTONS ; index++) {
             if (temp_push_button_data[index].switch_value == true) {
                 temp_push_button_data[index].on_time += TASK_READ_SENSORS_FREQUENCY_TICK_COUNT;
             } else {
@@ -122,7 +134,7 @@ START_PULSE;
     // Update global system data 
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-           memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_SWITCHES *  sizeof(push_button_data_t)));
+           memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(push_button_data_t)));
            memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(LED_data_t)));
         xSemaphoreGive(semaphore_system_IO_data);
 

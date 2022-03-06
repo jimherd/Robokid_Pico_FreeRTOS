@@ -7,8 +7,10 @@
 
 #include "FreeRTOS.h"
 
+#include "system.h"
 #include "common.h"
 
+//==============================================================================
 /**
  * @brief Calculate task execution time and record
  * @note  Check for new low/high values
@@ -50,4 +52,36 @@ error_message_t error_message;
     error_message.task       = task;
     xQueueSend(queue_motor_cmds, &error_message, portMAX_DELAY);
     return;
+}
+
+//==============================================================================
+/**
+ * @brief   wait for push buuton tobe pressed and released
+ * 
+ * @param   push_button     PUSH_BUTTON_A to PUSH_BUTTON_D
+ * @param   time_out        max time to wait press
+ * @return  uint32_t        length of buuton press in uS
+ */
+uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out)
+{
+
+// Wait for push switch to be pressed
+
+    xEventGroupWaitBits  ( 
+        eventgroup_push_buttons,
+        (1 << push_button),
+        pdFALSE,        //  don't clear bit
+        pdFALSE,        
+        time_out);
+
+// Wait for push button to be released
+
+        xEventGroupWaitBits  ( 
+        eventgroup_push_buttons,
+        (1 << (push_button + NOS_ROBOKID_PUSH_BUTTONS)),
+        pdFALSE,
+        pdFALSE,        
+        time_out);
+
+    return  system_IO_data.push_button_data[push_button].on_time;
 }

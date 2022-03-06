@@ -68,37 +68,7 @@ BaseType_t  xWasDelayed;
     }
 }
 
-#define BLANK           32  // ' '
-#define BATTERY_FULL    33  // '!'
-#define BATTERY_75      34  // '"'
-#define BATTERY_HALF    35  // '#'
-#define BATTERY_25      36  // '$'
-#define BATTERY_EMPTY   37  // '%'
-
-#define DPAD_UP         38  // '&'
-#define DPAD_DOWN       39  // '\''
-#define DPAD_LEFT       40  // '('
-#define DPAD_RIGHT      41  // ')'
-
-#define SELECT_START    47  // '/'
-#define SELECT          48  // '0'
-#define START           49  // '1'
-
-#define BUTTON_A_B      50  // '2'
-#define BUTTON_A        51  // '3'
-#define BUTTON_B        52  // '4'
-
-#define BUTTON_X_Y      53  // '5'
-#define BUTTON_X        54  // '6'
-#define BUTTON_Y        55  // '7'
-
-#define BUTTON_L_R      56  // '8'
-#define BUTTON_L        57  // '9'
-#define BUTTON_R        58  // ':'
-
-#define GAMEPAD_CONNECTED   61  // '='
-#define ERROR_ICON      63  // '?'
-
+//==============================================================================
 /**
  * @brief Generate set of diplay icons.
  * 
@@ -194,6 +164,7 @@ int8_t  error;
     return;
 }
 
+//==============================================================================
 /**
  * @brief Manage scroll display
  * 

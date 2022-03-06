@@ -31,6 +31,7 @@ struct {
         {0, 4, 127, 7}, // window 5 : rows 4 to 7 - info scroll area
 };
 
+//==============================================================================
 /**
  * @brief Write a set of bytes to SSD1306 using page addressing
  * 
@@ -49,6 +50,7 @@ uint8_t SSD1306_write_pag_buf(uint8_t font_index, uint8_t *buffer, uint8_t len){
     return 0;
 }
 
+//==============================================================================
 /**
  * @brief output string to SSD1306 using horizontal indexing
  * 
@@ -100,6 +102,7 @@ uint8_t const *font_base;
     return  0;
 }
 
+//==============================================================================
 /**
  * @brief Set each byte (1024) of the display
  * 
@@ -119,6 +122,7 @@ void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
     }
 }
 
+//==============================================================================
 /**
  * @brief Load scroller data structure
  * 
