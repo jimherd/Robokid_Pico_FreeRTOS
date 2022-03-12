@@ -41,6 +41,8 @@ TaskHandle_t taskhndl_Task_drive_motors;
 TaskHandle_t taskhndl_Task_error;
 TaskHandle_t taskhndl_Task_blink_LED;
 
+SemaphoreHandle_t semaphore_LCD_data;
+SemaphoreHandle_t semaphore_SSD1306_display;
 SemaphoreHandle_t semaphore_system_IO_data;
 SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
@@ -59,6 +61,8 @@ task_data_t     task_data[NOS_TASKS];
 system_IO_data_t    system_IO_data;
 gamepad_data_t      gamepad_data;
 system_status_t     system_status;
+
+LCD_row_data_t      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
 //==============================================================================
 // System initiation
@@ -114,6 +118,11 @@ uint8_t     index;
             task_data[index].last_exec_time    = 0;
             task_data[index].lowest_exec_time  = UINT32_MAX;
             task_data[index].highest_exec_time = 0;
+        };
+    // LCD row data
+    for (index=0 ; index < SS1306_NOS_LCD_ROWS ; index++) {
+            LCD_row_data[index].dirty_bit   = false;
+            LCD_row_data[index].font        = 0;
         };
 }
 //==============================================================================
@@ -190,6 +199,8 @@ int main()
                 &taskhndl_Task_blink_LED
     );
 
+    semaphore_LCD_data          = xSemaphoreCreateMutex();
+    semaphore_SSD1306_display   = xSemaphoreCreateMutex();
     semaphore_system_IO_data    = xSemaphoreCreateMutex();
     semaphore_system_status     = xSemaphoreCreateMutex();
     semaphore_gamepad_data      = xSemaphoreCreateMutex();

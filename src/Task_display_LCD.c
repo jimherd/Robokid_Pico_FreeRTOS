@@ -15,6 +15,7 @@
 #include "OLED_128X64.h"
 #include "SSD1306.h"
 #include "images.h"
+#include "Robokid_strings.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -27,13 +28,7 @@
 //==============================================================================
 void process_icons(void);       // prototype
 void process_scroller(void);
-
-char        *test_scroll_string_data[4] = {
-    "SWA: Exit",
-    "SWB: Start",
-    "SWC: Reset",
-    "SWD: Stop"
-};
+void LCD_dump_row_data(void);
 
 //==============================================================================
 // Task code
@@ -50,21 +45,24 @@ TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
 
     Oled_Init();
-//
+
 // print hello message 
 
-    SSD1306_set_window(0, 0x00);
-//    SSD1306_write_string(0, MESSAGE_WINDOW, "Robokid 2");
-    SSD1306_set_text_area_scroller(SCROLL_WINDOW, 4, test_scroll_string_data);
+    LCD_write_row(0, MESSAGE_ROW, "Robokid 2");
+    SSD1306_set_text_area_scroller(SCROLL_ROW_UPPER, 2, 4, test_scroll_string_data);
     ENABLE_SCROLLER;
     
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
-        process_icons();
+
+    //    process_icons();
     //  process_message
         process_scroller();
-        vTaskDelay(100 / portTICK_PERIOD_MS);
+    // update display
+        LCD_dump_row_data();
+
+     //   vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
@@ -75,11 +73,10 @@ BaseType_t  xWasDelayed;
  */
 void process_icons(void) {
 
-char    buffer[10], buffer_pt;
+char    buffer[16], buffer_pt;
 int8_t  error;
 
     buffer_pt = 0;
-    SSD1306_set_window(ICON_WINDOW, 0x00);  // clear ICON window
 
 // Error state
 
@@ -159,8 +156,7 @@ int8_t  error;
     xSemaphoreGive(semaphore_gamepad_data);
 
     buffer[buffer_pt] = '\0';
-    SSD1306_write_string(1, ICON_WINDOW, buffer);
-
+    LCD_write_row(1, ICON_ROW, buffer);
     return;
 }
 
@@ -182,15 +178,39 @@ uint8_t window, index;
     } else {
         LCD_scroll_data.scroll_delay_count = LCD_scroll_data.scroll_delay;  // reset delay count
     }
-    window = 3;  // SCROLL_WINDOW;
-    SSD1306_set_window(SCROLL_WINDOW, 0x00);  // clear scroll area
+    window = LCD_scroll_data.first_LCD_row;
     for (index = 0; index < LCD_scroll_data.nos_LCD_rows; index++) {
-        SSD1306_write_string(0, window, LCD_scroll_data.string_data[LCD_scroll_data.string_count++]);
+        LCD_write_row(0, LCD_scroll_data.first_LCD_row+index, LCD_scroll_data.string_data[LCD_scroll_data.string_count]);
+        LCD_scroll_data.string_count += 1;
         if (LCD_scroll_data.string_count >= LCD_scroll_data.nos_strings) {
             LCD_scroll_data.string_count = 0;
         }
         window++;
     }
-    LCD_scroll_data.string_count--;
+    if (LCD_scroll_data.string_count == 0) {
+        LCD_scroll_data.string_count = LCD_scroll_data.nos_strings - 1;
+    } else {
+        LCD_scroll_data.string_count--;
+    }
     return;
 }
+
+/**
+ * @brief dump SSD1306 row data to display.
+ * 
+ * SSD1306 is used as FOUR rows of 14 characters.  If possible,
+ * all SSD1306 output should go through this routine.
+ */
+void LCD_dump_row_data(void)
+{
+    for (uint8_t index = 0; index < SS1306_NOS_LCD_ROWS; index++) {
+        if (LCD_row_data[index].dirty_bit == true) {
+            xSemaphoreTake(semaphore_SSD1306_display, portMAX_DELAY);
+              SSD1306_write_string(LCD_row_data[index].font, index+1, &LCD_row_data[index].row_string[0]);
+            xSemaphoreGive(semaphore_SSD1306_display);
+            LCD_row_data[index].dirty_bit = false;
+        }
+    }
+    return;
+}
+

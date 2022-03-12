@@ -13,7 +13,7 @@
 //==============================================================================
 /**
  * @brief Calculate task execution time and record
- * @note  Check for new low/high values
+ * @note  Check for new low/high values and record
  * @param task 
  * @param start_time    units of uS
  * @param end_time      units of uS
@@ -38,6 +38,8 @@ uint32_t delta_time;
         task_data[task].highest_exec_time = delta_time;
     }
 }
+
+//==============================================================================
 /**
  * @brief Send error into error queue
  * 
@@ -56,13 +58,20 @@ error_message_t error_message;
 
 //==============================================================================
 /**
- * @brief   wait for push buuton tobe pressed and released
+ * @brief   wait for push buuton to be pressed and released
+ * 
+ * Mechanism is based on FreeRTOS events.  Each push button is
+ * connected to an ON and OFF event that cane be used by
+ * the "xEventGroupWaitBits" routine.  This saves using a busy
+ * wait method as the CPU is released during the wait time.
+ * 
+ * An infinite timeout is specified by using the value "portMAX_DELAY"
  * 
  * @param   push_button     PUSH_BUTTON_A to PUSH_BUTTON_D
  * @param   time_out        max time to wait press
  * @return  uint32_t        length of buuton press in uS
  */
-uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out)
+uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
 {
 
 // Wait for push switch to be pressed
@@ -72,16 +81,54 @@ uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out)
         (1 << push_button),
         pdFALSE,        //  don't clear bit
         pdFALSE,        
-        time_out);
+        time_out_us);
 
 // Wait for push button to be released
 
-        xEventGroupWaitBits  ( 
+    xEventGroupWaitBits  ( 
         eventgroup_push_buttons,
         (1 << (push_button + NOS_ROBOKID_PUSH_BUTTONS)),
         pdFALSE,
         pdFALSE,        
-        time_out);
+        time_out_us);
+
+// return pulse width in microseconds
 
     return  system_IO_data.push_button_data[push_button].on_time;
+}
+
+/**
+ * @brief Load string into row of LCD buffer area
+ * 
+ * Access to buffer is protected by a MUTEX semaphore
+ * This buffer will be output by the display task.
+ * String is padded to maximum size with spaces
+ * 
+ * @param font          font of string
+ * @param row           window in range 1 to 4
+ * @param row_string    string to be 
+ */
+void LCD_write_row(uint8_t font, uint8_t row, const char *row_string) 
+{
+bool    end_detect;
+uint8_t row_data_index;
+
+    row_data_index = row - 1;
+    end_detect = false;
+    xSemaphoreTake(semaphore_LCD_data, portMAX_DELAY);
+        for (uint8_t index = 0; index < LCD_NOS_ROW_CHARACTERS; index++) {
+            if (end_detect == true) {
+                LCD_row_data[row_data_index].row_string[index] = ' ';
+            } else if (row_string[index] == '\0') {
+                end_detect = true;
+                LCD_row_data[row_data_index].row_string[index] = ' ';
+            } else {
+                LCD_row_data[row_data_index].row_string[index] = row_string[index];
+            }
+        }
+        LCD_row_data[row_data_index].row_string[LCD_NOS_ROW_CHARACTERS] = '\0';
+        LCD_row_data[row_data_index].font = font;
+        LCD_row_data[row_data_index].dirty_bit = true;
+    xSemaphoreGive(semaphore_LCD_data);
+    return;
 }

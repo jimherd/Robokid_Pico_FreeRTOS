@@ -90,9 +90,7 @@ START_PULSE;
         temp_push_button_data[2].switch_value = (switch_value & PUSH_BUTTON_C_MASK) >> PUSH_BUTTON_C_PIN;
         temp_push_button_data[3].switch_value = (switch_value & PUSH_BUTTON_D_MASK) >> PUSH_BUTTON_D_PIN;
 
-
-
-// maybe form into a loop
+    // maybe form into a loop
         if (temp_push_button_data[0].switch_value == 1) {
             xEventGroupSetBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
             xEventGroupClearBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
@@ -100,9 +98,9 @@ START_PULSE;
             xEventGroupClearBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
             xEventGroupSetBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
         }
-    //
+
     // update on-time counter
-    //
+
         for (index = 0 ; index < NOS_ROBOKID_PUSH_BUTTONS ; index++) {
             if (temp_push_button_data[index].switch_value == true) {
                 temp_push_button_data[index].on_time += TASK_READ_SENSORS_FREQUENCY_TICK_COUNT;
@@ -110,9 +108,9 @@ START_PULSE;
                 temp_push_button_data[index].on_time = 0;
             }
         }
-    //
+
     // Process LED data
-    //
+
         for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {
             if (temp_LED_data[index].value == false) {
                 gpio_put(temp_LED_data[index].pin_number, false);
@@ -130,9 +128,9 @@ START_PULSE;
                 }
             }
         }
-    //
+
     // Update global system data 
-    //
+
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
            memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(push_button_data_t)));
            memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(LED_data_t)));

@@ -113,8 +113,16 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define SSD1306_LCDWIDTH    128
 #define SSD1306_LCDHEIGHT   64
 
-#define ICON_WINDOW         1
-#define MESSAGE_WINDOW      2
+#define SS1306_NOS_LCD_ROWS    4
+
+
+
+#define LCD_NOS_ROW_CHARACTERS     (SSD1306_LCDWIDTH/9)   // does not inclide '\0'
+
+#define ICON_ROW            1
+#define MESSAGE_ROW         2
+#define SCROLL_ROW_UPPER    3
+#define SCROLL_ROW_LOWER    4
 #define SCROLL_WINDOW       5
 
 #define SSD1306_SPI_SPEED   8000000   // SSD1306 SPIMax=10MHz
@@ -343,6 +351,12 @@ typedef struct {
     char        string_data[MAX_SCROLL_STRINGS][MAX_SSD1306_STRING_LENGTH];     // pointer  to list of strings
 } LCD_scroll_data_t;
 
+typedef struct {
+    bool    dirty_bit;
+    uint8_t font;
+    char    row_string[16];
+} LCD_row_data_t;
+
 //==============================================================================
 // Extern references
 //==============================================================================
@@ -364,22 +378,26 @@ extern const uint BLINK_PIN;
 
 // FreeRTOS components
 
-extern void Task_Robokid(void *p);
+extern void Task_Robokid(void *p);                      // tasks
 extern void Task_read_sensors(void *p);
-extern void Task_read_gamepad(void *p);             // tasks
+extern void Task_read_gamepad(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
 extern void Task_blink_LED(void *p);
 
+
+
+extern SemaphoreHandle_t semaphore_LCD_data;            //semaphores
+extern SemaphoreHandle_t semaphore_SSD1306_display;
 extern SemaphoreHandle_t semaphore_system_IO_data;
-extern SemaphoreHandle_t semaphore_system_status;   //semaphores
+extern SemaphoreHandle_t semaphore_system_status;
 extern SemaphoreHandle_t semaphore_gamepad_data;
 
-extern QueueHandle_t queue_motor_cmds;              // queues
+extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;
 
-extern EventGroupHandle_t eventgroup_push_buttons;
+extern EventGroupHandle_t eventgroup_push_buttons;      // event groups
 
 extern error_message_t     error_message_log[LOG_SIZE];
 
@@ -394,6 +412,7 @@ extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 
+extern LCD_row_data_t  LCD_row_data[];
 extern LCD_scroll_data_t   LCD_scroll_data;
 
 #endif /* __SYSTEM_H__ */
