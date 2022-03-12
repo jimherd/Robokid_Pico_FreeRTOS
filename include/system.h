@@ -115,7 +115,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define SS1306_NOS_LCD_ROWS    4
 
-
+#define NOS_FONTS           2
 
 #define LCD_NOS_ROW_CHARACTERS     (SSD1306_LCDWIDTH/9)   // does not inclide '\0'
 
@@ -178,13 +178,16 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 
 #define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
 
-#define     TASK_READ_SENSORS_FREQUENCY                 50  //Hz
+#define     TASK_READ_SENSORS_FREQUENCY                 50  // Hz
 #define     TASK_READ_SENSORS_FREQUENCY_TICK_COUNT      ((1000/TASK_READ_SENSORS_FREQUENCY) * portTICK_PERIOD_MS)
 
-#define     TASK_DISPLAY_LCD_FREQUENCY                  10  //Hz
+#define     TASK_DISPLAY_LCD_FREQUENCY                  10  // Hz
 #define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
 #define     SCROLL_DELAY_MS                     2000
-#define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)                      
+#define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)    
+
+#define     TASK_SOUNDER_FREQUENCY                      10  // Hz
+#define     TASK_SOUNDER_FREQUENCY_TICK_COUNT           ((1000/TASK_SOUNDER_FREQUENCY) * portTICK_PERIOD_MS)
 
 #define     MOTOR_CMD_QUEUE_LENGTH          8
 #define     ERROR_MESSAGE_QUEUE_LENGTH      8
@@ -357,6 +360,11 @@ typedef struct {
     char    row_string[16];
 } LCD_row_data_t;
 
+typedef struct {
+    const char  *font;
+    uint8_t     chars_per_row;
+} font_data_t;
+
 //==============================================================================
 // Extern references
 //==============================================================================
@@ -367,6 +375,8 @@ extern task_data_t task_data[];
 extern gamepad_data_t   gamepad_data;
 extern system_status_t  system_status;
 extern system_IO_data_t system_IO_data;
+
+extern font_data_t  font_data[];
 
 extern const uint8_t *error_strings[];
 
@@ -384,6 +394,7 @@ extern void Task_read_gamepad(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
+extern void Task_sounder (void *p);
 extern void Task_blink_LED(void *p);
 
 

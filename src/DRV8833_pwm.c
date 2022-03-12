@@ -32,7 +32,7 @@ void DRV8833_init(void )
     gpio_set_function(RIGHT_MOTOR_CONTROL_PIN_A, GPIO_FUNC_PWM);
     gpio_set_function(RIGHT_MOTOR_CONTROL_PIN_B, GPIO_FUNC_PWM);
 
-    // Find out which PWM slice is connected to motoe control pins
+    // Find out which PWM slice is connected to motor control pins
     LM_slice_num = pwm_gpio_to_slice_num(LEFT_MOTOR_CONTROL_PIN_A);
     RM_slice_num = pwm_gpio_to_slice_num(RIGHT_MOTOR_CONTROL_PIN_A);
 

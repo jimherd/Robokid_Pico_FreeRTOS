@@ -56,7 +56,7 @@ BaseType_t  xWasDelayed;
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
 
-    //    process_icons();
+        process_icons();
     //  process_message
         process_scroller();
     // update display

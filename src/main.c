@@ -39,6 +39,7 @@ TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
 TaskHandle_t taskhndl_Task_error;
+TaskHandle_t taskhndl_Task_sounder;
 TaskHandle_t taskhndl_Task_blink_LED;
 
 SemaphoreHandle_t semaphore_LCD_data;
@@ -62,6 +63,10 @@ system_IO_data_t    system_IO_data;
 gamepad_data_t      gamepad_data;
 system_status_t     system_status;
 
+font_data_t         font_data[NOS_FONTS] = {
+    {Terminal_9x16,                (SSD1306_LCDWIDTH/9)},   // font 0
+    {robokid_LCD_icons_font_15x16, (SSD1306_LCDWIDTH/15)},  // font 1
+};
 LCD_row_data_t      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
 //==============================================================================
@@ -189,6 +194,14 @@ int main()
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_error
+    );
+
+    xTaskCreate(Task_sounder,
+                "sounder_task",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_sounder
     );
 
     xTaskCreate(Task_blink_LED,

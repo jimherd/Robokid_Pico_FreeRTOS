@@ -97,6 +97,7 @@ uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
     return  system_IO_data.push_button_data[push_button].on_time;
 }
 
+//==============================================================================
 /**
  * @brief Load string into row of LCD buffer area
  * 
@@ -116,7 +117,7 @@ uint8_t row_data_index;
     row_data_index = row - 1;
     end_detect = false;
     xSemaphoreTake(semaphore_LCD_data, portMAX_DELAY);
-        for (uint8_t index = 0; index < LCD_NOS_ROW_CHARACTERS; index++) {
+        for (uint8_t index = 0; index < font_data[font].chars_per_row; index++) { 
             if (end_detect == true) {
                 LCD_row_data[row_data_index].row_string[index] = ' ';
             } else if (row_string[index] == '\0') {
@@ -126,7 +127,7 @@ uint8_t row_data_index;
                 LCD_row_data[row_data_index].row_string[index] = row_string[index];
             }
         }
-        LCD_row_data[row_data_index].row_string[LCD_NOS_ROW_CHARACTERS] = '\0';
+        LCD_row_data[row_data_index].row_string[font_data[font].chars_per_row] = '\0';
         LCD_row_data[row_data_index].font = font;
         LCD_row_data[row_data_index].dirty_bit = true;
     xSemaphoreGive(semaphore_LCD_data);
