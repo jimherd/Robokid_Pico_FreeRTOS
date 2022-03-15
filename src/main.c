@@ -47,6 +47,8 @@ SemaphoreHandle_t semaphore_SSD1306_display;
 SemaphoreHandle_t semaphore_system_IO_data;
 SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data ;
+SemaphoreHandle_t semaphore_tone_data ;
+
 
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
@@ -62,10 +64,11 @@ task_data_t     task_data[NOS_TASKS];
 system_IO_data_t    system_IO_data;
 gamepad_data_t      gamepad_data;
 system_status_t     system_status;
+tune_data_t         tone_data;
 
 font_data_t         font_data[NOS_FONTS] = {
-    {Terminal_9x16,                (SSD1306_LCDWIDTH/9)},   // font 0
-    {robokid_LCD_icons_font_15x16, (SSD1306_LCDWIDTH/15)},  // font 1
+    {Terminal_9x16,                (SSD1306_LCDWIDTH / TERMINAL_9x16_FONT_WIDTH)},              // font 0
+    {robokid_LCD_icons_font_15x16, (SSD1306_LCDWIDTH / ROBOKID_LCD_ICONS_FONT_15x16_WIDTH)},    // font 1
 };
 LCD_row_data_t      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
@@ -156,22 +159,6 @@ int main()
                 &taskhndl_Task_Robokid
     );
 
-    xTaskCreate(Task_read_gamepad,
-                "Task_read_gamepad",
-                configMINIMAL_STACK_SIZE,
-                NULL,
-                TASK_PRIORITYNORMAL,
-                &taskhndl_Task_read_gamepad
-    );
-
-    xTaskCreate(Task_display_LCD,
-                "Task_display_LCD",
-                configMINIMAL_STACK_SIZE,
-                NULL,
-                TASK_PRIORITYNORMAL,
-                &taskhndl_Task_display_LCD
-    );
-
     xTaskCreate(Task_drive_motors,
                 "Task_drive_motors",
                 configMINIMAL_STACK_SIZE,
@@ -188,12 +175,20 @@ int main()
                 &taskhndl_Task_read_sensors
     );
 
-    xTaskCreate(Task_error,
-                "Task_error",
+    xTaskCreate(Task_display_LCD,
+                "Task_display_LCD",
                 configMINIMAL_STACK_SIZE,
                 NULL,
-                TASK_PRIORITYIDLE,
-                &taskhndl_Task_error
+                TASK_PRIORITYNORMAL,
+                &taskhndl_Task_display_LCD
+    );
+
+    xTaskCreate(Task_read_gamepad,
+                "Task_read_gamepad",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYNORMAL,
+                &taskhndl_Task_read_gamepad
     );
 
     xTaskCreate(Task_sounder,
@@ -202,6 +197,14 @@ int main()
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_sounder
+    );  
+
+    xTaskCreate(Task_error,
+                "Task_error",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_error
     );
 
     xTaskCreate(Task_blink_LED,
@@ -217,6 +220,7 @@ int main()
     semaphore_system_IO_data    = xSemaphoreCreateMutex();
     semaphore_system_status     = xSemaphoreCreateMutex();
     semaphore_gamepad_data      = xSemaphoreCreateMutex();
+    semaphore_tone_data         = xSemaphoreCreateMutex();
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(error_message_t));

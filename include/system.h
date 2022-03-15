@@ -6,15 +6,15 @@
  * @date    2022-01-09
  */
 
+#ifndef __SYSTEM_H__
+#define __SYSTEM_H__
+
 #include    "pico/stdlib.h"
 #include    "Pico_IO.h"
 
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
 #include    "event_groups.h"
-
-#ifndef __SYSTEM_H__
-#define __SYSTEM_H__
 
 //==============================================================================
 // Constants
@@ -127,6 +127,14 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define SSD1306_SPI_SPEED   8000000   // SSD1306 SPIMax=10MHz
 
+// fonts
+
+#define         TERMINAL_9x16_FONT_WIDTH                 9
+#define         TERMINAL_9x16_FONT_HEIGHT               16
+
+#define         ROBOKID_LCD_ICONS_FONT_15x16_WIDTH      15
+#define         ROBOKID_LCD_ICONS_FONT_15x16_HEIGHT     16
+
 // ICON  character codes
 
 #define BLANK           32  // ' '
@@ -173,8 +181,8 @@ typedef enum {
 //==============================================================================
 // Freertos
 
-typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, 
-                    TASK_DISPLAY, TASK_READ_GAMEPAD, TASK_ERROR, TASK_BLINK} task_t;
+typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
+                     TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_BLINK} task_t;
 
 #define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
 
@@ -182,12 +190,14 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS,
 #define     TASK_READ_SENSORS_FREQUENCY_TICK_COUNT      ((1000/TASK_READ_SENSORS_FREQUENCY) * portTICK_PERIOD_MS)
 
 #define     TASK_DISPLAY_LCD_FREQUENCY                  10  // Hz
+#define     TASK_DISPLAY_TIME_UNIT                      (1000 / TASK_DISPLAY_LCD_FREQUENCY)
 #define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
 #define     SCROLL_DELAY_MS                     2000
 #define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)    
 
-#define     TASK_SOUNDER_FREQUENCY                      10  // Hz
-#define     TASK_SOUNDER_FREQUENCY_TICK_COUNT           ((1000/TASK_SOUNDER_FREQUENCY) * portTICK_PERIOD_MS)
+#define     TASK_SOUNDER_FREQUENCY                      20  // Hz
+#define     TASK_SOUNDER_TIME_UNIT                      (1000 / TASK_SOUNDER_FREQUENCY)
+#define     TASK_SOUNDER_FREQUENCY_TICK_COUNT           ((1000 / TASK_SOUNDER_FREQUENCY) * portTICK_PERIOD_MS)
 
 #define     MOTOR_CMD_QUEUE_LENGTH          8
 #define     ERROR_MESSAGE_QUEUE_LENGTH      8
@@ -365,6 +375,20 @@ typedef struct {
     uint8_t     chars_per_row;
 } font_data_t;
 
+typedef struct {
+    uint8_t     tone;
+    uint8_t     duration_100mS;
+} note_data_t;
+
+typedef struct {
+    note_data_t *note_data;
+    bool        enable;
+    uint8_t     note_index;             // counts through notes
+    bool        repeat_count;           // count repetitions
+    uint8_t     note_duration_count;    // temp timer counter
+} tune_data_t;
+
+
 //==============================================================================
 // Extern references
 //==============================================================================
@@ -375,6 +399,7 @@ extern task_data_t task_data[];
 extern gamepad_data_t   gamepad_data;
 extern system_status_t  system_status;
 extern system_IO_data_t system_IO_data;
+extern tune_data_t      tune_data;
 
 extern font_data_t  font_data[];
 
@@ -404,6 +429,7 @@ extern SemaphoreHandle_t semaphore_SSD1306_display;
 extern SemaphoreHandle_t semaphore_system_IO_data;
 extern SemaphoreHandle_t semaphore_system_status;
 extern SemaphoreHandle_t semaphore_gamepad_data;
+extern SemaphoreHandle_t semaphore_tone_data;
 
 extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;

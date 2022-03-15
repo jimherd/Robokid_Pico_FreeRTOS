@@ -1,11 +1,11 @@
-#include    "pico/stdlib.h"
-
-#include    "FreeRTOS.h"
-#include    "semphr.h"      // from FreeRTOS
 
 #ifndef __DRV8833_PWM_H__
 #define __DRV8833_PWM_H__
 
+#include    "pico/stdlib.h"
+
+#include    "FreeRTOS.h"
+#include    "semphr.h"      // from FreeRTOS
 
 
 #define     PWM_RAW_FREQ        125000000   // 125MHz

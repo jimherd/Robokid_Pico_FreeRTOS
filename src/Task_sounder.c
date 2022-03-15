@@ -13,6 +13,8 @@
 
 #include "FreeRTOS.h"
 
+
+
 //==============================================================================
 // function prototypes
 //==============================================================================
@@ -33,8 +35,13 @@ BaseType_t  xWasDelayed;
 
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
-        xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
-
+        xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_SOUNDER_FREQUENCY_TICK_COUNT );
+        xSemaphoreTake(semaphore_tone_data, portMAX_DELAY);
+            // tone_data.tone = tone;
+            // tone_data.duration_100mS = duration;
+            // tone_data.duration_count = 0;
+            // tone_data.enable = true;
+        xSemaphoreGive(semaphore_tone_data);
     }
 }
 
@@ -57,6 +64,7 @@ void sound_init(void)
  */
 void set_tone(uint8_t note, uint16_t duration)
 {
+
     return;
 }
 
