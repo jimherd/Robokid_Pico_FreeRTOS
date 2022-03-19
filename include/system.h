@@ -19,6 +19,10 @@
 //==============================================================================
 // Constants
 //==============================================================================
+// CPU
+#define     CPU_CLOCK_FREQUENCY         125000000   // 125MHz
+
+//==============================================================================
 // Robokid parameters
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_PUSH_BUTTONS    4
@@ -167,6 +171,17 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define GAMEPAD_CONNECTED   61  // '='
 #define ERROR_ICON      63  // '?'
+
+//==============================================================================
+// piezo sounder system
+
+#define     SOUNDER_PIN_A           GP11
+
+#define     SOUNDER_COUNT_FREQ      5000000    // 5MHz
+#define     SOUNDER_PWM_CLK_DIV     (CPU_CLOCK_FREQUENCY / SOUNDER_COUNT_FREQ)  // init 25
+
+#define     NOS_OCTAVE_NOTES        13
+#define     MAX_TUNE_NOTES          32
 
 //==============================================================================
 // errors
@@ -375,18 +390,22 @@ typedef struct {
     uint8_t     chars_per_row;
 } font_data_t;
 
-typedef struct {
-    uint8_t     tone;
-    uint8_t     duration_100mS;
-} note_data_t;
+//==============================================================================
+// useod struct definition rather than typedef
 
-typedef struct {
-    note_data_t *note_data;
-    bool        enable;
-    uint8_t     note_index;             // counts through notes
-    bool        repeat_count;           // count repetitions
-    uint8_t     note_duration_count;    // temp timer counter
-} tune_data_t;
+struct note_data_t {
+    uint16_t     tone;
+    uint16_t     duration_100mS;
+};
+
+struct  tune_data_t {
+    struct note_data_t  *note_pointer;      // (*note_pointer)[32] pointer to an array of structs
+    bool                enable;
+    bool                new;
+    uint8_t             note_index;             // counts through notes
+    bool                repeat_count;           // count repetitions
+    uint8_t             note_duration_count;    // temp timer counter
+};
 
 
 //==============================================================================
@@ -399,7 +418,7 @@ extern task_data_t task_data[];
 extern gamepad_data_t   gamepad_data;
 extern system_status_t  system_status;
 extern system_IO_data_t system_IO_data;
-extern tune_data_t      tune_data;
+extern struct tune_data_t      tune_data;
 
 extern font_data_t  font_data[];
 
@@ -429,7 +448,7 @@ extern SemaphoreHandle_t semaphore_SSD1306_display;
 extern SemaphoreHandle_t semaphore_system_IO_data;
 extern SemaphoreHandle_t semaphore_system_status;
 extern SemaphoreHandle_t semaphore_gamepad_data;
-extern SemaphoreHandle_t semaphore_tone_data;
+extern SemaphoreHandle_t semaphore_tune_data;
 
 extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;

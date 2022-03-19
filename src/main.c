@@ -46,8 +46,8 @@ SemaphoreHandle_t semaphore_LCD_data;
 SemaphoreHandle_t semaphore_SSD1306_display;
 SemaphoreHandle_t semaphore_system_IO_data;
 SemaphoreHandle_t semaphore_system_status;
-SemaphoreHandle_t semaphore_gamepad_data ;
-SemaphoreHandle_t semaphore_tone_data ;
+SemaphoreHandle_t semaphore_gamepad_data;
+SemaphoreHandle_t semaphore_tune_data;
 
 
 QueueHandle_t queue_motor_cmds;
@@ -64,7 +64,7 @@ task_data_t     task_data[NOS_TASKS];
 system_IO_data_t    system_IO_data;
 gamepad_data_t      gamepad_data;
 system_status_t     system_status;
-tune_data_t         tone_data;
+struct tune_data_t    tune_data;
 
 font_data_t         font_data[NOS_FONTS] = {
     {Terminal_9x16,                (SSD1306_LCDWIDTH / TERMINAL_9x16_FONT_WIDTH)},              // font 0
@@ -220,7 +220,7 @@ int main()
     semaphore_system_IO_data    = xSemaphoreCreateMutex();
     semaphore_system_status     = xSemaphoreCreateMutex();
     semaphore_gamepad_data      = xSemaphoreCreateMutex();
-    semaphore_tone_data         = xSemaphoreCreateMutex();
+    semaphore_tune_data         = xSemaphoreCreateMutex();
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(error_message_t));

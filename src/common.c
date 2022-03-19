@@ -142,30 +142,16 @@ uint8_t row_data_index;
  * @param enable            play tune
  * @param repeat_count      Number of times tune is to be repeated
  */
-void set_tune_data(note_data_t *notes, bool enable, uint32_t repeat_count)
+void set_tune_data(struct note_data_t *notes, bool enable, uint32_t repeat_count)
 {
-    xSemaphoreTake(semaphore_tone_data, portMAX_DELAY);
-        tune_data.note_data             = notes;
+    xSemaphoreTake(semaphore_tune_data, portMAX_DELAY);
+        tune_data.note_pointer           = notes;
         tune_data.enable                = enable;
         tune_data.repeat_count          = repeat_count;
         tune_data.note_duration_count   = 0;
         tune_data.note_index            = 0;
-    xSemaphoreGive(semaphore_tone_data);
+        tune_data.new                   = true;
+    xSemaphoreGive(semaphore_tune_data);
     return;
 }
 
-void tune_off(void)
-{
-    xSemaphoreTake(semaphore_tone_data, portMAX_DELAY);
-        tune_data.enable = false;
-    xSemaphoreGive(semaphore_tone_data);
-
-}
-
-void tune_on(void)
-{
-    xSemaphoreTake(semaphore_tone_data, portMAX_DELAY);
-        tune_data.enable = true;
-    xSemaphoreGive(semaphore_tone_data);
-
-}
