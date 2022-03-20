@@ -7,7 +7,7 @@
 
 #include "system.h"
 #include "common.h"
-#include "sound.h"
+#include "tunes.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -16,7 +16,7 @@
 #include "FreeRTOS.h"
 
 //==============================================================================
-// Function rototypes
+// Function prototypes
 //==============================================================================
 
 void sound_init(void);
@@ -25,16 +25,33 @@ void tone_on(uint8_t note);
 void tone_off(void);
 
 //==============================================================================
+// PWM setup values for each frequency
+//==============================================================================
+
+const struct  {
+    uint16_t    note_frequency;
+    uint16_t    PWM_period;
+} tone_info[NOS_OCTAVE_NOTES] = {
+    FREQ_C,         (SOUNDER_COUNT_FREQ / FREQ_C),
+    FREQ_CS,        (SOUNDER_COUNT_FREQ / FREQ_CS),
+    FREQ_D,         (SOUNDER_COUNT_FREQ / FREQ_D),
+    FREQ_DS,        (SOUNDER_COUNT_FREQ / FREQ_DS),
+    FREQ_E,         (SOUNDER_COUNT_FREQ / FREQ_E),
+    FREQ_F,         (SOUNDER_COUNT_FREQ / FREQ_F),
+    FREQ_FS,        (SOUNDER_COUNT_FREQ / FREQ_FS),
+    FREQ_G,         (SOUNDER_COUNT_FREQ / FREQ_G),
+    FREQ_GS,        (SOUNDER_COUNT_FREQ / FREQ_GS),
+    FREQ_A,         (SOUNDER_COUNT_FREQ / FREQ_A),
+    FREQ_AS,        (SOUNDER_COUNT_FREQ / FREQ_AS),
+    FREQ_B,         (SOUNDER_COUNT_FREQ / FREQ_B),
+    SILENT_NOTE,    (SOUNDER_COUNT_FREQ / FREQ_C),
+};
+
+//==============================================================================
 // Globals
 //==============================================================================
 
 uint8_t     sounder_slice_num;
-
-struct note_data_t test_notes[] = {
-    {NOTE_C, 200},
-    {SILENT_NOTE, 100},
-    {NOTE_B, 200}
-};
 
 struct tune_data_t test_tune = {
     true,                   // new

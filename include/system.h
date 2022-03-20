@@ -43,6 +43,14 @@
 
 //==============================================================================
 // DRV8833 H-bridge
+
+#define MOTOR_COUNT_FREQ        25000000    // 25MHz
+#define MOTOR_PWM_FREQ          5000        // 5KHz
+
+#define MOTOR_PWM_CLK_DIV       (CPU_CLOCK_FREQUENCY / MOTOR_COUNT_FREQ)
+#define MOTOR_PWM_MAX_COUNT     (MOTOR_COUNT_FREQ / MOTOR_PWM_FREQ)
+#define MOTOR_PWM_MIN_COUNT     0
+
 #define     LEFT_MOTOR_CONTROL_PIN_A    GP18  // Pin 18 : PWM slice 1, channel A
 #define     LEFT_MOTOR_CONTROL_PIN_B    GP19  // Pin 19 : PWM slice 1, channel B
 
@@ -177,11 +185,45 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define     SOUNDER_PIN_A           GP11
 
+#define     SOUNDER_SLICE_CHANNEL   1
+
 #define     SOUNDER_COUNT_FREQ      5000000    // 5MHz
 #define     SOUNDER_PWM_CLK_DIV     (CPU_CLOCK_FREQUENCY / SOUNDER_COUNT_FREQ)  // init 25
 
+
 #define     NOS_OCTAVE_NOTES        13
 #define     MAX_TUNE_NOTES          32
+
+//
+// Frequencies of octave 4
+//
+#define     FREQ_C      262
+#define     FREQ_CS     277
+#define     FREQ_D      294
+#define     FREQ_DS     311
+#define     FREQ_E      330
+#define     FREQ_F      349
+#define     FREQ_FS     370
+#define     FREQ_G      382
+#define     FREQ_GS     415
+#define     FREQ_A      440
+#define     FREQ_AS     455
+#define     FREQ_B      484
+
+
+#define     NOTE_C      0
+#define     NOTE_CS     1
+#define     NOTE_D      2
+#define     NOTE_DS     3
+#define     NOTE_E      4
+#define     NOTE_F      5
+#define     NOTE_FS     6
+#define     NOTE_G      7
+#define     NOTE_GS     8
+#define     NOTE_A      9
+#define     NOTE_AS     10
+#define     NOTE_B      11
+#define     SILENT_NOTE 12
 
 //==============================================================================
 // errors
