@@ -30,7 +30,7 @@ void tone_off(void);
 
 uint8_t     sounder_slice_num;
 
-struct note_data_t test_notes[8] = {
+struct note_data_t test_notes[] = {
     {NOTE_C, 200},
     {SILENT_NOTE, 100},
     {NOTE_B, 200}
@@ -40,7 +40,7 @@ struct tune_data_t test_tune = {
     true,                   // new
     &test_notes[0], 3,      // tune
     true,                   // enable
-    1,                      //repeat count
+    1,                      // repeat count
 };
 
 extern struct tune_data_t test_tune;
@@ -107,9 +107,11 @@ uint8_t     index, repeat_count, duration_count;
                         continue;
                     }
                 } else {  // set next note
-                    duration_count = note_pt[index].duration_100mS;
-                    set_tone(note_pt[index].tone);
-                    index++;
+                    if (tune_data.enable == true) {
+                        duration_count = note_pt[index].duration_100mS;
+                        set_tone(note_pt[index].tone);
+                        index++;
+                    }
                 }
             }
         xSemaphoreGive(semaphore_tune_data);
