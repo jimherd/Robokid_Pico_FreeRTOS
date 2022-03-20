@@ -31,15 +31,16 @@ void tone_off(void);
 uint8_t     sounder_slice_num;
 
 struct note_data_t test_notes[8] = {
-    {FREQ_A, 50},
-    {SILENT_NOTE, 20},
-    {FREQ_B, 50}
+    {NOTE_C, 200},
+    {SILENT_NOTE, 100},
+    {NOTE_B, 200}
 };
 
 struct tune_data_t test_tune = {
-    &test_notes[0],
-    true, true,
-    0, 0, 0
+    true,                   // new
+    &test_notes[0], 3,      // tune
+    true,                   // enable
+    1,                      //repeat count
 };
 
 extern struct tune_data_t test_tune;
@@ -57,35 +58,59 @@ void Task_sounder (void *p)
 TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
 struct note_data_t *note_pt;
-uint8_t     index;
+uint8_t     index, repeat_count, duration_count;
 
     sound_init();
-    set_tune_data(test_notes, true, 1);
+    
+    set_tune_data(test_notes, NOS_NOTES(test_notes), true, 1);
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_SOUNDER_FREQUENCY_TICK_COUNT );
 
         xSemaphoreTake(semaphore_tune_data, portMAX_DELAY);
+
             if (tune_data.enable == false){
-                break;
+                xSemaphoreGive(semaphore_tune_data);
+                continue;
             }
+
             if (tune_data.new == true) {  // must be updated tune
                 tune_data.new = false;
-                tune_data.note_index = 0;
+                index = 0; 
+                repeat_count = tune_data.repeat_count;
                 note_pt = tune_data.note_pointer;
-                tune_data.note_duration_count = note_pt[0].duration_100mS;
-                set_tone(note_pt[0].tone);
-            }
-            if (tune_data.note_duration_count > 0) {
-                tune_data.note_duration_count--;
-                break;
-            } else {
-                index = tune_data.note_index;
-                tune_data.note_index++;         // step to next tone
-                tune_data.note_pointer;
-                // note_pt++ ;
-                tune_data.note_duration_count = note_pt[index].duration_100mS;
+                duration_count = note_pt[index].duration_100mS;
                 set_tone(note_pt[index].tone);
+                index++; repeat_count--;
+                xSemaphoreGive(semaphore_tune_data);
+                continue;
+            }
+
+            if (duration_count > 0) {
+                duration_count--;
+                xSemaphoreGive(semaphore_tune_data);
+                continue;
+            } else {
+                if (index >= tune_data.nos_notes) {     // tune complete
+                    if (repeat_count == 0) {
+                        tune_data.enable = false;
+                        set_tone(SILENT_NOTE); 
+                        xSemaphoreGive(semaphore_tune_data);
+                        continue;
+                    } else {  // restart tune
+                        index = 0;  
+                        note_pt = tune_data.note_pointer;
+                        duration_count = note_pt[index].duration_100mS;
+                        set_tone(note_pt[index].tone);
+                        index++; repeat_count--;
+                        xSemaphoreGive(semaphore_tune_data);
+                        continue;
+                    }
+                } else {  // set next note
+                    duration_count = note_pt[index].duration_100mS;
+                    set_tone(note_pt[index].tone);
+                    index++;
+                }
             }
         xSemaphoreGive(semaphore_tune_data);
     }
@@ -118,8 +143,13 @@ void sound_init(void)
  */
 void set_tone(uint8_t note)
 {
-    pwm_set_wrap(sounder_slice_num, tone_info[note].PWM_period);
-    pwm_set_chan_level(sounder_slice_num, SOUNDER_SLICE_CHANNEL, (tone_info[note].PWM_period / 2));
+    if (note == SILENT_NOTE) {
+        pwm_set_wrap(sounder_slice_num, tone_info[NOTE_C].PWM_period);   // set to "C" 
+        pwm_set_chan_level(sounder_slice_num, SOUNDER_SLICE_CHANNEL, 0); // no pulse
+    } else {
+        pwm_set_wrap(sounder_slice_num, tone_info[note].PWM_period);
+        pwm_set_chan_level(sounder_slice_num, SOUNDER_SLICE_CHANNEL, (tone_info[note].PWM_period / 2));
+    }
     return;
 }
 

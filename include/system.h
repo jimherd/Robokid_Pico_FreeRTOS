@@ -248,6 +248,8 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DIS
 #define     ENABLE_SCROLLER     LCD_scroll_data.enable = true
 #define     DISABLE_SCROLLER    LCD_scroll_data.enable = false
 
+#define     NOS_NOTES(note_array)   (sizeof(note_array)/sizeof(struct note_data_t))
+
 //==============================================================================
 // definitions of system data structures
 //==============================================================================
@@ -399,12 +401,12 @@ struct note_data_t {
 };
 
 struct  tune_data_t {
-    struct note_data_t  *note_pointer;      // (*note_pointer)[32] pointer to an array of structs
-    bool                enable;
     bool                new;
-    uint8_t             note_index;             // counts through notes
+    struct note_data_t  *note_pointer;      // (*note_pointer)[32] pointer to an array of structs
+    uint16_t            nos_notes;
+    bool                enable;
     bool                repeat_count;           // count repetitions
-    uint8_t             note_duration_count;    // temp timer counter
+//    uint8_t             note_duration_count;    // temp timer counter
 };
 
 
