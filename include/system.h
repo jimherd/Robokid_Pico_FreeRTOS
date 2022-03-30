@@ -354,8 +354,8 @@ struct motor_data_s {
 } ;
 
 struct  push_button_data_s {
-        bool      switch_value;
-        uint32_t  on_time;
+    bool      switch_value;
+    uint32_t  on_time;
 };
 
 struct vehicle_data_s {

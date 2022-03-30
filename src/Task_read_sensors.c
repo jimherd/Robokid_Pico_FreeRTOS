@@ -90,13 +90,17 @@ START_PULSE;
         temp_push_button_data[2].switch_value = (switch_value & PUSH_BUTTON_C_MASK) >> PUSH_BUTTON_C_PIN;
         temp_push_button_data[3].switch_value = (switch_value & PUSH_BUTTON_D_MASK) >> PUSH_BUTTON_D_PIN;
 
-    // maybe form into a loop
-        if (temp_push_button_data[0].switch_value == 1) {
-            xEventGroupSetBits (eventgroup_push_buttons, (1 << PUSH_BUTTON_A_EVENT_BIT));
-            xEventGroupClearBits (eventgroup_push_buttons, (1 << (PUSH_BUTTON_A_EVENT_BIT + 4)));
-        } else {
-            xEventGroupClearBits (eventgroup_push_buttons, (1 << PUSH_BUTTON_A_EVENT_BIT));
-            xEventGroupSetBits (eventgroup_push_buttons, (1 << (PUSH_BUTTON_A_EVENT_BIT + 4)));
+    // set event flags for the four push buttons. Event flags 0 to 3 are set when putton is pressed.
+    // Event flags 4 to 7 are set when push button is released
+    
+        for (index = PUSH_BUTTON_A_EVENT_BIT; index <= PUSH_BUTTON_D_EVENT_BIT; index++) {
+            if (temp_push_button_data[index].switch_value == 1) {
+                xEventGroupSetBits(eventgroup_push_buttons, (1 << index));
+                xEventGroupClearBits(eventgroup_push_buttons, (1 << (index + 4)));
+            } else {
+                xEventGroupClearBits(eventgroup_push_buttons, (1 << index));
+                xEventGroupSetBits(eventgroup_push_buttons, (1 << (index + 4)));
+            }
         }
 
     // update on-time counter

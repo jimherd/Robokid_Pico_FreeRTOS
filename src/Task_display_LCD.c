@@ -164,12 +164,27 @@ int8_t  error;
 /**
  * @brief Manage scroll display
  * 
+ * @note modify fir 1 and 2 row displays that do not need to scroll
+ * 
  */
 void process_scroller(void)
 {
 uint8_t window, index;
 
     if (LCD_scroll_data.enable == false) {
+        return;
+    }
+
+    // special case for 1 and two row sciolling : don't scroll
+
+    if (LCD_scroll_data.nos_strings == 1) {
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, blank_row);
+        return;
+    }
+    if (LCD_scroll_data.nos_strings == 2) {
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, LCD_scroll_data.string_data[1]);
         return;
     }
     if (LCD_scroll_data.scroll_delay_count > 0) {
@@ -181,7 +196,7 @@ uint8_t window, index;
     window = LCD_scroll_data.first_LCD_row;
     for (index = 0; index < LCD_scroll_data.nos_LCD_rows; index++) {
         LCD_write_row(0, LCD_scroll_data.first_LCD_row+index, LCD_scroll_data.string_data[LCD_scroll_data.string_count]);
-        LCD_scroll_data.string_count += 1;
+        LCD_scroll_data.string_count += 1; 
         if (LCD_scroll_data.string_count >= LCD_scroll_data.nos_strings) {
             LCD_scroll_data.string_count = 0;
         }
