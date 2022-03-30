@@ -241,7 +241,7 @@ typedef enum {
 typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
                      TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_BLINK} task_t;
 
-#define     NOS_TASKS   (TASK_BLINK - TASK_ROBOKID + 1)
+#define     NOS_TASKS   (TASK_BLINK + 1)
 
 #define     TASK_READ_SENSORS_FREQUENCY                 50  // Hz
 #define     TASK_READ_SENSORS_FREQUENCY_TICK_COUNT      ((1000/TASK_READ_SENSORS_FREQUENCY) * portTICK_PERIOD_MS)
@@ -299,7 +299,7 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DIS
  * @brief data structure for report returned from gamepad
  * 
  */
-typedef struct TU_ATTR_PACKED  {    // packed attribute
+struct  SNES_gamepad_report_s   {    //  TU_ATTR_PACKED
     uint8_t     dpad_x, dpad_y;         // dpad returned as 8-bit values
     uint8_t     dummy2, dummy3,dummy4;
 
@@ -320,27 +320,27 @@ typedef struct TU_ATTR_PACKED  {    // packed attribute
         uint8_t dummy7        :2;
     };
     uint8_t     dummy8;
-} SNES_gamepad_report_t;
+} ;
 
 //==============================================================================
 /**
  * @brief data structure to hold current gamepad information
  * 
  */
-typedef struct ATTRIBUTE_PACKED {
+struct gamepad_data_s  { 
     uint8_t     state;                  // ENABLED or DISABLED
     uint32_t    vid, pid;
     uint8_t     dpad_x, dpad_y;
     uint8_t     button_X, button_Y, button_A, button_B;
     uint8_t     button_L, button_R;
     uint8_t     button_START, button_SELECT;
-} gamepad_data_t;
+} ;
 
 struct system_status_s {
     int8_t     error_state;
 } ;
 
-struct motor_cmd_packet_s {
+struct __attribute__((__packed__)) motor_cmd_packet_s {
     motor_cmd_t   cmd;
     int8_t        param1, param2, param3;
 } ;
@@ -429,10 +429,10 @@ struct LCD_row_data_s {
     char    row_string[16];
 } ;
 
-typedef struct {
+struct font_data_s {
     const char  *font;
     uint8_t     chars_per_row;
-} font_data_t;
+} ;
 
 struct note_data_s {
     uint16_t     tone;
@@ -456,12 +456,12 @@ struct  tune_data_s {
 
 extern struct task_data_s task_data[];
 
-extern gamepad_data_t   gamepad_data;
+extern struct gamepad_data_s   gamepad_data;
 extern struct system_status_s  system_status;
 extern struct system_IO_data_s system_IO_data;
 extern struct tune_data_s      tune_data;
 
-extern font_data_t  font_data[];
+extern struct font_data_s  font_data[];
 
 extern const uint8_t *error_strings[];
 
