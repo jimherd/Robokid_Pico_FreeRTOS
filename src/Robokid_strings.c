@@ -16,3 +16,7 @@ const char  *test_scroll_string_data[4] = {
     "sw.C: Reset   ",
     "sw.D: Stop    "
 };
+
+const char *wait_start[1] = {
+    "sw.A: Start   ",
+};

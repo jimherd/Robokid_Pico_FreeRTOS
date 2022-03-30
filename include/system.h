@@ -72,10 +72,12 @@ typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 //==============================================================================
 // 4 push switches + 4 LEDs
 
-#define     PUSH_BUTTON_A       0
-#define     PUSH_BUTTON_B       (PUSH_BUTTON_A + 1)
-#define     PUSH_BUTTON_C       (PUSH_BUTTON_A + 2)
-#define     PUSH_BUTTON_D       (PUSH_BUTTON_A + 3)
+typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_buttons_e;
+
+// #define     PUSH_BUTTON_A       0
+// #define     PUSH_BUTTON_B       (PUSH_BUTTON_A + 1)
+// #define     PUSH_BUTTON_C       (PUSH_BUTTON_A + 2)
+// #define     PUSH_BUTTON_D       (PUSH_BUTTON_A + 3)
 
 #define     PUSH_BUTTON_A_PIN    GP12
 #define     PUSH_BUTTON_B_PIN    GP13
@@ -387,10 +389,10 @@ struct error_message_s {
  * @brief   Central store of system data. Access by mutex.
  */
 struct system_IO_data_s  {
-    struct system_status_s             system_status;      // error codes
+    struct system_status_s      system_status;      // error codes
     uint16_t                    system_voltage;
-    struct motor_data_s                motor_data[NOS_ROBOKID_MOTORS];
-    struct LED_data_s                  LED_data[NOS_ROBOKID_LEDS];
+    struct motor_data_s         motor_data[NOS_ROBOKID_MOTORS];
+    struct LED_data_s           LED_data[NOS_ROBOKID_LEDS];
     struct push_button_data_s   push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
     struct floor_sensor_data_s  floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
     struct vehicle_data_s       vehicle_data;

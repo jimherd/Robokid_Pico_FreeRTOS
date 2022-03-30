@@ -92,11 +92,11 @@ START_PULSE;
 
     // maybe form into a loop
         if (temp_push_button_data[0].switch_value == 1) {
-            xEventGroupSetBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
-            xEventGroupClearBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
+            xEventGroupSetBits (eventgroup_push_buttons, (1 << PUSH_BUTTON_A_EVENT_BIT));
+            xEventGroupClearBits (eventgroup_push_buttons, (1 << (PUSH_BUTTON_A_EVENT_BIT + 4)));
         } else {
-            xEventGroupClearBits (eventgroup_push_buttons, PUSH_BUTTON_A_EVENT_BIT);
-            xEventGroupSetBits (eventgroup_push_buttons, (PUSH_BUTTON_A_EVENT_BIT<<4));
+            xEventGroupClearBits (eventgroup_push_buttons, (1 << PUSH_BUTTON_A_EVENT_BIT));
+            xEventGroupSetBits (eventgroup_push_buttons, (1 << (PUSH_BUTTON_A_EVENT_BIT + 4)));
         }
 
     // update on-time counter

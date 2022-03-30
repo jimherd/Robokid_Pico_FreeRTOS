@@ -9,5 +9,6 @@
 extern const char   blank_row[];
 extern const char   *system_busy[];
 extern const char   *test_scroll_string_data[];
+extern const char   *wait_start[];
 
 #endif

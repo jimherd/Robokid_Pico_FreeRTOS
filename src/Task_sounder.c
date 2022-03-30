@@ -60,7 +60,15 @@ struct tune_data_s test_tune = {
     1,                      // repeat count
 };
 
+struct tune_data_s beeps = {
+    true,                   // new
+    &beep[0], 1,            // tune
+    true,                   // enable
+    1,                      // repeat count
+};
+
 extern struct tune_data_s test_tune;
+extern struct tune_data_s beeps;
 
 //==============================================================================
 // Task code
@@ -79,7 +87,7 @@ uint8_t     index, repeat_count, duration_count;
 
     sound_init();
     
-    set_tune_data(test_notes, NOS_NOTES(test_notes), true, 1);
+ //   set_tune_data(beep, NOS_NOTES(beep), true, 1);
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_SOUNDER_FREQUENCY_TICK_COUNT );

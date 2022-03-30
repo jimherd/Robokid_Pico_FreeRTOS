@@ -49,7 +49,6 @@ SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data;
 SemaphoreHandle_t semaphore_tune_data;
 
-
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
 
