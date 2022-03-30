@@ -12,7 +12,7 @@
 
 uint8_t  page_buffer[128];
 
-LCD_scroll_data_t   LCD_scroll_data;
+struct LCD_scroll_data_s   LCD_scroll_data;
 
 //
 // Table of virtual windows in SSD1306 display

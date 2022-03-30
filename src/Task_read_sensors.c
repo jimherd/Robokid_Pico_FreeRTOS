@@ -21,8 +21,8 @@
 #include "semphr.h"
 #include "event_groups.h"
 
-push_button_data_t  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-LED_data_t          temp_LED_data[NOS_ROBOKID_LEDS];
+struct push_button_data_s  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+struct LED_data_s          temp_LED_data[NOS_ROBOKID_LEDS];
 
 uint32_t            switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
 uint8_t             switch_sample_index;
@@ -70,8 +70,8 @@ START_PULSE;
     // Get currect switch and LED data
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-            memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(push_button_data_t)));
-            memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(LED_data_t)));
+            memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
+            memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
     //
     // read push switches and debounce
@@ -132,8 +132,8 @@ START_PULSE;
     // Update global system data 
 
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-           memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(push_button_data_t)));
-           memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(LED_data_t)));
+           memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
+           memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
 
         end_time = time_us_32();

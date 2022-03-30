@@ -26,7 +26,7 @@ void Task_Robokid(void *p)
 uint32_t    start_time, end_time;
 uint8_t     index;
 
-motor_cmd_packet_t  motor_cmd_packet;
+struct motor_cmd_packet_s  motor_cmd_packet;
 
 // delay to allow system tasks to be established
 

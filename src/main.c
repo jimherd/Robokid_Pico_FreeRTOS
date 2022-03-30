@@ -57,20 +57,20 @@ EventGroupHandle_t eventgroup_push_buttons;
 
 // Task data
 
-task_data_t     task_data[NOS_TASKS];
+struct task_data_s     task_data[NOS_TASKS];
 
 // System data structures. Protected with MUTEXES
 
-system_IO_data_t    system_IO_data;
+struct system_IO_data_s    system_IO_data;
 gamepad_data_t      gamepad_data;
-system_status_t     system_status;
-struct tune_data_t    tune_data;
+struct system_status_s     system_status;
+struct tune_data_s    tune_data;
 
 font_data_t         font_data[NOS_FONTS] = {
     {Terminal_9x16,                (SSD1306_LCDWIDTH / TERMINAL_9x16_FONT_WIDTH)},              // font 0
     {robokid_LCD_icons_font_15x16, (SSD1306_LCDWIDTH / ROBOKID_LCD_ICONS_FONT_15x16_WIDTH)},    // font 1
 };
-LCD_row_data_t      LCD_row_data[SS1306_NOS_LCD_ROWS];
+struct LCD_row_data_s      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
 //==============================================================================
 // System initiation
@@ -222,8 +222,8 @@ int main()
     semaphore_gamepad_data      = xSemaphoreCreateMutex();
     semaphore_tune_data         = xSemaphoreCreateMutex();
 
-    queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(motor_cmd_packet_t));   
-    queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(error_message_t));
+    queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(struct motor_cmd_packet_s));   
+    queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(struct error_message_s));
 
     eventgroup_push_buttons = xEventGroupCreate (); 
 

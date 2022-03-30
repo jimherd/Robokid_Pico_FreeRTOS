@@ -16,7 +16,7 @@
 #include "FreeRTOS.h"
 #include "semphr.h"
 
-motor_data_t    temp_motor_data;
+struct motor_data_s    temp_motor_data;
 
 
 uint8_t  LM_slice_num, RM_slice_num;
@@ -104,7 +104,7 @@ bool            zero_cross_over;
     // get motor data
 
     xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-        memcpy(&temp_motor_data, &system_IO_data.motor_data[motor_number], sizeof(motor_data_t));
+        memcpy(&temp_motor_data, &system_IO_data.motor_data[motor_number], sizeof(struct motor_data_s));
     xSemaphoreGive(semaphore_system_IO_data);
  
     if (pwm_width > 0) {
@@ -193,7 +193,7 @@ bool            zero_cross_over;
     // update central data store
 
     xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-        memcpy(&system_IO_data.motor_data[motor_number], &temp_motor_data, sizeof(motor_data_t));
+        memcpy(&system_IO_data.motor_data[motor_number], &temp_motor_data, sizeof(struct motor_data_s));
     xSemaphoreGive(semaphore_system_IO_data);
 
     return OK;

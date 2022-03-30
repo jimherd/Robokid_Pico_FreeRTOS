@@ -30,10 +30,10 @@
 //==============================================================================
 void Task_drive_motors(void *p) {
 
-motor_cmd_packet_t  command;
+struct motor_cmd_packet_s  command;
 uint32_t     value;
 uint8_t     i;
-motor_data_t   temp_motor_data;
+struct motor_data_s   temp_motor_data;
 uint32_t    start_time, end_time;
 
     DRV8833_init();
@@ -44,7 +44,7 @@ uint32_t    start_time, end_time;
     // get current motor data
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-            memcpy(&temp_motor_data, &system_IO_data.push_button_data[command.param1], (sizeof(motor_data_t)));
+            memcpy(&temp_motor_data, &system_IO_data.push_button_data[command.param1], (sizeof(struct motor_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
 
         switch (command.cmd) {
@@ -64,7 +64,7 @@ uint32_t    start_time, end_time;
     // update central system data store
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-            memcpy(&system_IO_data.push_button_data[command.param1], &temp_motor_data, (sizeof(motor_data_t)));
+            memcpy(&system_IO_data.push_button_data[command.param1], &temp_motor_data, (sizeof(struct motor_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
     }
 }

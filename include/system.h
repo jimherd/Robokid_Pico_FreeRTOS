@@ -290,7 +290,7 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DIS
 #define     ENABLE_SCROLLER     LCD_scroll_data.enable = true
 #define     DISABLE_SCROLLER    LCD_scroll_data.enable = false
 
-#define     NOS_NOTES(note_array)   (sizeof(note_array)/sizeof(struct note_data_t))
+#define     NOS_NOTES(note_array)   (sizeof(note_array)/sizeof(struct note_data_s))
 
 //==============================================================================
 // definitions of system data structures
@@ -336,83 +336,83 @@ typedef struct ATTRIBUTE_PACKED {
     uint8_t     button_START, button_SELECT;
 } gamepad_data_t;
 
-typedef struct {
+struct system_status_s {
     int8_t     error_state;
-} system_status_t;
+} ;
 
-typedef struct {
+struct motor_cmd_packet_s {
     motor_cmd_t   cmd;
     int8_t        param1, param2, param3;
-} motor_cmd_packet_t;
+} ;
 
-typedef struct {
+struct motor_data_s {
     direction_t     motor_state;
     uint8_t         pwm_width;
     bool            flip;
-} motor_data_t;
+} ;
 
-typedef struct  {
+struct  push_button_data_s {
         bool      switch_value;
         uint32_t  on_time;
-} push_button_data_t;
+};
 
-typedef struct {
+struct vehicle_data_s {
     vehicle_state_t     vehicle_state;
     uint32_t            speed;
-} vehicle_data_t;
+} ;
 
-typedef struct {
+struct LED_data_s {
     uint8_t   pin_number;
     bool      value;
     bool      flash;
     uint8_t   flash_time;    // units of 20mS
     uint8_t   flash_counter;
     bool      flash_value;
-} LED_data_t;
+} ;
 
-typedef struct {
+struct floor_sensor_data_s {
     uint8_t     raw_value;
     uint8_t     threshhold;
     bool        binary_value;
-} floor_sensor_data_t;
+} ;
 
-typedef struct {
+struct error_message_s {
     error_codes_t   error_code;
     task_t          task;
     uint32_t        log_time;
-} error_message_t;
+} ;
 
 //==============================================================================
 /**
  * @brief   Central store of system data. Access by mutex.
  */
-typedef struct  {
-    system_status_t     system_status;      // error codes
-    uint16_t            system_voltage;
-    motor_data_t        motor_data[NOS_ROBOKID_MOTORS];
-    LED_data_t          LED_data[NOS_ROBOKID_LEDS];
-    push_button_data_t  push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-    floor_sensor_data_t   floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
-    vehicle_data_t      vehicle_data;
-} system_IO_data_t;
+struct system_IO_data_s  {
+    struct system_status_s             system_status;      // error codes
+    uint16_t                    system_voltage;
+    struct motor_data_s                motor_data[NOS_ROBOKID_MOTORS];
+    struct LED_data_s                  LED_data[NOS_ROBOKID_LEDS];
+    struct push_button_data_s   push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+    struct floor_sensor_data_s  floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
+    struct vehicle_data_s       vehicle_data;
+} ;
 
 //==============================================================================
 /**
  * @brief Task data
  */
-typedef struct {
+struct task_data_s {
     uint8_t     priority;
     struct {
         uint32_t    last_exec_time;
         uint32_t    lowest_exec_time;
         uint32_t    highest_exec_time;
     };
-} task_data_t;
+};
 
 #define     MAX_SCROLL_STRINGS             8
 #define     MAX_SSD1306_STRING_LENGTH     15
 
-typedef struct {
+struct LCD_scroll_data_s {
     bool        enable;
     uint8_t     nos_strings;
     uint8_t     string_count;
@@ -421,30 +421,27 @@ typedef struct {
     uint8_t     scroll_delay;       // in units of LCD task (typ 100mS)
     uint8_t     scroll_delay_count;
     char        string_data[MAX_SCROLL_STRINGS][MAX_SSD1306_STRING_LENGTH];     // pointer  to list of strings
-} LCD_scroll_data_t;
+} ;
 
-typedef struct {
+struct LCD_row_data_s {
     bool    dirty_bit;
     uint8_t font;
     char    row_string[16];
-} LCD_row_data_t;
+} ;
 
 typedef struct {
     const char  *font;
     uint8_t     chars_per_row;
 } font_data_t;
 
-//==============================================================================
-// useod struct definition rather than typedef
-
-struct note_data_t {
+struct note_data_s {
     uint16_t     tone;
     uint16_t     duration_100mS;
 };
 
-struct  tune_data_t {
+struct  tune_data_s {
     bool                new;
-    struct note_data_t  *note_pointer;      // (*note_pointer)[32] pointer to an array of structs
+    struct note_data_s  *note_pointer;      // (*note_pointer)[32] pointer to an array of structs
     uint16_t            nos_notes;
     bool                enable;
     bool                repeat_count;           // count repetitions
@@ -457,12 +454,12 @@ struct  tune_data_t {
 //==============================================================================
 // System data structures
 
-extern task_data_t task_data[];
+extern struct task_data_s task_data[];
 
 extern gamepad_data_t   gamepad_data;
-extern system_status_t  system_status;
-extern system_IO_data_t system_IO_data;
-extern struct tune_data_t      tune_data;
+extern struct system_status_s  system_status;
+extern struct system_IO_data_s system_IO_data;
+extern struct tune_data_s      tune_data;
 
 extern font_data_t  font_data[];
 
@@ -499,7 +496,7 @@ extern QueueHandle_t queue_error_messages;
 
 extern EventGroupHandle_t eventgroup_push_buttons;      // event groups
 
-extern error_message_t     error_message_log[LOG_SIZE];
+extern struct error_message_s     error_message_log[LOG_SIZE];
 
 // SSD1306 LCD Fonts
 
@@ -512,7 +509,7 @@ extern const unsigned char Font_6x8[];
 extern const unsigned char Segment_25x40[];
 extern const unsigned char truck_bmp[1024];
 
-extern LCD_row_data_t  LCD_row_data[];
-extern LCD_scroll_data_t   LCD_scroll_data;
+extern struct LCD_row_data_s  LCD_row_data[];
+extern struct LCD_scroll_data_s   LCD_scroll_data;
 
 #endif /* __SYSTEM_H__ */

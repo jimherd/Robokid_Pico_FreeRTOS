@@ -18,7 +18,7 @@
 
 // circular buffer to hold last LOG_SIZE errors
 
-error_message_t     error_message_log[LOG_SIZE];
+struct error_message_s     error_message_log[LOG_SIZE];
 uint8_t error_log_ptr;
 
 //==============================================================================

@@ -48,7 +48,7 @@ uint32_t delta_time;
  */
 void log_error(uint8_t error_code, task_t task)
 {
-error_message_t error_message;
+struct error_message_s error_message;
 
     error_message.error_code = error_code;
     error_message.task       = task;
@@ -142,7 +142,7 @@ uint8_t row_data_index;
  * @param enable            play tune
  * @param repeat_count      Number of times tune is to be repeated
  */
-void set_tune_data(struct note_data_t *notes, uint16_t nos_notes, bool enable, uint32_t repeat_count)
+void set_tune_data(struct note_data_s *notes, uint16_t nos_notes, bool enable, uint32_t repeat_count)
 {
     xSemaphoreTake(semaphore_tune_data, portMAX_DELAY);
         tune_data.new                   = true;

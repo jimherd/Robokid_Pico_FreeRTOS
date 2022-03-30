@@ -53,14 +53,14 @@ const struct  {
 
 uint8_t     sounder_slice_num;
 
-struct tune_data_t test_tune = {
+struct tune_data_s test_tune = {
     true,                   // new
     &test_notes[0], 3,      // tune
     true,                   // enable
     1,                      // repeat count
 };
 
-extern struct tune_data_t test_tune;
+extern struct tune_data_s test_tune;
 
 //==============================================================================
 // Task code
@@ -74,7 +74,7 @@ void Task_sounder (void *p)
 {
 TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
-struct note_data_t *note_pt;
+struct note_data_s *note_pt;
 uint8_t     index, repeat_count, duration_count;
 
     sound_init();
