@@ -5,6 +5,8 @@
  * @date    2022-02-26
  */
 
+#include "pico/stdlib.h"
+
 #include "FreeRTOS.h"
 
 #include "system.h"
@@ -46,12 +48,13 @@ uint32_t delta_time;
  * @param error_code 
  * @param task 
  */
-void log_error(uint8_t error_code, task_t task)
+void log_error(error_codes_e error_code, task_t task)
 {
 struct error_message_s error_message;
 
     error_message.error_code = error_code;
     error_message.task       = task;
+    error_message.log_time   = time_us_64();
     xQueueSend(queue_motor_cmds, &error_message, portMAX_DELAY);
     return;
 }
@@ -69,7 +72,7 @@ struct error_message_s error_message;
  * 
  * @param   push_button     PUSH_BUTTON_A to PUSH_BUTTON_D
  * @param   time_out        max time to wait press
- * @return  uint32_t        length of buuton press in mS
+ * @return  uint32_t        length of button press in mS
  */
 uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
 {

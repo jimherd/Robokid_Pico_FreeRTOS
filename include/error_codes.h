@@ -10,7 +10,7 @@
 //==============================================================================
 // errors
 
-typedef enum {
+typedef enum  {
     OK                      =  0,
     FAULT                   = -1,
     BAD_PWM_PERCENT_WIDTH   = -2,

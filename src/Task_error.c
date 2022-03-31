@@ -28,10 +28,6 @@ void Task_error(void *p)
     
     FOREVER {
         xQueueReceive(queue_error_messages, &error_message_log[error_log_ptr],  portMAX_DELAY);
-    
-    // added time stamp to logged error message
-
-        error_message_log[error_log_ptr].log_time = time_us_32();
 
     // update global error flag. Blink task will flash this error code
 

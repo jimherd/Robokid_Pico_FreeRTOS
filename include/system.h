@@ -290,6 +290,9 @@ typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DIS
 
 #define     NOS_NOTES(note_array)   (sizeof(note_array)/sizeof(struct note_data_s))
 
+#define WAIT_BUTTON_PRESSED(BUTTON)  xEventGroupWaitBits( eventgroup_push_buttons, (1 << BUTTON), false, false, portMAX_DELAY )
+#define WAIT_BUTTON_RELEASED(BUTTON)  xEventGroupWaitBits( eventgroup_push_buttons, (1 << ((BUTTON) + 4)), false, false, portMAX_DELAY )
+
 //==============================================================================
 // definitions of system data structures
 //==============================================================================
@@ -335,12 +338,12 @@ struct gamepad_data_s  {
 } ;
 
 struct system_status_s {
-    int8_t     error_state;
+    error_codes_e     error_state;
 } ;
 
 struct __attribute__((__packed__)) motor_cmd_packet_s {
-    motor_cmd_t   cmd;
-    int8_t        param1, param2, param3;
+    motor_cmd_t     cmd;
+    int8_t          param1, param2, param3;
 } ;
 
 struct motor_data_s {
@@ -377,7 +380,7 @@ struct floor_sensor_data_s {
 struct error_message_s {
     error_codes_e   error_code;
     task_t          task;
-    uint32_t        log_time;
+    uint64_t        log_time;
 } ;
 
 //==============================================================================

@@ -74,7 +74,7 @@ extern struct tune_data_s beeps;
 // Task code
 //==============================================================================
 /**
- * @brief Task to control display of SSD1306 display
+ * @brief Task to control sound system
  * 
  * @param p 
  */
@@ -87,7 +87,6 @@ uint8_t     index, repeat_count, duration_count;
 
     sound_init();
     
- //   set_tune_data(beep, NOS_NOTES(beep), true, 1);
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_SOUNDER_FREQUENCY_TICK_COUNT );

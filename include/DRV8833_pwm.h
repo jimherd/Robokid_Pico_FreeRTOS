@@ -4,6 +4,8 @@
 
 #include    "pico/stdlib.h"
 
+#include    "error_codes.h"
+
 #include    "FreeRTOS.h"
 #include    "semphr.h"      // from FreeRTOS
 

@@ -61,20 +61,18 @@ BaseType_t  xWasDelayed;
         process_scroller();
     // update display
         LCD_dump_row_data();
-
-     //   vTaskDelay(100 / portTICK_PERIOD_MS);
     }
 }
 
 //==============================================================================
 /**
- * @brief Generate set of diplay icons.
+ * @brief Generate set of display icons.
  * 
  */
-void process_icons(void) {
-
-char    buffer[16], buffer_pt;
-int8_t  error;
+void process_icons(void) 
+{
+char            buffer[16], buffer_pt;
+error_codes_e   error;
 
     buffer_pt = 0;
 
@@ -175,7 +173,7 @@ uint8_t window, index;
         return;
     }
 
-    // special case for 1 and two row sciolling : don't scroll
+// special case for 1 and two row sciolling : don't scroll
 
     if (LCD_scroll_data.nos_strings == 1) {
         LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);

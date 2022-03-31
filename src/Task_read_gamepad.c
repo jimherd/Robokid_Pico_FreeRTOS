@@ -1,3 +1,8 @@
+/**
+ * @file    Task_read_gamepad.c
+ * @author  Jim Herd 
+ * @brief   Manage USB connection to a SNES gamepad
+ */
 #include <stdio.h>
 #include <string.h>
 
@@ -15,8 +20,6 @@
 
 #include "bsp/board.h"
 #include "tusb.h"
-
-
 
 //==============================================================================
 // USB gamepad function prototypes

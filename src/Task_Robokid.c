@@ -19,9 +19,6 @@
 #include "task.h"
 #include "queue.h"
 
-#define WAIT_BUTTON_PRESSED(BUTTON)  xEventGroupWaitBits( eventgroup_push_buttons, (1 << BUTTON), false, false, portMAX_DELAY )
-#define WAIT_BUTTON_RELEASED(BUTTON)  xEventGroupWaitBits( eventgroup_push_buttons, (1 << ((BUTTON) + 4)), false, false, portMAX_DELAY )
-
 //==============================================================================
 // Main task routine
 //==============================================================================
@@ -43,13 +40,12 @@ struct motor_cmd_packet_s  motor_cmd_packet;
     }
     LCD_write_row(0, MESSAGE_ROW, wait_start[0]);
 
- //   xEventGroupWaitBits( eventgroup_push_buttons, PUSH_BUTTON_A, false, false, portMAX_DELAY );
-    WAIT_BUTTON_PRESSED(PUSH_BUTTON_A);
-    WAIT_BUTTON_RELEASED(PUSH_BUTTON_A);
+    wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
     
     FOREVER {
 
+// Main code to run Robokid activities
 
     }
 }

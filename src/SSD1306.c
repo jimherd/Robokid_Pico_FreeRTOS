@@ -44,13 +44,13 @@ struct {
  */
 uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer) {
 
-uint8_t     pixel_width, pixel_height, nos_pages;
-uint8_t     segment, page;
-uint8_t     first_char, last_char;
-uint8_t     pixel_count;
-uint8_t     char_cnt, character;
-uint8_t     *ch_pt, *font_index, *font_pt;
-uint8_t const *font_base;
+uint8_t         pixel_width, pixel_height, nos_pages;
+uint8_t         segment, page;
+uint8_t         first_char, last_char;
+uint8_t         pixel_count;
+uint8_t         char_cnt, character;
+uint8_t         *ch_pt, *font_index, *font_pt;
+uint8_t const   *font_base;
 
     font_base    =  font_table[font_code];
     pixel_width  = *font_base;
@@ -99,7 +99,7 @@ void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
 
     for (uint8_t i = page_window_table[window].Y1_pag_value ; i <= page_window_table[window].Y2_pag_value ; i++) {
         Oled_SetPointer(page_window_table[window].X1_seg_value, i);
-        for (uint8_t j = page_window_table[window].X1_seg_value; j <= page_window_table[window].X2_seg_value ; j++){
+        for (uint8_t j = page_window_table[window].X1_seg_value; j <= page_window_table[window].X2_seg_value ; j++) {
             Oled_WriteRam(byte_value);
         }
     }

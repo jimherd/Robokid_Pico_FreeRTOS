@@ -2,8 +2,6 @@
  * @file    Task_read_sensors.c
  * @author  Jim Herd
  * @brief   read Robokid sensors
- * @version 0.1
- * @date    2022-02-16
  */
 
 #include <string.h>
