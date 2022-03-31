@@ -11,13 +11,13 @@
 #include "hardware/pwm.h"
 
 #include "system.h"
+#include "error_codes.h"
 #include "DRV8833_pwm.h"
 
 #include "FreeRTOS.h"
 #include "semphr.h"
 
 struct motor_data_s    temp_motor_data;
-
 
 uint8_t  LM_slice_num, RM_slice_num;
 
@@ -69,9 +69,9 @@ void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle)
  * @param motor_number  LEFT_MOTOR or RIGHT_MOTOR
  * @param state         MOTOR_OFF, MOTOR_FORWARD, MOTOR_BACKWARD, or MOTOR_BRAKE
  * @param pwm_width     -100% to +100%
- * @return uint8_t      error code -  OK, BAD_MOTOR_NUMBER, or BAD_PWM_WIDTH
+ * @return error_codes_e      error code -  OK, BAD_MOTOR_NUMBER, or BAD_PWM_WIDTH
  */
-uint8_t  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm_width) 
+error_codes_e  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm_width) 
 {
 
 uint32_t        pulse_count, period_count ;
@@ -80,12 +80,13 @@ uint8_t         pwm_slice;
 direction_t     new_direction;
 uint32_t        DRV8833_in1, DRV8833_in2, temp;
 bool            zero_cross_over;
+error_codes_e   error;
 
     // check parameters
 
-    uint8_t error = OK;
+    error = OK;
     if (abs(pwm_width) > 100) {
-        return FAULT;   // return  BAD_PWM_WIDTH
+        return BAD_PWM_PERCENT_WIDTH; 
     }
     switch(motor_number) {
         case LEFT_MOTOR : {
@@ -97,7 +98,7 @@ bool            zero_cross_over;
             break;
         }
         default : {
-            return FAULT;  // return BAD_MOTOR_NUMBER;
+            return BAD_MOTOR_NUMBER; 
         }  
     }
 
@@ -176,7 +177,7 @@ bool            zero_cross_over;
             break;
         }
         default : {
-            return FAULT;   //  return BAD_MOTOR_COMMAND
+            return BAD_MOTOR_COMMAND; 
         }
     }
 

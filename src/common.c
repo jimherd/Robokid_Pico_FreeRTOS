@@ -69,14 +69,15 @@ struct error_message_s error_message;
  * 
  * @param   push_button     PUSH_BUTTON_A to PUSH_BUTTON_D
  * @param   time_out        max time to wait press
- * @return  uint32_t        length of buuton press in uS
+ * @return  uint32_t        length of buuton press in mS
  */
 uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
 {
+EventBits_t event_bits;
 
 // Wait for push switch to be pressed
 
-    xEventGroupWaitBits  ( 
+    event_bits = xEventGroupWaitBits  ( 
         eventgroup_push_buttons,
         (1 << push_button),
         pdFALSE,        //  don't clear bit
@@ -85,7 +86,7 @@ uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
 
 // Wait for push button to be released
 
-    xEventGroupWaitBits  ( 
+    event_bits = xEventGroupWaitBits  ( 
         eventgroup_push_buttons,
         (1 << (push_button + NOS_ROBOKID_PUSH_BUTTONS)),
         pdFALSE,

@@ -19,28 +19,24 @@
 #include "task.h"
 #include "queue.h"
 
-#include "TMC7300.h"
-#include "TMC7300_Registers.h"
-#include "TMC7300_Fields.h"
-
 #include "DRV8833_pwm.h"
 
 //==============================================================================
 // Main task routine
 //==============================================================================
-void Task_drive_motors(void *p) {
+void Task_drive_motors(void *p) 
+{
 
 struct motor_cmd_packet_s  command;
-uint32_t     value;
-uint8_t     i;
-struct motor_data_s   temp_motor_data;
-uint32_t    start_time, end_time;
+uint32_t                   value;
+uint8_t                    i;
+struct motor_data_s        temp_motor_data;
+uint32_t                   start_time, end_time;
 
     DRV8833_init();
 
     FOREVER {
         xQueueReceive(queue_motor_cmds, &command,  portMAX_DELAY);
-    //
     // get current motor data
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);

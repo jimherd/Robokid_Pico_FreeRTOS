@@ -16,6 +16,8 @@
 #include    "semphr.h"      // from FreeRTOS
 #include    "event_groups.h"
 
+#include    "error_codes.h"
+
 //==============================================================================
 // Constants
 //==============================================================================
@@ -227,13 +229,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     NOTE_B      11
 #define     SILENT_NOTE 12
 
-//==============================================================================
-// errors
 
-typedef enum {
-    OK                  =  0,
-    FAULT               = -1,
-} error_codes_t;
 
 #define     LOG_SIZE    50
 
@@ -379,7 +375,7 @@ struct floor_sensor_data_s {
 } ;
 
 struct error_message_s {
-    error_codes_t   error_code;
+    error_codes_e   error_code;
     task_t          task;
     uint32_t        log_time;
 } ;
