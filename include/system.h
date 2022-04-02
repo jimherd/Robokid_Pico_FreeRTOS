@@ -36,12 +36,12 @@
 
 //==============================================================================
 // TMC7300 H-bridge
-#define     TMC7300_UART_PORT   uart1  
-#define     BAUD_RATE           115200   
+// #define     TMC7300_UART_PORT   uart1  
+// #define     BAUD_RATE           115200   
 
-#define     UART_TX_PIN         GP8         // Pin 11
-#define     UART_RX_PIN         GP9         // Pin 12
-#define     TMC7300_EN_PIN      GP10        // Pin 14
+// #define     UART_TX_PIN         GP8         // Pin 11
+// #define     UART_RX_PIN         GP9         // Pin 12
+// #define     TMC7300_EN_PIN      GP10        // Pin 14
 
 //==============================================================================
 // DRV8833 H-bridge
@@ -136,9 +136,14 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define LCD_NOS_ROW_CHARACTERS     (SSD1306_LCDWIDTH/9)   // does not inclide '\0'
 
 #define ICON_ROW            1
+
 #define MESSAGE_ROW         2
+
 #define SCROLL_ROW_UPPER    3
 #define SCROLL_ROW_LOWER    4
+#define SCROLL_AREA_NOS_ROWS   ((SCROLL_ROW_LOWER - SCROLL_ROW_UPPER) + 1)
+#define STRING_COUNT(array_of_strings)   (sizeof(array_of_strings) / sizeof(array_of_strings[0]))
+
 #define SCROLL_WINDOW       5
 
 #define SSD1306_SPI_SPEED   8000000   // SSD1306 SPIMax=10MHz
@@ -185,7 +190,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define ERROR_ICON      63  // '?'
 
 //==============================================================================
-// piezo sounder system
+// sounder system
 
 #define     SOUNDER_PIN_A           GP11
 
@@ -193,7 +198,6 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define     SOUNDER_COUNT_FREQ      5000000    // 5MHz
 #define     SOUNDER_PWM_CLK_DIV     (CPU_CLOCK_FREQUENCY / SOUNDER_COUNT_FREQ)  // init 25
-
 
 #define     NOS_OCTAVE_NOTES        13
 #define     MAX_TUNE_NOTES          32
@@ -231,7 +235,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 
 
-#define     LOG_SIZE    50
+
 
 //==============================================================================
 // Freertos

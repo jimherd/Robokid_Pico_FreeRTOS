@@ -109,11 +109,12 @@ void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
 /**
  * @brief 
  * 
- * @param window            upper scroll row (in range 1 to 4)
+ * @param first_row         upper scroll row (in range 1 to 4)
+ * @param nos_rows          number of rows in scroll area
  * @param nos_strings       number of strings in scrolled menu
  * @param scroll_strings    set of scroll strings
  */
-void SSD1306_set_text_area_scroller(uint8_t first_row, uint8_t nos_rows, uint8_t nos_strings, char **scroll_strings)
+void SSD1306_set_text_area_scroller(uint8_t nos_strings, char **scroll_strings)
 {
 uint8_t index, string_length;
 
@@ -124,8 +125,8 @@ uint8_t index, string_length;
         strncpy(LCD_scroll_data.string_data[index], scroll_strings[index], LCD_NOS_ROW_CHARACTERS);
     }
     LCD_scroll_data.string_count = 0;
-    LCD_scroll_data.nos_LCD_rows = nos_rows;
-    LCD_scroll_data.first_LCD_row = first_row;
+    LCD_scroll_data.nos_LCD_rows = SCROLL_AREA_NOS_ROWS;   // nos_rows
+    LCD_scroll_data.first_LCD_row = SCROLL_ROW_UPPER;    // first_row
 
     LCD_scroll_data.scroll_delay_count = 0;
     LCD_scroll_data.scroll_delay = SCROLL_DELAY_TICK_COUNT;

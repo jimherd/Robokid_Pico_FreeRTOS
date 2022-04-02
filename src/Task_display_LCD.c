@@ -49,7 +49,7 @@ BaseType_t  xWasDelayed;
 // print hello message 
 
     LCD_write_row(0, MESSAGE_ROW, "Robokid 2");
-    SSD1306_set_text_area_scroller(SCROLL_ROW_UPPER, 2, 4, test_scroll_string_data);
+    SSD1306_set_text_area_scroller(STRING_COUNT(test_scroll_string_data), test_scroll_string_data);
     ENABLE_SCROLLER;
     
     xLastWakeTime = xTaskGetTickCount ();

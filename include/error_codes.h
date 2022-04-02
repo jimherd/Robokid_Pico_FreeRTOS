@@ -8,7 +8,7 @@
 #define __ERROR_CODES_H__
 
 //==============================================================================
-// errors
+// list of errors
 
 typedef enum  {
     OK                      =  0,
@@ -17,5 +17,10 @@ typedef enum  {
     BAD_MOTOR_NUMBER        = -3,
     BAD_MOTOR_COMMAND       = -4,
 } error_codes_e;
+
+//==============================================================================
+// size of circular buffer holding logged errors
+
+#define     LOG_SIZE    50
 
 #endif

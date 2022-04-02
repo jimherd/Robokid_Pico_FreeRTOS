@@ -6,9 +6,9 @@
 #ifndef __ROBOKID_STRINGS__
 #define __ROBOKID_STRINGS__
 
-extern const char   blank_row[];
-extern const char   *system_busy[];
-extern const char   *test_scroll_string_data[];
-extern const char   *wait_start[];
+extern const char   blank_row[16];
+extern const char*   system_busy[4];
+extern const char*   test_scroll_string_data[4];
+extern const char*   wait_start[1];
 
 #endif

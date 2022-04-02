@@ -19,26 +19,25 @@
 #include "task.h"
 #include "queue.h"
 
+#define     TASK_ROBOKID_START_DELAY_SECONDS    10
+#define     HALF_SECOND      (500/portTICK_PERIOD_MS)
+
 //==============================================================================
 // Main task routine
 //==============================================================================
 void Task_Robokid(void *p) 
 {
-uint32_t    start_time, end_time;
-uint8_t     index;
-
-struct motor_cmd_packet_s  motor_cmd_packet;
-
-// delay to allow system tasks to be established
-
-#define     TASK_ROBOKID_START_DELAY_SECONDS    10
-#define     HALF_SECOND      (500/portTICK_PERIOD_MS)
+uint32_t                    start_time, end_time;
+uint8_t                     index;
+struct motor_cmd_packet_s   motor_cmd_packet;
 
     for (index = 0; index < (TASK_ROBOKID_START_DELAY_SECONDS * 2); index++) {
         LCD_write_row(0, MESSAGE_ROW, system_busy[index % 4]);
         vTaskDelay(HALF_SECOND);
     }
-    LCD_write_row(0, MESSAGE_ROW, wait_start[0]);
+    LCD_write_row(0, MESSAGE_ROW, blank_row);
+
+    SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
     wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
