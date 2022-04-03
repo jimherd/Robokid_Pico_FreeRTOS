@@ -2,11 +2,6 @@
  * @file Task_display_LCD
  * @author Jim Herd
  * @brief Manage display of information on SSD1306 LCD display
- * @version 0.1
- * @date 2022-01-12
- * 
- * @copyright Copyright (c) 2022
- * 
  */
 #include <stdio.h>
 
@@ -24,11 +19,11 @@
 #include "FreeRTOS.h"
 
 //==============================================================================
-// function prototypes
+// function prototypes for local routines
 //==============================================================================
-void process_icons(void);       // prototype
-void process_scroller(void);
-void LCD_dump_row_data(void);
+static void process_icons(void); 
+static void process_scroller(void);
+static void LCD_dump_row_data(void);
 
 //==============================================================================
 // Task code
@@ -55,9 +50,9 @@ BaseType_t  xWasDelayed;
     xLastWakeTime = xTaskGetTickCount ();
     FOREVER {
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT );
-
+    // process icons
         process_icons();
-    //  process_message
+    //  process_scrolling_message
         process_scroller();
     // update display
         LCD_dump_row_data();
@@ -65,11 +60,13 @@ BaseType_t  xWasDelayed;
 }
 
 //==============================================================================
+// local functions
+//==============================================================================
 /**
  * @brief Generate set of display icons.
  * 
  */
-void process_icons(void) 
+static void process_icons(void) 
 {
 char            buffer[16], buffer_pt;
 error_codes_e   error;
@@ -165,7 +162,7 @@ error_codes_e   error;
  * @note modify fir 1 and 2 row displays that do not need to scroll
  * 
  */
-void process_scroller(void)
+static void process_scroller(void)
 {
 uint8_t window, index;
 
@@ -208,13 +205,14 @@ uint8_t window, index;
     return;
 }
 
+//==============================================================================
 /**
  * @brief dump SSD1306 row data to display.
  * 
  * SSD1306 is used as FOUR rows of 14 characters.  If possible,
  * all SSD1306 output should go through this routine.
  */
-void LCD_dump_row_data(void)
+static void LCD_dump_row_data(void)
 {
     for (uint8_t index = 0; index < SS1306_NOS_LCD_ROWS; index++) {
         if (LCD_row_data[index].dirty_bit == true) {

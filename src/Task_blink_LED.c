@@ -2,11 +2,6 @@
  * @file Task_blink_LED.c
  * @author Jim Herd
  * @brief Flash error code
- * @version 0.1
- * @date 2022-01-10
- * 
- * @copyright Copyright (c) 2022
- * 
  * @note    Errors are flashed as decimal values.
  *          errors are negative and flashed as positive numbers.
  *          If all well one long flash every 5 seconds.

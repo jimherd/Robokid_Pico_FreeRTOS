@@ -27,8 +27,8 @@
 void Task_read_gamepad(void *p);
 
 static inline bool is_generic_gamepad(uint8_t dev_addr);
-bool diff_report(struct SNES_gamepad_report_s const* report1,   struct SNES_gamepad_report_s const* report2);
-void process_gamepad_report(uint8_t const* report, uint16_t len);
+static bool diff_report(struct SNES_gamepad_report_s const* report1,   struct SNES_gamepad_report_s const* report2);
+static void process_gamepad_report(uint8_t const* report, uint16_t len);
 void tuh_hid_mount_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* desc_report, uint16_t len);
 void tuh_hid_umount_cb(uint8_t dev_addr, uint8_t instance);
 void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t const* report, uint16_t len );
@@ -76,7 +76,7 @@ uint16_t  vid, pid;
  * @return true     Reports differ
  * @return false    Reports identical
  */
-bool diff_report(struct SNES_gamepad_report_s const* report1,   struct SNES_gamepad_report_s const* report2) 
+static bool diff_report(struct SNES_gamepad_report_s const* report1,   struct SNES_gamepad_report_s const* report2) 
 {
     return  memcmp(report1, report2, sizeof(struct SNES_gamepad_report_s));
 }
@@ -89,7 +89,7 @@ bool diff_report(struct SNES_gamepad_report_s const* report1,   struct SNES_game
  * @param report 
  * @param len 
  */
-void process_gamepad_report(uint8_t const* report, uint16_t len) 
+static void process_gamepad_report(uint8_t const* report, uint16_t len) 
 {
 struct SNES_gamepad_report_s  gamepad_report;
 static struct SNES_gamepad_report_s previous_gamepad_report = { 127,127,0 };
