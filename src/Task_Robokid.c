@@ -43,7 +43,10 @@ struct motor_cmd_packet_s   motor_cmd_packet;
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
     
     FOREVER {
-
+        LCD_write_row(0, MESSAGE_ROW, mode_DPAD);
+        SSD1306_set_text_area_scroller(STRING_COUNT(mode_J_button_data), mode_J_button_data);
+        set_leds(LED_FLASH, LED_OFF, LED_FLASH, LED_FLASH);
+        wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
 // Main code to run Robokid activities
 
     }

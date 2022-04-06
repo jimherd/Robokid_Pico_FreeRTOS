@@ -114,12 +114,19 @@ START_PULSE;
     // Process LED data
 
         for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {
-            if (temp_LED_data[index].value == false) {
-                gpio_put(temp_LED_data[index].pin_number, false);
-            } else {
-                if ((temp_LED_data[index].value == true) && (temp_LED_data[index].flash == false)) {
+            switch (temp_LED_data[index].state) {
+                case LED_OFF : {
+                    gpio_put(temp_LED_data[index].pin_number, false);
+                    break;
+                }
+                case LED_ON : {
                     gpio_put(temp_LED_data[index].pin_number, true);
-                } else {
+                    break;
+                }
+                case LED_NO_CHANGE : {
+                    break;
+                }
+                case LED_FLASH : {
                     if (temp_LED_data[index].flash_counter == 0) {
                         temp_LED_data[index].flash_counter = temp_LED_data[index].flash_time;
                         temp_LED_data[index].flash_value = !temp_LED_data[index].flash_value;
@@ -127,6 +134,7 @@ START_PULSE;
                     } else {
                         temp_LED_data[index].flash_counter--;
                     }
+                    break;
                 }
             }
         }

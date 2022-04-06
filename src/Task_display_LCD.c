@@ -170,7 +170,7 @@ uint8_t window, index;
         return;
     }
 
-// special case for 1 and two row sciolling : don't scroll
+// special case for 1 and two row scrolling : don't scroll
 
     if (LCD_scroll_data.nos_strings == 1) {
         LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);

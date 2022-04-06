@@ -99,6 +99,12 @@ typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_b
 #define     PUSH_BUTTON_C_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 2)
 #define     PUSH_BUTTON_D_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 3)
 
+typedef enum {LED_NO_CHANGE, LED_OFF, LED_FLASH, LED_ON} LED_state_te;
+
+enum {LED_A, LED_B, LED_C, LED_D};
+
+#define     DEFAULT_FLASH_TIME      10
+
 #define     LED_0_PIN       GP16
 #define     LED_1_PIN       GP17
 #define     LED_2_PIN       GP27
@@ -367,12 +373,12 @@ struct vehicle_data_s {
 } ;
 
 struct LED_data_s {
-    uint8_t   pin_number;
-    bool      value;
-    bool      flash;
-    uint8_t   flash_time;    // units of 20mS
-    uint8_t   flash_counter;
-    bool      flash_value;
+    uint8_t         pin_number;
+    LED_state_te    state;
+    bool            flash;
+    uint8_t         flash_time;    // units of 20mS
+    uint8_t         flash_counter;
+    bool            flash_value;
 } ;
 
 struct floor_sensor_data_s {

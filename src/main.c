@@ -100,10 +100,10 @@ uint8_t     index;
         };
     // LED data
         for (index=0; index < NOS_ROBOKID_LEDS ; index++ ) {
-            system_IO_data.LED_data[index].value         = false;
+            system_IO_data.LED_data[index].state         = LED_OFF;
             system_IO_data.LED_data[index].flash         = false;
             system_IO_data.LED_data[index].flash_value   = false;
-            system_IO_data.LED_data[index].flash_time    = 0;
+            system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
             system_IO_data.LED_data[index].flash_counter = 0;   
         };
         system_IO_data.LED_data[0].pin_number = LED_0_PIN;

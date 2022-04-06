@@ -158,3 +158,17 @@ void set_tune_data(struct note_data_s *notes, uint16_t nos_notes, bool enable, u
     return;
 }
 
+
+
+
+void set_leds(LED_state_te LED_A_state,  
+              LED_state_te LED_B_state, 
+              LED_state_te LED_C_state,
+              LED_state_te LED_D_state)
+{
+    system_IO_data.LED_data[LED_A].state = LED_A_state;
+    system_IO_data.LED_data[LED_B].state = LED_B_state;
+    system_IO_data.LED_data[LED_C].state = LED_C_state;
+    system_IO_data.LED_data[LED_D].state = LED_D_state;
+    return;
+}

@@ -18,6 +18,21 @@ const char* test_scroll_string_data[4] = {
     "sw.D: Stop    "
 };
 
-const char* wait_start[] = {
+const char* wait_start[1] = {
     "A: Start      ",
+};
+
+const char mode_DPAD[16] = {
+    "Jmode: DPAD   ",
+};
+
+const char mode_tank[16] = {
+    "Jmode: Tank   ",
+};
+
+const char* mode_J_button_data[4] = {
+    "sw.A: Accept  ",
+    "sw.B: Exit    ",
+    "sw.C: Exit    ",
+    "sw.D: next    "
 };

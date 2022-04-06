@@ -17,5 +17,9 @@ void LCD_write_row(uint8_t font, uint8_t row, const char *row_string);
 void set_tune_data(struct note_data_s *notes, uint16_t nos_notes, bool enable, uint32_t repeat_count);
 void tune_off(void);
 void tune_on(void);
+void set_leds(LED_state_te LED_A_state,  
+              LED_state_te LED_B_state, 
+              LED_state_te LED_C_state,
+              LED_state_te LED_D_state);
 
 #endif
