@@ -31,8 +31,8 @@ const char mode_tank[16] = {
 };
 
 const char* mode_J_button_data[4] = {
-    "sw.A: Accept  ",
-    "sw.B: Exit    ",
-    "sw.C: Exit    ",
-    "sw.D: next    "
+    "A: Accept     ",
+    "B: Next mode  ",
+    "C: -----      ",
+    "D: -----      "
 };

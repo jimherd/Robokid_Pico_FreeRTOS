@@ -8,6 +8,7 @@
 #include "pico/stdlib.h"
 
 #include "FreeRTOS.h"
+#include "event_groups.h"
 
 #include "system.h"
 #include "common.h"
@@ -78,6 +79,8 @@ uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out_us)
 {
 EventBits_t event_bits;
 
+    reset_push_button_timers();
+
 // Wait for push switch to be pressed
 
     event_bits = xEventGroupWaitBits  ( 
@@ -99,6 +102,50 @@ EventBits_t event_bits;
 // return pulse width in microseconds
 
     return  system_IO_data.push_button_data[push_button].on_time;
+}
+
+/**
+ * @brief wait for any of the user input push buttons to be pressed
+ * 
+ * @param time_out_us 
+ * @return EventBits_t      test for bit set to identify button pressed
+ */
+EventBits_t wait_for_any_button_press(uint32_t time_out_us) 
+{
+EventBits_t    event_bits;
+
+    reset_push_button_timers();
+
+    event_bits = xEventGroupWaitBits  ( 
+        eventgroup_push_buttons,
+        PUSH_BUTTON_ON_EVENT_MASK,
+        pdFALSE,
+        pdFALSE,        // wait on any bit
+        time_out_us);
+
+    xEventGroupWaitBits  ( 
+        eventgroup_push_buttons,
+        PUSH_BUTTON_OFF_EVENT_MASK,
+        pdFALSE,
+        pdFALSE,            // wait on any bit
+        time_out_us);
+
+    return event_bits;
+}
+
+/**
+ * @brief clear push button timers to measure next presses
+ * 
+ * @param push_button 
+ */
+void reset_push_button_timers(void)
+{
+    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+        for (uint8_t index = 0; index < NOS_ROBOKID_PUSH_BUTTONS; index++) {
+            system_IO_data.push_button_data[index].on_time = 0;
+        }
+    xSemaphoreGive(semaphore_system_IO_data);
+    return;
 }
 
 //==============================================================================
@@ -158,9 +205,14 @@ void set_tune_data(struct note_data_s *notes, uint16_t nos_notes, bool enable, u
     return;
 }
 
-
-
-
+/**
+ * @brief Set the leds object
+ * 
+ * @param LED_A_state   LED_OFF, LED_FLASH, LED_ON, or LED_NO_CHANGE
+ * @param LED_B_state                   "
+ * @param LED_C_state                   "
+ * @param LED_D_state                   "
+ */
 void set_leds(LED_state_te LED_A_state,  
               LED_state_te LED_B_state, 
               LED_state_te LED_C_state,

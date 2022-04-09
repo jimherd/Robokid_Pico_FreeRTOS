@@ -74,7 +74,7 @@ START_PULSE;
     //
     // read push switches and debounce
     //
-        switch_samples[switch_sample_index] = gpio_get_all() & SWITCH_MASK;
+        switch_samples[switch_sample_index] = gpio_get_all() & PUSH_BUTTON_HARDWARE_MASK;
         uint32_t switch_value = 0xFFFF;
         for (index=0; index < NOS_SWITCH_SAMPLES ; index++) {
             switch_value &= switch_samples[index];
@@ -83,13 +83,15 @@ START_PULSE;
         if (switch_sample_index >= NOS_SWITCH_SAMPLES) {
             switch_sample_index = 0;
         }
-        temp_push_button_data[0].switch_value = (switch_value & PUSH_BUTTON_A_MASK) >> PUSH_BUTTON_A_PIN;
-        temp_push_button_data[1].switch_value = (switch_value & PUSH_BUTTON_B_MASK) >> PUSH_BUTTON_B_PIN;
-        temp_push_button_data[2].switch_value = (switch_value & PUSH_BUTTON_C_MASK) >> PUSH_BUTTON_C_PIN;
-        temp_push_button_data[3].switch_value = (switch_value & PUSH_BUTTON_D_MASK) >> PUSH_BUTTON_D_PIN;
+        temp_push_button_data[0].switch_value = (switch_value & PUSH_BUTTON_A_HARDWARE_MASK) >> PUSH_BUTTON_A_PIN;
+        temp_push_button_data[1].switch_value = (switch_value & PUSH_BUTTON_B_HARDWARE_MASK) >> PUSH_BUTTON_B_PIN;
+        temp_push_button_data[2].switch_value = (switch_value & PUSH_BUTTON_C_HARDWARE_MASK) >> PUSH_BUTTON_C_PIN;
+        temp_push_button_data[3].switch_value = (switch_value & PUSH_BUTTON_D_HARDWARE_MASK) >> PUSH_BUTTON_D_PIN;
 
     // set event flags for the four push buttons. Event flags 0 to 3 are set when putton is pressed.
     // Event flags 4 to 7 are set when push button is released
+    
+    uint32_t  button_on_events, button_off_events;
     
         for (index = PUSH_BUTTON_A_EVENT_BIT; index <= PUSH_BUTTON_D_EVENT_BIT; index++) {
             if (temp_push_button_data[index].switch_value == 1) {
@@ -100,6 +102,8 @@ START_PULSE;
                 xEventGroupSetBits(eventgroup_push_buttons, (1 << (index + 4)));
             }
         }
+        xEventGroupClearBits(eventgroup_push_buttons, (1 << index));
+        xEventGroupSetBits(eventgroup_push_buttons, (1 << (index + 4)));
 
     // update on-time counter
 
@@ -107,7 +111,7 @@ START_PULSE;
             if (temp_push_button_data[index].switch_value == true) {
                 temp_push_button_data[index].on_time += TASK_READ_SENSORS_FREQUENCY_TICK_COUNT;
             } else {
-                temp_push_button_data[index].on_time = 0;
+                // temp_push_button_data[index].on_time = 0;
             }
         }
 

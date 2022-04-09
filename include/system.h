@@ -74,23 +74,21 @@ typedef enum {LOW, HIGH, PWM} DRV8833_in_t;
 //==============================================================================
 // 4 push switches + 4 LEDs
 
-typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_buttons_e;
-
-// #define     PUSH_BUTTON_A       0
-// #define     PUSH_BUTTON_B       (PUSH_BUTTON_A + 1)
-// #define     PUSH_BUTTON_C       (PUSH_BUTTON_A + 2)
-// #define     PUSH_BUTTON_D       (PUSH_BUTTON_A + 3)
+typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_buttons_te;
 
 #define     PUSH_BUTTON_A_PIN    GP12
 #define     PUSH_BUTTON_B_PIN    GP13
 #define     PUSH_BUTTON_C_PIN    GP14
 #define     PUSH_BUTTON_D_PIN    GP15
 
-#define     PUSH_BUTTON_A_MASK          (1 << PUSH_BUTTON_A_PIN)
-#define     PUSH_BUTTON_B_MASK          (1 << PUSH_BUTTON_B_PIN)
-#define     PUSH_BUTTON_C_MASK          (1 << PUSH_BUTTON_C_PIN)
-#define     PUSH_BUTTON_D_MASK          (1 << PUSH_BUTTON_D_PIN)
-#define     SWITCH_MASK         (PUSH_BUTTON_A_MASK | PUSH_BUTTON_B_MASK | PUSH_BUTTON_C_MASK | PUSH_BUTTON_D_MASK)
+#define     PUSH_BUTTON_A_HARDWARE_MASK          (1 << PUSH_BUTTON_A_PIN)
+#define     PUSH_BUTTON_B_HARDWARE_MASK          (1 << PUSH_BUTTON_B_PIN)
+#define     PUSH_BUTTON_C_HARDWARE_MASK          (1 << PUSH_BUTTON_C_PIN)
+#define     PUSH_BUTTON_D_HARDWARE_MASK          (1 << PUSH_BUTTON_D_PIN)
+#define     PUSH_BUTTON_HARDWARE_MASK         (PUSH_BUTTON_A_HARDWARE_MASK | PUSH_BUTTON_B_HARDWARE_MASK | PUSH_BUTTON_C_HARDWARE_MASK | PUSH_BUTTON_D_HARDWARE_MASK)
+
+#define     PUSH_BUTTON_ON_EVENT_MASK   ((1 << NOS_ROBOKID_PUSH_BUTTONS) - 1)
+#define     PUSH_BUTTON_OFF_EVENT_MASK  (PUSH_BUTTON_ON_EVENT_MASK << NOS_ROBOKID_PUSH_BUTTONS)
 
 #define     NOS_SWITCH_SAMPLES          3
 
@@ -98,6 +96,11 @@ typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_b
 #define     PUSH_BUTTON_B_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 1)
 #define     PUSH_BUTTON_C_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 2)
 #define     PUSH_BUTTON_D_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 3)
+
+#define     PUSH_BUTTON_A_EVENT_MASK    1 << PUSH_BUTTON_A
+#define     PUSH_BUTTON_B_EVENT_MASK    1 << PUSH_BUTTON_B
+#define     PUSH_BUTTON_C_EVENT_MASK    1 << PUSH_BUTTON_C
+#define     PUSH_BUTTON_D_EVENT_MASK    1 << PUSH_BUTTON_D
 
 typedef enum {LED_NO_CHANGE, LED_OFF, LED_FLASH, LED_ON} LED_state_te;
 
@@ -238,10 +241,6 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     NOTE_AS     10
 #define     NOTE_B      11
 #define     SILENT_NOTE 12
-
-
-
-
 
 //==============================================================================
 // Freertos
