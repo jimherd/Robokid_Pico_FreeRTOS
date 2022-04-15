@@ -82,6 +82,10 @@ void init_system_data(void)
 {
 uint8_t     index;
 
+    // system modes
+        system_IO_data.robokid_modes.primary_mode   = PRIMARY_NULL_MODE;
+        system_IO_data.robokid_modes.secondary_mode = SECONDARY_NULL_MODE;
+        system_IO_data.robokid_modes.tertiary_mode  = TERTIARY_NULL_MODE;
     // system status
         system_status.error_state = OK;
     // Battery voltage

@@ -97,10 +97,10 @@ typedef enum {PUSH_BUTTON_A, PUSH_BUTTON_B, PUSH_BUTTON_C, PUSH_BUTTON_D} push_b
 #define     PUSH_BUTTON_C_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 2)
 #define     PUSH_BUTTON_D_EVENT_BIT     (PUSH_BUTTON_A_EVENT_BIT + 3)
 
-#define     PUSH_BUTTON_A_EVENT_MASK    1 << PUSH_BUTTON_A
-#define     PUSH_BUTTON_B_EVENT_MASK    1 << PUSH_BUTTON_B
-#define     PUSH_BUTTON_C_EVENT_MASK    1 << PUSH_BUTTON_C
-#define     PUSH_BUTTON_D_EVENT_MASK    1 << PUSH_BUTTON_D
+#define     PUSH_BUTTON_A_EVENT_MASK    (1 << PUSH_BUTTON_A)
+#define     PUSH_BUTTON_B_EVENT_MASK    (1 << PUSH_BUTTON_B)
+#define     PUSH_BUTTON_C_EVENT_MASK    (1 << PUSH_BUTTON_C)
+#define     PUSH_BUTTON_D_EVENT_MASK    (1 << PUSH_BUTTON_D)
 
 typedef enum {LED_NO_CHANGE, LED_OFF, LED_FLASH, LED_ON} LED_state_te;
 
@@ -227,7 +227,6 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     FREQ_AS     455
 #define     FREQ_B      484
 
-
 #define     NOTE_C      0
 #define     NOTE_CS     1
 #define     NOTE_D      2
@@ -243,10 +242,113 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     SILENT_NOTE 12
 
 //==============================================================================
+// System modes
+
+typedef enum {
+    PRIMARY_NULL_MODE,
+    JOYSTICK_MODE, ACTIVITY_MODE, BUMP_MODE, FOLLOW_MODE, PROGRAM_MODE, 
+    SKETCH_MODE, LAB_MODE, DISTANCE_MODE, EXPERIMENT_MODE
+} primary_sys_modes_te;
+
+#define     NOS_PRIMARY_MODES   EXPERIMENT_MODE
+#define     FIRST_PRIMARY_MODE  JOYSTICK_MODE
+#define     LAST_PRIMARY_MODE   EXPERIMENT_MODE
+
+typedef enum { 
+    SECONDARY_NULL_MODE,
+    JOYSTICK_MODE_1=(JOYSTICK_MODE*10), JOYSTICK_MODE_2, JOYSTICK_MODE_3,
+    RUN_FORWARD=(ACTIVITY_MODE*10), RUN_BACKWARD, RUN_SPIN_RIGHT, RUN_SPIN_LEFT, RUN_TEST,  DEMO_MODE,
+    LINE_BUMP_MODE=(BUMP_MODE*10), LINE_BUG_BUMP_MODE, WALL_BUMP_MODE,
+    LINE_FOLLOW_MODE=(FOLLOW_MODE*10), LIGHT_FOLLOW_MODE,
+    PROGRAM_MODE_0=(PROGRAM_MODE*10), PROGRAM_MODE_1, PROGRAM_MODE_2, PROGRAM_MODE_3, PROGRAM_MODE_4, PROGRAM_MODE_5,
+    SKETCH_MODE_0=(SKETCH_MODE*10), SKETCH_MODE_1, SKETCH_MODE_2,
+    LAB_MODE_0=(LAB_MODE*10), LAB_MODE_1, LAB_MODE_2,
+    DISTANCE_MODE_0=(DISTANCE_MODE*10), DISTANCE_MODE_1, DISTANCE_MODE_2,
+    experiment_1=(EXPERIMENT_MODE*10),experiment_2, experiment_3, experiment_4, experiment_5,
+} secondary_sys_modes_te;
+
+#define   FIRST_JOYSTICK_MODE  JOYSTICK_MODE_1
+#define   LAST_JOYSTICK_MODE   JOYSTICK_MODE_3
+
+#define   FIRST_ACTIVITY_MODE  RUN_FORWARD
+#define   LAST_ACTIVITY_MODE   RUN_TEST
+
+#define   FIRST_BUMP_MODE  LINE_BUMP_MODE
+#define   LAST_BUMP_MODE   WALL_BUMP_MODE
+
+#define   FIRST_FOLLOW_MODE  LINE_FOLLOW_MODE
+#define   LAST_FOLLOW_MODE   LIGHT_FOLLOW_MODE
+
+#define   FIRST_PROGRAM_MODE  PROGRAM_MODE_0
+#define   LAST_PROGRAM_MODE   PROGRAM_MODE_5
+
+#define   FIRST_SKETCH_MODE  SKETCH_MODE_0
+#define   LAST_SKETCH_MODE   SKETCH_MODE_2
+
+#define   FIRST_DISTANCE_MODE  DISTANCE_MODE_0
+#define   LAST_DISTANCE_MODE   DISTANCE_MODE_2
+
+#define   FIRST_LAB_MODE  LAB_MODE_0
+#define   LAST_LAB_MODE   LAB_MODE_2
+
+#define   FIRST_EXPERIMENT_MODE     EXPERIMENT_0
+#define   LAST_EXPERIMENT_MODE      EXPERIMENT_5
+
+// typedef enum { 
+//     JOYSTICK_MODE_1, JOYSTICK_MODE_2, JOYSTICK_MODE_3
+// } joystick_mode_te;
+
+// typedef enum {
+//      RUN_FORWARD, RUN_BACKWARD, RUN_SPIN_RIGHT, RUN_SPIN_LEFT, RUN_TEST,  DEMO_MODE
+// } activity_mode_te;
+
+// typedef enum {
+//      LINE_BUMP_MODE, LINE_BUG_BUMP_MODE, WALL_BUMP_MODE 
+// } bump_mode_te;
+
+// typedef enum { 
+//     LINE_FOLLOW_MODE, LIGHT_FOLLOW_MODE
+// } follow_mode_te;
+
+// typedef enum {
+//      TAPE_MANUAL_MODE, TAPE_MOTOR_MODE
+// } tape_mode_te;
+
+// typedef enum {
+//      PROGRAM_MODE_0, PROGRAM_MODE_1, PROGRAM_MODE_2, PROGRAM_MODE_3, PROGRAM_MODE_4, PROGRAM_MODE_5
+// } program_mode_te;
+
+typedef enum {
+    TERTIARY_NULL_MODE,
+    level_3_0, level3_1,
+} tertiary_sys_modes_te;
+
+typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
+
+#define   FIRST_SEQUENCE_MODE    PLAY
+#define   LAST_SEQUENCE_MODE     DUMP
+
+// typedef enum { 
+//     SKETCH_MODE_0, SKETCH_MODE_1, SKETCH_MODE_2
+// } drawing_mode_te;
+
+
+
+// typedef enum { 
+//     LAB_MODE_0, LAB_MODE_1, LAB_MODE_2
+// } lab_mode_te;
+
+// typedef enum { 
+//     DISTANCE_MODE_0, DISTANCE_MODE_1, DISTANCE_MODE_2
+// } distance_mode_te;
+
+//==============================================================================
 // Freertos
 
-typedef enum TASKS {TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
-                     TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_BLINK} task_t;
+typedef enum TASKS {
+    TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
+    TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_BLINK
+} task_t;
 
 #define     NOS_TASKS   (TASK_BLINK + 1)
 
@@ -392,11 +494,18 @@ struct error_message_s {
     uint64_t        log_time;
 } ;
 
+struct system_modes_s {
+    primary_sys_modes_te    primary_mode;
+    secondary_sys_modes_te  secondary_mode;
+    tertiary_sys_modes_te   tertiary_mode;
+};
+
 //==============================================================================
 /**
  * @brief   Central store of system data. Access by mutex.
  */
 struct system_IO_data_s  {
+    struct system_modes_s       robokid_modes;
     struct system_status_s      system_status;      // error codes
     uint16_t                    system_voltage;
     struct motor_data_s         motor_data[NOS_ROBOKID_MOTORS];

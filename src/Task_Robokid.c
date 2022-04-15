@@ -23,10 +23,7 @@
 #define     TASK_ROBOKID_START_DELAY_SECONDS    10
 #define     HALF_SECOND      (500/portTICK_PERIOD_MS)
 
-typedef enum {
-    JOYSTICK_MODE, ACTIVITY_MODE, BUMP_MODE, FOLLOW_MODE, PROGRAM_MODE, 
-    SKETCH_MODE, LAB_MODE, DISTANCE_MODE, EXPERIMENT_MODE
-} primary_sys_modes_te;
+#define  LONG_PRESS_MS  4000        // 4 seconds
 
 //==============================================================================
 // Main task routine
@@ -35,36 +32,43 @@ void Task_Robokid(void *p)
 {
 uint32_t                    start_time, end_time;
 uint8_t                     index;
-struct motor_cmd_packet_s   motor_cmd_packet;
-EventBits_t                 event_bits;
+//struct motor_cmd_packet_s   motor_cmd_packet;
+volatile EventBits_t                 event_bits;
 primary_sys_modes_te        primary_mode, first_mode, last_mode;
 uint32_t                    press_time;
+volatile uint32_t temp;
+
+    temp = PUSH_BUTTON_B_EVENT_MASK;
 
     for (index = 0; index < (TASK_ROBOKID_START_DELAY_SECONDS * 2); index++) {
         LCD_write_row(0, MESSAGE_ROW, system_busy[index % 4]);
         vTaskDelay(HALF_SECOND);
     }
-    LCD_write_row(0, MESSAGE_ROW, blank_row);
 
     SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
     first_mode = JOYSTICK_MODE;
     last_mode = EXPERIMENT_MODE - 1;  // hide experiment mode from normal operation
+    LCD_write_row(0, MESSAGE_ROW, system_ready[0]);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
-    if (press_time > 100) {
+    if (press_time > LONG_PRESS_MS) {
         last_mode = EXPERIMENT_MODE;   // expose experiment mode if press time is > xxxx
     }
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
 
+    primary_mode = PRIMARY_NULL_MODE;
+
     FOREVER {
-        primary_mode = first_mode;
-        LCD_write_row(0, MESSAGE_ROW, mode_DPAD);
-        SSD1306_set_text_area_scroller(STRING_COUNT(mode_J_button_data), mode_J_button_data);
+        LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode]);
+        SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
         set_leds(LED_FLASH, LED_OFF, LED_FLASH, LED_FLASH);
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
-        if (event_bits == PUSH_BUTTON_A_EVENT_MASK){
+        if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
             switch (primary_mode) {
+                case PRIMARY_NULL_MODE : {  // no mode selected as yet
+                    break;
+                }
                 case JOYSTICK_MODE : {
                     run_joystick_mode();
                     break;
@@ -72,9 +76,9 @@ uint32_t                    press_time;
                 default : {
                     break;
                 }
-            } 
+            }  // end of switch 
         }
-        if (event_bits == PUSH_BUTTON_B_EVENT_MASK){
+        if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
             if (primary_mode == last_mode) {
                 primary_mode = first_mode;
             } else {

@@ -99,7 +99,7 @@ EventBits_t event_bits;
         pdFALSE,        
         time_out_us);
 
-// return pulse width in microseconds
+// return pulse width in milliseconds
 
     return  system_IO_data.push_button_data[push_button].on_time;
 }
@@ -120,17 +120,17 @@ EventBits_t    event_bits;
         eventgroup_push_buttons,
         PUSH_BUTTON_ON_EVENT_MASK,
         pdFALSE,
-        pdFALSE,        // wait on any bit
+        pdFALSE,        // wait for any button to be pressed
         time_out_us);
 
     xEventGroupWaitBits  ( 
         eventgroup_push_buttons,
         PUSH_BUTTON_OFF_EVENT_MASK,
         pdFALSE,
-        pdFALSE,            // wait on any bit
+        pdTRUE,            // wait for all buttons to be released
         time_out_us);
 
-    return event_bits;
+    return (event_bits & PUSH_BUTTON_ON_EVENT_MASK);
 }
 
 /**
