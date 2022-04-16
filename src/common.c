@@ -49,7 +49,7 @@ uint32_t delta_time;
  * @param error_code 
  * @param task 
  */
-void log_error(error_codes_e error_code, task_t task)
+void log_error(error_codes_te error_code, task_t task)
 {
 struct error_message_s error_message;
 

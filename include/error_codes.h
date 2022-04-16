@@ -11,12 +11,13 @@
 // list of errors
 
 typedef enum  {
-    OK                      =  0,
-    FAULT                   = -1,
-    BAD_PWM_PERCENT_WIDTH   = -2,
-    BAD_MOTOR_NUMBER        = -3,
-    BAD_MOTOR_COMMAND       = -4,
-} error_codes_e;
+    OK                              =  0,
+    FAULT                           = -1,
+    BAD_PWM_PERCENT_WIDTH           = -2,
+    BAD_MOTOR_NUMBER                = -3,
+    BAD_MOTOR_COMMAND               = -4,
+    USB_CONTROLLER_NOT_CONNECTED    = -5,
+} error_codes_te;
 
 //==============================================================================
 // size of circular buffer holding logged errors

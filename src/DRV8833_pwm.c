@@ -71,7 +71,7 @@ void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle)
  * @param pwm_width     -100% to +100%
  * @return error_codes_e      error code -  OK, BAD_MOTOR_NUMBER, or BAD_PWM_WIDTH
  */
-error_codes_e  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm_width) 
+error_codes_te  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm_width) 
 {
 
 uint32_t        pulse_count, period_count ;
@@ -80,7 +80,7 @@ uint8_t         pwm_slice;
 direction_t     new_direction;
 uint32_t        DRV8833_in1, DRV8833_in2, temp;
 bool            zero_cross_over;
-error_codes_e   error;
+error_codes_te   error;
 
     // check parameters
 

@@ -11,7 +11,7 @@
 #include "system.h"
 
 void update_task_execution_time(task_t task, uint32_t start_time, uint32_t end_time);
-void log_error(error_codes_e error_code, task_t task);
+void log_error(error_codes_te error_code, task_t task);
 void reset_push_button_timers(void);
 uint32_t wait_for_button_press(uint8_t push_button, uint32_t time_out);
 EventBits_t wait_for_any_button_press(uint32_t time_out_us);

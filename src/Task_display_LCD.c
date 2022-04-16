@@ -68,7 +68,7 @@ BaseType_t  xWasDelayed;
 static void process_icons(void) 
 {
 char            buffer[16], buffer_pt;
-error_codes_e   error;
+error_codes_te  error;
 
     buffer_pt = 0;
 

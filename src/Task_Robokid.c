@@ -32,13 +32,10 @@ void Task_Robokid(void *p)
 {
 uint32_t                    start_time, end_time;
 uint8_t                     index;
-//struct motor_cmd_packet_s   motor_cmd_packet;
-volatile EventBits_t                 event_bits;
+EventBits_t                 event_bits;
 primary_sys_modes_te        primary_mode, first_mode, last_mode;
 uint32_t                    press_time;
-volatile uint32_t temp;
-
-    temp = PUSH_BUTTON_B_EVENT_MASK;
+error_codes_te              error;
 
     for (index = 0; index < (TASK_ROBOKID_START_DELAY_SECONDS * 2); index++) {
         LCD_write_row(0, MESSAGE_ROW, system_busy[index % 4]);
@@ -65,51 +62,28 @@ volatile uint32_t temp;
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
         if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
-            switch (primary_mode) {
+            switch (primary_mode) 
                 case PRIMARY_NULL_MODE : {  // no mode selected as yet
                     break;
-                }
-                case JOYSTICK_MODE : {
-                    run_joystick_mode();
+                case JOYSTICK_MODE : 
+                    error = run_joystick_mode();
+                    if (error != OK) {
+                        log_error(error, TASK_ROBOKID);
+                    }
                     break;
-                }
-                default : {
+                default : 
                     break;
-                }
             }  // end of switch 
-        }
-        if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
+        } else if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
             if (primary_mode == last_mode) {
                 primary_mode = first_mode;
             } else {
                 primary_mode++;
             }
-        }
-        if (event_bits == PUSH_BUTTON_C_EVENT_MASK){
-            NULL;   // ignore press of button C
-        }
-        if (event_bits == PUSH_BUTTON_D_EVENT_MASK){
-            NULL;   // ignore press of button D
+        } else if (event_bits == PUSH_BUTTON_C_EVENT_MASK) {
+            NULL;  // ignore press of button C
+        } else if (event_bits == PUSH_BUTTON_D_EVENT_MASK) {
+            NULL;  // ignore press of button D
         }
     }
 }
-
-        // motor_cmd_packet.cmd = MOVE;
-        // motor_cmd_packet.param1  = RIGHT_MOTOR;
-        // motor_cmd_packet.param2  = 75;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // motor_cmd_packet.cmd = MOVE;
-        // motor_cmd_packet.param1  = LEFT_MOTOR;
-        // motor_cmd_packet.param2  = 75;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // vTaskDelay(3000/portTICK_PERIOD_MS);
-
-        // motor_cmd_packet.cmd = MOTOR_BRAKE;
-        // motor_cmd_packet.param1  = RIGHT_MOTOR;
-        // motor_cmd_packet.param2  = 0;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // motor_cmd_packet.cmd = MOTOR_BRAKE;
-        // motor_cmd_packet.param1  = LEFT_MOTOR;
-        // motor_cmd_packet.param2  = 0;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // vTaskDelay(3000/portTICK_PERIOD_MS);

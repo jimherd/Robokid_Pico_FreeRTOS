@@ -127,6 +127,22 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define     GAMEPAD_DPAD_Y_AXIS_NULL    0x7F
 #define     GAMEPAD_DPAD_Y_AXIS_DOWN    0xFF
 
+// codes for joystick mode 1 : DPAD control
+
+#define DPAD_STOP       ((GAMEPAD_DPAD_X_AXIS_NULL << 8) + GAMEPAD_DPAD_Y_AXIS_NULL)
+
+#define DPAD_FORWARD    ((GAMEPAD_DPAD_X_AXIS_NULL << 8) + GAMEPAD_DPAD_Y_AXIS_UP)
+#define DPAD_BACKWARD   ((GAMEPAD_DPAD_X_AXIS_NULL << 8) + GAMEPAD_DPAD_Y_AXIS_DOWN)
+
+#define DPAD_SPIN_RIGHT   ((GAMEPAD_DPAD_X_AXIS_RIGHT << 8) + GAMEPAD_DPAD_Y_AXIS_NULL)
+#define DPAD_SPIN_LEFT   ((GAMEPAD_DPAD_X_AXIS_LEFT << 8) + GAMEPAD_DPAD_Y_AXIS_NULL)
+
+#define ARC_FORWARD_RIGHT   ((GAMEPAD_DPAD_X_AXIS_RIGHT << 8) + GAMEPAD_DPAD_Y_AXIS_UP)
+#define ARC_FORWARD_LEFT    ((GAMEPAD_DPAD_X_AXIS_LEFT << 8) + GAMEPAD_DPAD_Y_AXIS_UP)
+
+#define ARC_BACKWARD_RIGHT   ((GAMEPAD_DPAD_X_AXIS_RIGHT << 8) + GAMEPAD_DPAD_Y_AXIS_DOWN)
+#define ARC_BACKWARD_LEFT    ((GAMEPAD_DPAD_X_AXIS_LEFT << 8) + GAMEPAD_DPAD_Y_AXIS_DOWN)
+
 enum  gamepad_state {DISABLED, ENABLED} ;
 enum  gamepad_switch_state {released, pressed};
 enum  gamepad_dpad_X_axis {X_AXIS_OFF, X_AXIS_LEFT, X_AXIS_RIGHT};
@@ -294,30 +310,6 @@ typedef enum {
 #define   FIRST_EXPERIMENT_MODE     EXPERIMENT_0
 #define   LAST_EXPERIMENT_MODE      EXPERIMENT_5
 
-// typedef enum { 
-//     JOYSTICK_MODE_1, JOYSTICK_MODE_2, JOYSTICK_MODE_3
-// } joystick_mode_te;
-
-// typedef enum {
-//      RUN_FORWARD, RUN_BACKWARD, RUN_SPIN_RIGHT, RUN_SPIN_LEFT, RUN_TEST,  DEMO_MODE
-// } activity_mode_te;
-
-// typedef enum {
-//      LINE_BUMP_MODE, LINE_BUG_BUMP_MODE, WALL_BUMP_MODE 
-// } bump_mode_te;
-
-// typedef enum { 
-//     LINE_FOLLOW_MODE, LIGHT_FOLLOW_MODE
-// } follow_mode_te;
-
-// typedef enum {
-//      TAPE_MANUAL_MODE, TAPE_MOTOR_MODE
-// } tape_mode_te;
-
-// typedef enum {
-//      PROGRAM_MODE_0, PROGRAM_MODE_1, PROGRAM_MODE_2, PROGRAM_MODE_3, PROGRAM_MODE_4, PROGRAM_MODE_5
-// } program_mode_te;
-
 typedef enum {
     TERTIARY_NULL_MODE,
     level_3_0, level3_1,
@@ -411,7 +403,7 @@ typedef enum TASKS {
  * @brief data structure for report returned from gamepad
  * 
  */
-struct  SNES_gamepad_report_s   {    //  TU_ATTR_PACKED
+struct  SNES_gamepad_report_s   {  
     uint8_t     dpad_x, dpad_y;         // dpad returned as 8-bit values
     uint8_t     dummy2, dummy3,dummy4;
 
@@ -449,7 +441,7 @@ struct gamepad_data_s  {
 } ;
 
 struct system_status_s {
-    error_codes_e     error_state;
+    error_codes_te     error_state;
 } ;
 
 struct __attribute__((__packed__)) motor_cmd_packet_s {
@@ -489,7 +481,7 @@ struct floor_sensor_data_s {
 } ;
 
 struct error_message_s {
-    error_codes_e   error_code;
+    error_codes_te  error_code;
     task_t          task;
     uint64_t        log_time;
 } ;
