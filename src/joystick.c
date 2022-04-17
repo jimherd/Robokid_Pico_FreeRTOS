@@ -80,6 +80,7 @@ error_codes_te run_joystick_mode_1(void)
 struct SNES_gamepad_report_s    temp_gamepad_data;
 struct motor_cmd_packet_s       motor_cmd_packet;
 uint32_t                        DPAD_code;
+uint8_t motor_left_command, motor_right_command;
 
     if (gamepad_data.state == DISABLED) {
         return USB_CONTROLLER_NOT_CONNECTED;
@@ -100,6 +101,10 @@ uint32_t                        DPAD_code;
         DPAD_code = ((temp_gamepad_data.dpad_y << 8) + temp_gamepad_data.dpad_x);
 
         if (DPAD_code == DPAD_STOP) {
+            motor_left_command = MOTOR_BRAKE;
+            motor_right_command = MOTOR_BRAKE;
+            // left_param2 = 0;
+            // right_param2 = 0;
 
         } else if (DPAD_code == DPAD_FORWARD) {
 
@@ -118,7 +123,7 @@ uint32_t                        DPAD_code;
         } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
 
         }
-
+         xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
         vTaskDelay(100/portTICK_PERIOD_MS);   // approx 10Hz reading og gamepad
     }
     return OK;

@@ -13,6 +13,10 @@ set(CMAKE_CXX_STANDARD 17)
 # initialize the Pico SDK
 pico_sdk_init()
 
+# addgcc compiler options
+
+add_compile_options(-fshort-enums)
+
 # collect all source .c files
 FILE(GLOB Robokid_Pico_Freetros_src ${CMAKE_SOURCE_DIR}/src/*.c)
 
@@ -63,3 +67,10 @@ pico_add_extra_outputs(${PROJECT_NAME})
 # Enable usb output, disable uart output
 pico_enable_stdio_usb(${PROJECT_NAME} 0)
 pico_enable_stdio_uart(${PROJECT_NAME} 1)
+
+# print executable size
+add_custom_command(TARGET ${PROJECT_NAME}
+    POST_BUILD
+    COMMAND arm-none-eabi-size.exe -G Robokid_Pico_FreeRTOS.elf
+    VERBATIM
+)
