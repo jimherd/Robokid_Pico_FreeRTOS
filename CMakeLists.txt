@@ -71,6 +71,8 @@ pico_enable_stdio_uart(${PROJECT_NAME} 1)
 # print executable size
 add_custom_command(TARGET ${PROJECT_NAME}
     POST_BUILD
+    COMMAND date.exe /t >> File_size
     COMMAND arm-none-eabi-size.exe -G Robokid_Pico_FreeRTOS.elf
+    COMMAND arm-none-eabi-size.exe -G Robokid_Pico_FreeRTOS.elf  >> File_size
     VERBATIM
 )

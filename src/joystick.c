@@ -74,13 +74,19 @@ error_codes_te          error;
  * DPAD : forward, backward, left, right
  * SELECT : exit this mode
  * 
+ * @note
+ *  The same motor packet command structure is used to send both right
+ * and left commands into the FreeRTOS queue.  This present no problems
+ * as the queue entries are based on data copying and are not passed by
+ * reference.
+ * 
  */
 error_codes_te run_joystick_mode_1(void)
 {
 struct SNES_gamepad_report_s    temp_gamepad_data;
 struct motor_cmd_packet_s       motor_cmd_packet;
 uint32_t                        DPAD_code;
-uint8_t motor_left_command, motor_right_command;
+uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
 
     if (gamepad_data.state == DISABLED) {
         return USB_CONTROLLER_NOT_CONNECTED;
@@ -101,29 +107,53 @@ uint8_t motor_left_command, motor_right_command;
         DPAD_code = ((temp_gamepad_data.dpad_y << 8) + temp_gamepad_data.dpad_x);
 
         if (DPAD_code == DPAD_STOP) {
-            motor_left_command = MOTOR_BRAKE;
-            motor_right_command = MOTOR_BRAKE;
-            // left_param2 = 0;
-            // right_param2 = 0;
-
+            right_cmd = MOTOR_BRAKE; left_cmd = MOTOR_BRAKE; 
+            right_PWM = 0; left_PWM = 0;
         } else if (DPAD_code == DPAD_FORWARD) {
-
+            right_cmd = MOVE; left_cmd = MOVE;
+            right_PWM = +100; left_PWM = +100;
         } else if (DPAD_code == DPAD_BACKWARD) {
-
+            right_cmd = MOVE; left_cmd = MOVE;
+            right_PWM = -100; left_PWM = -100;
         } else if (DPAD_code == DPAD_SPIN_RIGHT) {
-
+            right_cmd = MOVE; left_cmd = MOVE;
+            right_PWM = -100; left_PWM = +100;
         } else if (DPAD_code == DPAD_SPIN_LEFT) {
-
+            right_cmd = MOVE; left_cmd = MOVE;
+            right_PWM = +100; left_PWM = -100;
         } else if (DPAD_code == ARC_FORWARD_RIGHT) {
-
+            right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
+            right_PWM = 0; left_PWM = +100;
         } else if (DPAD_code == ARC_FORWARD_LEFT) {
-
+            right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
+            right_PWM = +100; left_PWM = 0;
         } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
-
+            right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
+            right_PWM = 0; left_PWM = -100;
         } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
-
+            right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
+            right_PWM = -100; left_PWM = 0;
         }
-         xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+
+// Press switch-Y to go at half speed
+
+        if (temp_gamepad_data.button_Y == true) {
+            left_PWM = left_PWM >> 1;
+            right_PWM = right_PWM >> 1;
+        }
+// send right motor command
+        motor_cmd_packet.cmd = right_cmd;
+        motor_cmd_packet.param1  = RIGHT_MOTOR;
+        motor_cmd_packet.param2  = right_PWM;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+
+// send left motor command ( See not at function header)
+        motor_cmd_packet.cmd = left_cmd;
+        motor_cmd_packet.param1  = LEFT_MOTOR;
+        motor_cmd_packet.param2  = left_PWM;
+        xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
+
+       
         vTaskDelay(100/portTICK_PERIOD_MS);   // approx 10Hz reading og gamepad
     }
     return OK;
