@@ -2,8 +2,6 @@
  * @file    system.h
  * @author  Jim Herd 
  * @brief   Constants relating to Robokid robot
- * @version 0.1
- * @date    2022-01-09
  */
 
 #ifndef __SYSTEM_H__
@@ -320,20 +318,6 @@ typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 #define   FIRST_SEQUENCE_MODE    PLAY
 #define   LAST_SEQUENCE_MODE     DUMP
 
-// typedef enum { 
-//     SKETCH_MODE_0, SKETCH_MODE_1, SKETCH_MODE_2
-// } drawing_mode_te;
-
-
-
-// typedef enum { 
-//     LAB_MODE_0, LAB_MODE_1, LAB_MODE_2
-// } lab_mode_te;
-
-// typedef enum { 
-//     DISTANCE_MODE_0, DISTANCE_MODE_1, DISTANCE_MODE_2
-// } distance_mode_te;
-
 //==============================================================================
 // Freertos
 
@@ -350,8 +334,8 @@ typedef enum TASKS {
 #define     TASK_DISPLAY_LCD_FREQUENCY                  10  // Hz
 #define     TASK_DISPLAY_TIME_UNIT                      (1000 / TASK_DISPLAY_LCD_FREQUENCY)
 #define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
-#define     SCROLL_DELAY_MS                     2000
-#define     SCROLL_DELAY_TICK_COUNT             (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)    
+#define     SCROLL_DELAY_MS                             2000
+#define     SCROLL_DELAY_TICK_COUNT                     (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)    
 
 #define     TASK_SOUNDER_FREQUENCY                      20  // Hz
 #define     TASK_SOUNDER_TIME_UNIT                      (1000 / TASK_SOUNDER_FREQUENCY)
@@ -556,7 +540,6 @@ struct  tune_data_s {
     uint16_t            nos_notes;
     bool                enable;
     bool                repeat_count;           // count repetitions
-//    uint8_t             note_duration_count;    // temp timer counter
 };
 
 
@@ -592,8 +575,6 @@ extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
 extern void Task_sounder (void *p);
 extern void Task_blink_LED(void *p);
-
-
 
 extern SemaphoreHandle_t semaphore_LCD_data;            //semaphores
 extern SemaphoreHandle_t semaphore_SSD1306_display;

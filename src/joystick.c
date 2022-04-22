@@ -5,7 +5,6 @@
  */
 
 // Notes
-//
 //      Active switches are 
 //          switch A = go/stop button
 //          switch C = exit to main slection level
@@ -28,7 +27,7 @@ secondary_sys_modes_te  secondary_mode;
 error_codes_te          error;
 
     secondary_mode = JOYSTICK_MODE_1;
-    LCD_write_row(0, MESSAGE_ROW, main_modes[PRIMARY_NULL_MODE]);
+    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)]);
     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
     set_leds(LED_FLASH, LED_FLASH, LED_OFF, LED_OFF);
     event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
@@ -83,9 +82,9 @@ error_codes_te          error;
  */
 error_codes_te run_joystick_mode_1(void)
 {
-struct SNES_gamepad_report_s    temp_gamepad_data;
+struct gamepad_data_s    temp_gamepad_data;
 struct motor_cmd_packet_s       motor_cmd_packet;
-uint32_t                        DPAD_code;
+volatile uint32_t                        DPAD_code;
 uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
 
     if (gamepad_data.state == DISABLED) {
@@ -96,7 +95,7 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
 
     FOREVER {
         xSemaphoreTake(semaphore_gamepad_data, portMAX_DELAY);
-            memcpy(&temp_gamepad_data, &gamepad_data, sizeof(struct SNES_gamepad_report_s));
+            memcpy(&temp_gamepad_data, &gamepad_data, sizeof(struct gamepad_data_s));
         xSemaphoreGive(semaphore_gamepad_data);
         if (temp_gamepad_data.button_SELECT == true) {
             break;
@@ -104,7 +103,7 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
 
 // calculate motor commands
 
-        DPAD_code = ((temp_gamepad_data.dpad_y << 8) + temp_gamepad_data.dpad_x);
+        DPAD_code = ((temp_gamepad_data.dpad_x << 8) + temp_gamepad_data.dpad_y);
 
         if (DPAD_code == DPAD_STOP) {
             right_cmd = MOTOR_BRAKE; left_cmd = MOTOR_BRAKE; 
@@ -135,12 +134,12 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
             right_PWM = -100; left_PWM = 0;
         }
 
-// Press switch-Y to go at half speed
-
+// If Y-switch pressed then set half speed
         if (temp_gamepad_data.button_Y == true) {
             left_PWM = left_PWM >> 1;
             right_PWM = right_PWM >> 1;
         }
+
 // send right motor command
         motor_cmd_packet.cmd = right_cmd;
         motor_cmd_packet.param1  = RIGHT_MOTOR;
@@ -153,8 +152,7 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
         motor_cmd_packet.param2  = left_PWM;
         xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
 
-       
-        vTaskDelay(100/portTICK_PERIOD_MS);   // approx 10Hz reading og gamepad
+        vTaskDelay(100/portTICK_PERIOD_MS);   // approx 10Hz reading of gamepad
     }
     return OK;
 }

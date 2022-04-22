@@ -62,8 +62,8 @@ error_codes_te              error;
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
         if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
-            switch (primary_mode) 
-                case PRIMARY_NULL_MODE : {  // no mode selected as yet
+            switch (primary_mode) {
+                case PRIMARY_NULL_MODE :  // no mode selected as yet
                     break;
                 case JOYSTICK_MODE : 
                     error = run_joystick_mode();

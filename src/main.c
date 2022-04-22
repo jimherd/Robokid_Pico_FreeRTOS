@@ -90,6 +90,14 @@ uint8_t     index;
         system_status.error_state = OK;
     // Battery voltage
         system_IO_data.system_voltage = 500;
+    // USB data
+        gamepad_data.state = DISABLED;
+        gamepad_data.vid = 0; gamepad_data.pid = 0;
+        gamepad_data.dpad_x = 0; gamepad_data.dpad_y = 0;
+        gamepad_data.button_X = 0; gamepad_data.button_Y = 0;
+        gamepad_data.button_A = 0; gamepad_data.button_B = 0;
+        gamepad_data.button_L = 0; gamepad_data.button_R = 0;
+        gamepad_data.button_START = 0; gamepad_data.button_SELECT = 0;
     // Motor data
         system_IO_data.motor_data[LEFT_MOTOR].motor_state = OFF;
         system_IO_data.motor_data[LEFT_MOTOR].pwm_width = 0;

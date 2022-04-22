@@ -40,9 +40,15 @@ void Task_read_gamepad(void *p)
 {
 
     board_init();
-    tusb_init();
+
     gamepad_data.state = DISABLED;
 
+// Delay before initialising USB subsystem.  This allows the FreeRTOS system
+// to stabalize.
+
+    vTaskDelay(2000/portTICK_PERIOD_MS);
+    tusb_init();
+    
     FOREVER {
        vTaskDelay(100/portTICK_PERIOD_MS);
        tuh_task();
