@@ -87,10 +87,14 @@ struct motor_cmd_packet_s       motor_cmd_packet;
 volatile uint32_t                        DPAD_code;
 uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
 
+    SSD1306_set_text_area_scroller(STRING_COUNT(gamepad_connect), gamepad_connect);
+    wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
+
     if (gamepad_data.state == DISABLED) {
         return USB_CONTROLLER_NOT_CONNECTED;
     }
-
+    SSD1306_set_text_area_scroller(STRING_COUNT(blank_scroll_area), blank_scroll_area);
+    
 // get gamepad data
 
     FOREVER {

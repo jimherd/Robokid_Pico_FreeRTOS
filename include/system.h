@@ -11,7 +11,7 @@
 #include    "Pico_IO.h"
 
 #include    "FreeRTOS.h"
-#include    "semphr.h"      // from FreeRTOS
+#include    "semphr.h"
 #include    "event_groups.h"
 
 #include    "error_codes.h"
@@ -27,7 +27,7 @@
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_PUSH_BUTTONS    4
 #define     NOS_ROBOKID_LEDS            4
-#define     NOS_ROBOKID_FLOOR_SENSORS   2
+#define     NOS_ROBOKID_FLOOR_SENSORS   3
 
 #define     LEFT_MOTOR_FLIP_MODE        false
 #define     RIGHT_MOTOR_FLIP_MODE       true

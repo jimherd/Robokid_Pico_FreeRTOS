@@ -8,6 +8,7 @@
  */
 
 #include "system.h"
+#include "common.h"
 
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
@@ -93,7 +94,8 @@ uint8_t     index;
     // USB data
         gamepad_data.state = DISABLED;
         gamepad_data.vid = 0; gamepad_data.pid = 0;
-        gamepad_data.dpad_x = 0; gamepad_data.dpad_y = 0;
+        gamepad_data.dpad_x = GAMEPAD_DPAD_X_AXIS_NULL; 
+        gamepad_data.dpad_y = GAMEPAD_DPAD_Y_AXIS_NULL;
         gamepad_data.button_X = 0; gamepad_data.button_Y = 0;
         gamepad_data.button_A = 0; gamepad_data.button_B = 0;
         gamepad_data.button_L = 0; gamepad_data.button_R = 0;
@@ -196,7 +198,7 @@ int main()
 
     xTaskCreate(Task_read_gamepad,
                 "Task_read_gamepad",
-                configMINIMAL_STACK_SIZE,
+                1024,    // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_gamepad

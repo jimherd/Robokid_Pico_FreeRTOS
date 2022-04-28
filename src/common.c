@@ -6,6 +6,7 @@
  */
 
 #include "pico/stdlib.h"
+#include "hardware/resets.h"
 
 #include "FreeRTOS.h"
 #include "event_groups.h"
@@ -223,4 +224,14 @@ void set_leds(LED_state_te LED_A_state,
     system_IO_data.LED_data[LED_C].state = LED_C_state;
     system_IO_data.LED_data[LED_D].state = LED_D_state;
     return;
+}
+
+/**
+ * @brief Reset USB subsystem
+ * 
+ */
+void reset_USB(void)
+{
+     reset_block(RESETS_RESET_USBCTRL_BITS);
+     unreset_block_wait(RESETS_RESET_USBCTRL_BITS);
 }

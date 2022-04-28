@@ -23,5 +23,6 @@ void set_leds(LED_state_te LED_A_state,
               LED_state_te LED_B_state, 
               LED_state_te LED_C_state,
               LED_state_te LED_D_state);
+void reset_USB(void);
 
 #endif

@@ -40,11 +40,17 @@ const char* main_modes[NOS_PRIMARY_MODES+1] = {
     "Mode Exp      "
 };
 
+const char* gamepad_connect[3] = {
+    "Please connect",
+    "GAMPAD to USB ",  
+    "A: When done  ",
+};
+
 const char* mode_J[3] = {
 //    "No J mode     ",
-    "J mode 1      ",
-    "J mode 2      ",
-    "J mode 3      ",
+    "   J mode 1   ",
+    "   J mode 2   ",
+    "   J mode 3   ",
 };
 
 const char mode_tank[16] = {
@@ -61,4 +67,9 @@ const char* mode_J_button_data[4] = {
     "B: Next mode  ",
     "C: -----      ",
     "D: Exit mode  "  
+};
+
+const char* blank_scroll_area[2] = {
+    "              ",
+    "              ",  
 };

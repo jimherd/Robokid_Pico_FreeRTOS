@@ -39,9 +39,11 @@ void tuh_hid_report_received_cb(uint8_t dev_addr, uint8_t instance, uint8_t cons
 void Task_read_gamepad(void *p) 
 {
 
-    board_init();
+    vTaskDelay(2000/portTICK_PERIOD_MS);
 
-    gamepad_data.state = DISABLED;
+    // hidh_close(dev_addr);
+    reset_USB();
+    board_init();
 
 // Delay before initialising USB subsystem.  This allows the FreeRTOS system
 // to stabalize.
@@ -142,7 +144,7 @@ uint16_t  vid, pid;
         xSemaphoreGive(semaphore_gamepad_data);
     if (is_generic_gamepad(dev_addr)) {
         if ( !tuh_hid_receive_report(dev_addr, instance)) {
-            
+            __breakpoint();
             //printf("Error : cannot request to receive report\r\n");
         }
     }

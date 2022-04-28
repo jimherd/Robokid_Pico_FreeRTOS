@@ -13,9 +13,11 @@ extern const char*  test_scroll_string_data[4];
 extern const char*  wait_start[1];
 extern const char*  main_modes[];
 extern const char*  mode_J[];
+extern const char*  gamepad_connect[3];
 extern const char   mode_DPAD[16];
 extern const char   mode_tank[16];
 extern const char*  top_level_button_data[2];
 extern const char*  mode_J_button_data[4];
+extern const char* blank_scroll_area[2];
 
 #endif
