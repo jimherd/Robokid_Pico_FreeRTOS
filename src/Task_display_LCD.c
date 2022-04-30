@@ -43,7 +43,7 @@ BaseType_t  xWasDelayed;
 
 // print hello message 
 
-    LCD_write_row(0, MESSAGE_ROW, "Robokid 2");
+    LCD_write_row(0, MESSAGE_ROW, "Robokid 2", false);
     ENABLE_SCROLLER;
     
     xLastWakeTime = xTaskGetTickCount ();
@@ -150,7 +150,7 @@ error_codes_te  error;
     xSemaphoreGive(semaphore_gamepad_data);
 
     buffer[buffer_pt] = '\0';
-    LCD_write_row(1, ICON_ROW, buffer);
+    LCD_write_row(1, ICON_ROW, buffer, false);
     return;
 }
 
@@ -172,13 +172,13 @@ uint8_t window, index;
 // special case for 1 and two row scrolling : don't scroll
 
     if (LCD_scroll_data.nos_strings == 1) {
-        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);
-        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, blank_row);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0], false);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, blank_row, false);
         return;
     }
     if (LCD_scroll_data.nos_strings == 2) {
-        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0]);
-        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, LCD_scroll_data.string_data[1]);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row, LCD_scroll_data.string_data[0], false);
+        LCD_write_row(0,LCD_scroll_data.first_LCD_row+1, LCD_scroll_data.string_data[1], false);
         return;
     }
     if (LCD_scroll_data.scroll_delay_count > 0) {
@@ -189,7 +189,7 @@ uint8_t window, index;
     }
     window = LCD_scroll_data.first_LCD_row;
     for (index = 0; index < LCD_scroll_data.nos_LCD_rows; index++) {
-        LCD_write_row(0, LCD_scroll_data.first_LCD_row+index, LCD_scroll_data.string_data[LCD_scroll_data.string_count]);
+        LCD_write_row(0, LCD_scroll_data.first_LCD_row+index, LCD_scroll_data.string_data[LCD_scroll_data.string_count], false);
         LCD_scroll_data.string_count += 1; 
         if (LCD_scroll_data.string_count >= LCD_scroll_data.nos_strings) {
             LCD_scroll_data.string_count = 0;
@@ -216,7 +216,7 @@ static void LCD_dump_row_data(void)
     for (uint8_t index = 0; index < SS1306_NOS_LCD_ROWS; index++) {
         if (LCD_row_data[index].dirty_bit == true) {
             xSemaphoreTake(semaphore_SSD1306_display, portMAX_DELAY);
-              SSD1306_write_string(LCD_row_data[index].font, index+1, &LCD_row_data[index].row_string[0]);
+              SSD1306_write_string(LCD_row_data[index].font, index+1, &LCD_row_data[index].row_string[0], LCD_row_data[index].invert);
             xSemaphoreGive(semaphore_SSD1306_display);
             LCD_row_data[index].dirty_bit = false;
         }

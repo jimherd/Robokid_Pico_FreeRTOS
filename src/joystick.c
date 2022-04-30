@@ -27,7 +27,7 @@ secondary_sys_modes_te  secondary_mode;
 error_codes_te          error;
 
     secondary_mode = JOYSTICK_MODE_1;
-    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)]);
+    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)], false);
     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
     set_leds(LED_FLASH, LED_FLASH, LED_OFF, LED_OFF);
     event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
@@ -74,11 +74,10 @@ error_codes_te          error;
  * SELECT : exit this mode
  * 
  * @note
- *  The same motor packet command structure is used to send both right
- * and left commands into the FreeRTOS queue.  This present no problems
+ * The same motor packet command structure is used to send both right
+ * and left commands into the FreeRTOS queue.  This presents no problems
  * as the queue entries are based on data copying and are not passed by
  * reference.
- * 
  */
 error_codes_te run_joystick_mode_1(void)
 {
@@ -150,7 +149,7 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
         motor_cmd_packet.param2  = right_PWM;
         xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
 
-// send left motor command ( See not at function header)
+// send left motor command ( See note at function header)
         motor_cmd_packet.cmd = left_cmd;
         motor_cmd_packet.param1  = LEFT_MOTOR;
         motor_cmd_packet.param2  = left_PWM;
@@ -160,23 +159,3 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
     }
     return OK;
 }
-
-       // motor_cmd_packet.cmd = MOVE;
-        // motor_cmd_packet.param1  = RIGHT_MOTOR;
-        // motor_cmd_packet.param2  = 75;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // motor_cmd_packet.cmd = MOVE;
-        // motor_cmd_packet.param1  = LEFT_MOTOR;
-        // motor_cmd_packet.param2  = 75;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // vTaskDelay(3000/portTICK_PERIOD_MS);
-
-        // motor_cmd_packet.cmd = MOTOR_BRAKE;
-        // motor_cmd_packet.param1  = RIGHT_MOTOR;
-        // motor_cmd_packet.param2  = 0;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // motor_cmd_packet.cmd = MOTOR_BRAKE;
-        // motor_cmd_packet.param1  = LEFT_MOTOR;
-        // motor_cmd_packet.param2  = 0;
-        // xQueueSend(queue_motor_cmds, &motor_cmd_packet, portMAX_DELAY);
-        // vTaskDelay(3000/portTICK_PERIOD_MS);

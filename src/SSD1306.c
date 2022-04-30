@@ -40,9 +40,10 @@ struct {
  * @param font_code Index into table of available fonts
  * @param window    Index into table of defined windows
  * @param buffer    null terminated string to be output
+ * @param invert    invert string data
  * @return uint8_t 
  */
-uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer) {
+uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer, bool invert) {
 
 uint8_t         pixel_width, pixel_height, nos_pages;
 uint8_t         segment, page;
@@ -77,7 +78,11 @@ uint8_t const   *font_base;
             font_index = (uint8_t*)(font_base + ((character - first_char) * (pixel_width * nos_pages)));
 // write character
             for (uint8_t k=i; k < (pixel_width * nos_pages); k=k+nos_pages) {
-                Oled_WriteRam(*(font_index + k));
+                if (invert == true) {
+                    Oled_WriteRam(*(font_index + k));
+                } else {
+                    Oled_WriteRam(~(*(font_index + k)));
+                }
             }
         }
         page++;
@@ -160,10 +165,10 @@ void SSD1306_set_text_area(uint8_t window, uint8_t nos_strings, char *message_st
     //SSD1306_set_window(SCROLL_WINDOW, '\0');   // clear test area window
 
     if (nos_strings == 1) {
-        SSD1306_write_string(0, SCROLL_ROW_UPPER,  message_strings[0]);
+        SSD1306_write_string(0, SCROLL_ROW_UPPER,  message_strings[0], false);
     } else if (nos_strings == 2) {
-        SSD1306_write_string(0, SCROLL_ROW_UPPER,  message_strings[0]);
-        SSD1306_write_string(0, SCROLL_ROW_LOWER,  message_strings[1]);
+        SSD1306_write_string(0, SCROLL_ROW_UPPER,  message_strings[0], false);
+        SSD1306_write_string(0, SCROLL_ROW_LOWER,  message_strings[1], false);
     };
 
     return;

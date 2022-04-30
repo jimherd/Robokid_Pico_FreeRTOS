@@ -161,7 +161,7 @@ void reset_push_button_timers(void)
  * @param row           window in range 1 to 4
  * @param row_string    string to be 
  */
-void LCD_write_row(uint8_t font, uint8_t row, const char *row_string) 
+void LCD_write_row(uint8_t font, uint8_t row, const char *row_string, bool invert) 
 {
 bool    end_detect;
 uint8_t row_data_index;
@@ -182,6 +182,7 @@ uint8_t row_data_index;
         LCD_row_data[row_data_index].row_string[font_data[font].chars_per_row] = '\0';
         LCD_row_data[row_data_index].font = font;
         LCD_row_data[row_data_index].dirty_bit = true;
+        LCD_row_data[row_data_index].invert = invert;
     xSemaphoreGive(semaphore_LCD_data);
     return;
 }

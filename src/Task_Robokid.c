@@ -38,7 +38,7 @@ uint32_t                    press_time;
 error_codes_te              error;
 
     for (index = 0; index < (TASK_ROBOKID_START_DELAY_SECONDS * 2); index++) {
-        LCD_write_row(0, MESSAGE_ROW, system_busy[index % 4]);
+        LCD_write_row(0, MESSAGE_ROW, system_busy[index % 4], false);
         vTaskDelay(HALF_SECOND);
     }
 
@@ -46,7 +46,7 @@ error_codes_te              error;
 
     first_mode = JOYSTICK_MODE;
     last_mode = EXPERIMENT_MODE - 1;  // hide experiment mode from normal operation
-    LCD_write_row(0, MESSAGE_ROW, system_ready[0]);
+    LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     if (press_time > LONG_PRESS_MS) {
         last_mode = EXPERIMENT_MODE;   // expose experiment mode if press time is > xxxx
@@ -56,7 +56,7 @@ error_codes_te              error;
     primary_mode = PRIMARY_NULL_MODE;
 
     FOREVER {
-        LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode]);
+        LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode], true);
         SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
         set_leds(LED_FLASH, LED_OFF, LED_FLASH, LED_FLASH);
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);

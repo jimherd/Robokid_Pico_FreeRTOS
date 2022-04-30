@@ -522,6 +522,7 @@ struct LCD_row_data_s {
     bool    dirty_bit;
     uint8_t font;
     char    row_string[16];
+    bool    invert;
 } ;
 
 struct font_data_s {
