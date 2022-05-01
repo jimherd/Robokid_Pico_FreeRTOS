@@ -144,6 +144,7 @@ uint8_t     index;
     for (index=0 ; index < SS1306_NOS_LCD_ROWS ; index++) {
             LCD_row_data[index].dirty_bit   = false;
             LCD_row_data[index].font        = 0;
+            LCD_row_data[index].invert      = false;
         };
 }
 //==============================================================================
