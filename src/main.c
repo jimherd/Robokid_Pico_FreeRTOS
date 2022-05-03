@@ -162,8 +162,6 @@ int main()
     gpio_pull_down(LOG_PIN);         // should default but just make sure
 
     init_system_data();
-    
-    system_status.error_state = -26;
  
     xTaskCreate(Task_Robokid,
                 "Robokid_task",

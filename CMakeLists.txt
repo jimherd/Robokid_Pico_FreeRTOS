@@ -13,9 +13,11 @@ set(CMAKE_CXX_STANDARD 17)
 # initialize the Pico SDK
 pico_sdk_init()
 
-# addgcc compiler options
+# add gcc compiler options
 
-add_compile_options(-fshort-enums)
+#add_compile_options(-fshort-enums -Wunused-result)
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fshort-enums -Wunused-result ")
 
 # collect all source .c files
 FILE(GLOB Robokid_Pico_Freetros_src ${CMAKE_SOURCE_DIR}/src/*.c)

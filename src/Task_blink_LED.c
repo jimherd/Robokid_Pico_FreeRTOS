@@ -34,7 +34,7 @@ uint32_t    start_time, end_time;
     FOREVER {
         start_time = time_us_32();
         xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
-            error = system_status.error_state;
+            error = system_IO_data.system_status.error_state;
         xSemaphoreGive(semaphore_system_status);
 
         if (error == OK) {                          // no error 

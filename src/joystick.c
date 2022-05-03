@@ -27,7 +27,7 @@ secondary_sys_modes_te  secondary_mode;
 error_codes_te          error;
 
     secondary_mode = JOYSTICK_MODE_1;
-    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)], false);
+    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)], true);
     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
     set_leds(LED_FLASH, LED_FLASH, LED_OFF, LED_OFF);
     event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);

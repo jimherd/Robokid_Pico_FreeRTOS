@@ -17,6 +17,7 @@ typedef enum  {
     BAD_MOTOR_NUMBER                = -3,
     BAD_MOTOR_COMMAND               = -4,
     USB_CONTROLLER_NOT_CONNECTED    = -5,
+    GAMEPAD_ERROR_READING_VID_PID   = -6,
 } error_codes_te;
 
 //==============================================================================

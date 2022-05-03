@@ -58,6 +58,7 @@ struct error_message_s error_message;
     error_message.task       = task;
     error_message.log_time   = time_us_64();
     xQueueSend(queue_motor_cmds, &error_message, portMAX_DELAY);
+
     return;
 }
 

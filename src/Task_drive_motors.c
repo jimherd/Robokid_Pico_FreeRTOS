@@ -32,6 +32,7 @@ uint32_t                   value;
 uint8_t                    i;
 struct motor_data_s        temp_motor_data;
 uint32_t                   start_time, end_time;
+error_codes_te             error;
 
     DRV8833_init();
 
@@ -47,9 +48,13 @@ uint32_t                   start_time, end_time;
             case MOTOR_OFF   : 
             case MOTOR_BRAKE : 
             case MOVE        : {
-                DRV8833_set_motor(command.param1, command.cmd, command.param2);
-                temp_motor_data.motor_state = command.cmd;
-                temp_motor_data.pwm_width   = command.param2;
+                error = DRV8833_set_motor(command.param1, command.cmd, command.param2);
+                if (error == OK) {
+                    temp_motor_data.motor_state = command.cmd;
+                    temp_motor_data.pwm_width   = command.param2;
+                } else {
+                    log_error(error, TASK_DRIVE_MOTORS);
+                }
                 break;
             }
             default : {

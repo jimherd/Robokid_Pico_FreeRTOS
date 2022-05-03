@@ -43,6 +43,7 @@ struct {
  * @param invert    invert string data
  * @return uint8_t 
  */
+__attribute__ ((warn_unused_result))
 uint8_t SSD1306_write_string(uint8_t font_code, uint8_t window,  uint8_t *buffer, bool invert) {
 
 uint8_t         pixel_width, pixel_height, nos_pages;
@@ -78,7 +79,7 @@ uint8_t const   *font_base;
             font_index = (uint8_t*)(font_base + ((character - first_char) * (pixel_width * nos_pages)));
 // write character
             for (uint8_t k=i; k < (pixel_width * nos_pages); k=k+nos_pages) {
-                if (invert == true) {
+                if (invert == false) {
                     Oled_WriteRam(*(font_index + k));
                 } else {
                     Oled_WriteRam(~(*(font_index + k)));
