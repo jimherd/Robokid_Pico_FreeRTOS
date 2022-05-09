@@ -17,6 +17,13 @@
 #include    "error_codes.h"
 
 //==============================================================================
+// Complie time configuration
+//==============================================================================
+
+//#define SSD1306_INTERFACE_SPI
+#define SSD1306_INTERFACE_I2C
+
+//==============================================================================
 // Constants
 //==============================================================================
 // CPU
@@ -29,8 +36,8 @@
 #define     NOS_ROBOKID_LEDS            4
 #define     NOS_ROBOKID_FLOOR_SENSORS   3
 
-#define     LEFT_MOTOR_FLIP_MODE        false
-#define     RIGHT_MOTOR_FLIP_MODE       true
+#define     LEFT_MOTOR_FLIP_MODE        true
+#define     RIGHT_MOTOR_FLIP_MODE       false
 
 //==============================================================================
 // TMC7300 H-bridge
@@ -149,6 +156,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 //==============================================================================
 // SSD1306 display
 
+
 #define SSD1306_LCDWIDTH    128
 #define SSD1306_LCDHEIGHT   64
 
@@ -169,7 +177,8 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 #define SCROLL_WINDOW       5
 
-#define SSD1306_SPI_SPEED   8000000   // SSD1306 SPIMax=10MHz
+#define SSD1306_SPI_SPEED   8000000         // SSD1306 SPIMax=10MHz
+#define SSD1306_I2C_SPEED   (400 * 1000)
 
 // fonts
 

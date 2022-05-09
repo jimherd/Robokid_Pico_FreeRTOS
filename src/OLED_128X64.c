@@ -17,6 +17,7 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 #include "hardware/spi.h"
+#include "hardware/i2c.h"
 #include "OLED_128X64.h"
 
 #include "system.h"
@@ -24,19 +25,9 @@
 #include "font.h"
 #include "bitmap.h"
 
-/*  OLED_128X64(PinName cs, PinName rs, PinName dc, PinName clk, PinName data)
-    : _spi(data, NC, clk), 
-      _cs(cs), 
-      _reset(rs), 
-      _dc(dc),
-      _cursor_x(0),
-      _cursor_y(0)
-{
-    _spi.frequency(5000000);
-} */
 
-    uint8_t  Oled_RAM[1024];  
-    int32_t _cursor_x, _cursor_y;
+uint8_t  Oled_RAM[1024];  
+int32_t _cursor_x, _cursor_y;
 
 //==============================================================================
 // Display configuration information
@@ -106,11 +97,12 @@ const uint8_t init_sequence [] = {
 //==============================================================================
 // Initializes the OLED module.
 //==============================================================================
-void  Oled_Init(void){
+void  SSD1306_init(void){
 
     _cursor_x = 0;
     _cursor_y = 0;
 
+#ifdef SSD1306_INTERFACE_SPI
     gpio_init(OLED_CS);
     gpio_init(OLED_DC);
     gpio_set_dir(OLED_CS, GPIO_OUT);
@@ -122,40 +114,49 @@ void  Oled_Init(void){
     gpio_set_function(OLED_MOSI, GPIO_FUNC_SPI);
 
     spi_init(SPI_PORT, SSD1306_SPI_SPEED);   // SPI_SPEED_5MHz
+#endif
 
-    Oled_Command_seq(init_sequence, sizeof(init_sequence));
+#ifdef SSD1306_INTERFACE_I2C
+    i2c_init(I2C_PORT, SSD1306_I2C_SPEED);
+    gpio_set_function(SSD1306_I2C_SDA_PIN, GPIO_FUNC_I2C);
+    gpio_set_function(SSD1306_I2C_SCL_PIN, GPIO_FUNC_I2C);
+    gpio_pull_up(SSD1306_I2C_SDA_PIN);
+    gpio_pull_up(SSD1306_I2C_SCL_PIN);
+#endif
+
+    SSD1306_command_seq(init_sequence, sizeof(init_sequence));
 
     Oled_Delay();
 
-    Oled_FillScreen(0x00);
 
 /*    Oled_Reset();
-    Oled_Command(SET_DISPLAY_OFF);                  // Set Display OFF
-    Oled_Command(SET_CONTRAST); Oled_Command(0xCF); // Set Contrast Control
-    Oled_Command(SET_ALL_PIXELS_NORMAL);            // Entire Display ON
-    Oled_Command(SET_NORMAL_DISPLAY); 
+    SSD1306_command(SET_DISPLAY_OFF);                  // Set Display OFF
+    SSD1306_command(SET_CONTRAST); SSD1306_command(0xCF); // Set Contrast Control
+    SSD1306_command(SET_ALL_PIXELS_NORMAL);            // Entire Display ON
+    SSD1306_command(SET_NORMAL_DISPLAY); 
 
-    Oled_Command(SET_MEMORY_ADDRESSING_MODE); Oled_Command(PAGE_ADDRESSING_MODE); 
-    Oled_Command(SET_LOWER_COLUMN_START_ADDRESS_PAGE_MODE + 0);
-    Oled_Command(SET_HIGHER_COLUMN_START_ADDRESS_PAGE_MODE + 0);
-    Oled_Command(SET_PAGE_START_ADDRESS_PAGE_MODE | PAGE0);
+    SSD1306_command(SET_MEMORY_ADDRESSING_MODE); SSD1306_command(PAGE_ADDRESSING_MODE); 
+    SSD1306_command(SET_LOWER_COLUMN_START_ADDRESS_PAGE_MODE + 0);
+    SSD1306_command(SET_HIGHER_COLUMN_START_ADDRESS_PAGE_MODE + 0);
+    SSD1306_command(SET_PAGE_START_ADDRESS_PAGE_MODE | PAGE0);
 
-    Oled_Command(SET_DISPLAY_START_LINE | 0);
-    Oled_Command(SET_SEGMENT_REMAP_127_to_SEG0);
-    Oled_Command(SET_MULTIPLEX_RATIO); Oled_Command(0x3F); // Set Multiplex Ratio
-    Oled_Command(0xC8);                     // Set COM Output
-    Oled_Command(SET_DISPLAY_OFFSET); Oled_Command(0); // Set Display Offset
-    Oled_Command(0xDA); Oled_Command(0x12); // Set COM Pins Hardware Configuration
+    SSD1306_command(SET_DISPLAY_START_LINE | 0);
+    SSD1306_command(SET_SEGMENT_REMAP_127_to_SEG0);
+    SSD1306_command(SET_MULTIPLEX_RATIO); SSD1306_command(0x3F); // Set Multiplex Ratio
+    SSD1306_command(0xC8);                     // Set COM Output
+    SSD1306_command(SET_DISPLAY_OFFSET); SSD1306_command(0); // Set Display Offset
+    SSD1306_command(0xDA); SSD1306_command(0x12); // Set COM Pins Hardware Configuration
 
-    Oled_Command(0xD5); Oled_Command(0x80); // Set Display Clock
-    Oled_Command(0xD9); Oled_Command(0xF1); // Set Pre-charge Period
-    Oled_Command(0xDB); Oled_Command(0x40); // Set VCOMH Deselect Level
-    Oled_Command(0x8D); Oled_Command(0x14); // Charge Pump Setting
+    SSD1306_command(0xD5); SSD1306_command(0x80); // Set Display Clock
+    SSD1306_command(0xD9); SSD1306_command(0xF1); // Set Pre-charge Period
+    SSD1306_command(0xDB); SSD1306_command(0x40); // Set VCOMH Deselect Level
+    SSD1306_command(0x8D); SSD1306_command(0x14); // Charge Pump Setting
 
-    Oled_Command(SET_DISPLAY_ON);           // Set Display ON
+    SSD1306_command(SET_DISPLAY_ON);           // Set Display ON
     Oled_FillScreen(0x00);                  // Clear screen */
 
-    Oled_Command(SET_DISPLAY_ON);           // Set Display ON
+    Oled_FillScreen(0x00);                  // Clear screen */
+    SSD1306_command(SET_DISPLAY_ON);           // Set Display ON
 }
 
 //==============================================================================
@@ -179,24 +180,56 @@ void  Oled_Reset(void)
 //==============================================================================
 // Write a single command.
 //==============================================================================
-void  Oled_Command(const uint8_t cmd)
+/**
+ * @brief Write a command to the OLED SSD1306 display
+ * 
+ * @note
+ *      Code can access SPI or I2C interface
+ * 
+ * @param cmd 
+ */
+void  SSD1306_command(const uint8_t cmd)
 {
+
+#ifdef SSD1306_INTERFACE_SPI
     gpio_put(OLED_CS, 1);
     gpio_put(OLED_DC, 0);
     gpio_put(OLED_CS, 0);
     spi_write_blocking(SPI_PORT, &cmd, 1);
     gpio_put(OLED_CS, 1);
+#endif
+
+#ifdef SSD1306_INTERFACE_I2C
+    // I2C write process expects a control byte followed by data
+    // this "data" can be a command or data to follow up a command
+    // Co = 1, D/C = 0 => the driver expects a command
+    uint8_t buf[2] = {0x80, cmd};
+    int reply;
+    reply = i2c_write_blocking(I2C_PORT, SSD1306_ADDRESS, buf, 2, false);
+    if (reply == PICO_ERROR_GENERIC ) {
+        __breakpoint;
+    }
+#endif
+
 }
 //==============================================================================
 // Write a single command.
 //==============================================================================
-void  Oled_Command_seq(const uint8_t *cmd_seq, uint32_t len)
+void  SSD1306_command_seq(const uint8_t *cmd_seq, uint32_t len)
 {
+#ifdef SSD1306_INTERFACE_SPI
     gpio_put(OLED_CS, 1);
     gpio_put(OLED_DC, 0);
     gpio_put(OLED_CS, 0);
     spi_write_blocking(SPI_PORT, cmd_seq, len);
     gpio_put(OLED_CS, 1);
+#endif
+
+#ifdef SSD1306_INTERFACE_I2C
+    for (uint32_t i = 0; i < len; i++) {
+        SSD1306_command(cmd_seq[i]);
+    }
+#endif
 }
 
 //==============================================================================
@@ -204,11 +237,19 @@ void  Oled_Command_seq(const uint8_t *cmd_seq, uint32_t len)
 //==============================================================================
 void  Oled_WriteRam(uint8_t dat)
 {
+#ifdef SSD1306_INTERFACE_SPI
     gpio_put(OLED_CS, 1);
     gpio_put(OLED_DC, 1);
     gpio_put(OLED_CS, 0);
     spi_write_blocking(SPI_PORT, &dat, 1);
     gpio_put(OLED_CS, 1);   
+#endif
+
+#ifdef SSD1306_INTERFACE_I2C
+    // Co = 0, D/C = 1 => the driver expects data to be written to RAM
+    uint8_t buf[2] = {0x40, dat};
+    i2c_write_blocking(I2C_PORT, SSD1306_ADDRESS, buf, 2, false);
+#endif
 }
 
 //==============================================================================
@@ -225,9 +266,9 @@ uint8_t low_column, hig_column;
     hig_column = hig_column | 0b00010000;
     pag = (pag & 0b00000111);
     pag = (pag | 0b10110000);
-    Oled_Command(low_column); // Set Lower Column
-    Oled_Command(hig_column); // Set Higher Column
-    Oled_Command(pag);        // Set Page Start
+    SSD1306_command(low_column); // Set Lower Column
+    SSD1306_command(hig_column); // Set Higher Column
+    SSD1306_command(pag);        // Set Page Start
 }
 
 //==============================================================================
@@ -611,61 +652,61 @@ void  Oled_Circle(uint8_t x1, uint8_t y1, uint8_t radius, uint8_t color)
 void  Right_HorizontalScroll(uint8_t start_page, uint8_t end_page, uint8_t set_time)
 {
     Deactivate_Scroll();
-    Oled_Command(0x26);
-    Oled_Command(0x00);
-    Oled_Command(start_page);
-    Oled_Command(set_time);
-    Oled_Command(end_page);
-    Oled_Command(0x00);
-    Oled_Command(0xFF);
+    SSD1306_command(0x26);
+    SSD1306_command(0x00);
+    SSD1306_command(start_page);
+    SSD1306_command(set_time);
+    SSD1306_command(end_page);
+    SSD1306_command(0x00);
+    SSD1306_command(0xFF);
     Activate_Scroll();
 }
 
 void  Left_HorizontalScroll(uint8_t start_page, uint8_t end_page, uint8_t set_time)
 {
     Deactivate_Scroll();
-    Oled_Command(0x27);
-    Oled_Command(0x00);
-    Oled_Command(start_page);
-    Oled_Command(set_time);
-    Oled_Command(end_page);
-    Oled_Command(0x00);
-    Oled_Command(0xFF);
+    SSD1306_command(0x27);
+    SSD1306_command(0x00);
+    SSD1306_command(start_page);
+    SSD1306_command(set_time);
+    SSD1306_command(end_page);
+    SSD1306_command(0x00);
+    SSD1306_command(0xFF);
     Activate_Scroll();
 }
 
 void  VerticalRight_HorizontalScroll(uint8_t start_page, uint8_t end_page, uint8_t set_time)
 {
     Deactivate_Scroll();
-    Oled_Command(0x29);
-    Oled_Command(0x00);
-    Oled_Command(start_page);
-    Oled_Command(set_time);
-    Oled_Command(end_page);
-    Oled_Command(0x01); //scrolling_offset
+    SSD1306_command(0x29);
+    SSD1306_command(0x00);
+    SSD1306_command(start_page);
+    SSD1306_command(set_time);
+    SSD1306_command(end_page);
+    SSD1306_command(0x01); //scrolling_offset
     Activate_Scroll();
 }
 
 void  VerticalLeft_HorizontalScroll(uint8_t start_page, uint8_t end_page, uint8_t set_time)
 {
     Deactivate_Scroll();
-    Oled_Command(0x2A);
-    Oled_Command(0x00);
-    Oled_Command(start_page);
-    Oled_Command(set_time);
-    Oled_Command(end_page);
-    Oled_Command(0x01); //scrolling_offset
+    SSD1306_command(0x2A);
+    SSD1306_command(0x00);
+    SSD1306_command(start_page);
+    SSD1306_command(set_time);
+    SSD1306_command(end_page);
+    SSD1306_command(0x01); //scrolling_offset
     Activate_Scroll();
 }
 
 void  Deactivate_Scroll(void)
 {
-    Oled_Command(0x2E);
+    SSD1306_command(0x2E);
 }
 
 void  Activate_Scroll(void)
 {
-    Oled_Command(0x2F);
+    SSD1306_command(0x2F);
 }
 
 //==============================================================================

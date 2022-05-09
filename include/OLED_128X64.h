@@ -50,10 +50,14 @@
 // OLED_SDA    <<<>>> Connect to I2C SDA line.
 //==============================================================================
 
-#define     OLED_I2C_SCL    GP7      // GP3  Pin 5
-#define     OLED_I2C_SDA    GP4      // GP4  Pin 6
+#define     SSD1306_I2C_SDA_PIN    GP8 
+#define     SSD1306_I2C_SCL_PIN    GP9 
 
 #define     I2C_PORT        i2c0
+
+#define     SSD1306_ADDRESS   0x3C
+
+#define     SSD1306_WRITE_MODE  0x0
 
 #define     DISPLAY_WIDTH   128
 #define     DISPLAY_HEIGHT   64
@@ -128,11 +132,11 @@
 //==============================================================================
 // Function Prototypes.
 //==============================================================================
-    void Oled_Init(void);
+    void SSD1306_init(void);
     void Oled_Delay(void);
     void Oled_Reset(void);
-    void Oled_Command(uint8_t cmd);
-    void  Oled_Command_seq(const uint8_t *cmd_seq, uint32_t len);
+    void SSD1306_command(uint8_t cmd);
+    void  SSD1306_command_seq(const uint8_t *cmd_seq, uint32_t len);
     void Oled_WriteRam(uint8_t dat);
     void Oled_SetPointer(uint8_t seg, uint8_t pag);
     void Oled_SetFont(const unsigned char *_font, uint8_t _width, uint8_t _height, uint8_t _min, uint8_t _max);

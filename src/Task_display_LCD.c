@@ -39,7 +39,7 @@ uint32_t    start_time, end_time;
 TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
 
-    Oled_Init();
+    SSD1306_init();
 
 // print hello message 
 

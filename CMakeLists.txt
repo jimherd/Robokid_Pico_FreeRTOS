@@ -15,8 +15,6 @@ pico_sdk_init()
 
 # add gcc compiler options
 
-#add_compile_options(-fshort-enums -Wunused-result)
-
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fshort-enums -Wunused-result ")
 
 # collect all source .c files
@@ -50,6 +48,7 @@ target_link_libraries( ${PROJECT_NAME}
     pico_stdlib 
     pico_multicore
     hardware_gpio 
+    hardware_i2c
     hardware_spi
     hardware_pwm
     FreeRTOS

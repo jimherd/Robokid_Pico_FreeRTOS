@@ -10,6 +10,7 @@
 //          switch C = exit to main slection level
 //          switch D = step through selections
 
+#include <stdlib.h>
 #include <string.h>
 
 #include "system.h"
@@ -132,16 +133,18 @@ uint8_t left_cmd, right_cmd, left_PWM, right_PWM;
         } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
             right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
             right_PWM = 0; left_PWM = -100;
-        } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
+        } else if (DPAD_code == ARC_BACKWARD_LEFT) {
             right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
             right_PWM = -100; left_PWM = 0;
         }
 
 // If Y-switch pressed then set half speed
         if (temp_gamepad_data.button_Y == true) {
-            left_PWM = left_PWM >> 1;
-            right_PWM = right_PWM >> 1;
+            left_PWM = (left_PWM < 0) ? -(abs(left_PWM) >> 1) : (left_PWM >> 1);
+            right_PWM = (right_PWM < 0) ? -(abs(right_PWM) >> 1) : (right_PWM >> 1);
         }
+        //    left_PWM = left_PWM >> 1;
+        //    right_PWM = right_PWM >> 1;
 
 // send right motor command
         motor_cmd_packet.cmd = right_cmd;

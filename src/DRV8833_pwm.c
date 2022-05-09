@@ -71,6 +71,7 @@ void set_PWM_duty_cycle(motor_t motor, uint32_t duty_cycle)
  * @param pwm_width     -100% to +100%
  * @return error_codes_e      error code -  OK, BAD_MOTOR_NUMBER, or BAD_PWM_WIDTH
  */
+__attribute__ ((warn_unused_result))
 error_codes_te  DRV8833_set_motor(motor_t motor_number, motor_cmd_t command, int8_t pwm_width) 
 {
 
@@ -172,7 +173,7 @@ error_codes_te   error;
             if (temp_motor_data.flip == true){
                 temp = DRV8833_in2;
                 DRV8833_in2 = DRV8833_in1;
-                DRV8833_in2 = temp;
+                DRV8833_in1 = temp;
             }
             break;
         }
@@ -204,10 +205,12 @@ error_codes_te   error;
 // vehicle_stop : set both motor to brake
 // ============
 //
-void vehicle_stop(void) {
+void vehicle_stop(void) 
+{
+error_codes_te error;
 
-    DRV8833_set_motor(LEFT_MOTOR , MOTOR_BRAKE, 0);
-    DRV8833_set_motor(RIGHT_MOTOR, MOTOR_BRAKE, 0);
+    error = DRV8833_set_motor(LEFT_MOTOR , MOTOR_BRAKE, 0);
+    error = DRV8833_set_motor(RIGHT_MOTOR, MOTOR_BRAKE, 0);
   
 //    motor_data[LEFT_MOTOR].motor_state = STOPPED;
 //    motor_data[RIGHT_MOTOR].motor_state = STOPPED;
