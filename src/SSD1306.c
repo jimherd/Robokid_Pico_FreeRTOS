@@ -80,7 +80,7 @@ uint8_t const   *font_base;
         ch_pt = buffer;
         buff_index = 1;    // used by I2C code
 // string loop
-        Oled_SetPointer(segment, page);
+        SSD1306_SetPointer(segment, page);
         for (uint8_t j=0 ; j<char_cnt ; j++) {
             character = *ch_pt++;
             font_index = (uint8_t*)(font_base + ((character - first_char) * (pixel_width * nos_pages)));
@@ -88,9 +88,9 @@ uint8_t const   *font_base;
             for (uint8_t k=i; k < (pixel_width * nos_pages); k=k+nos_pages) {
     #ifdef SSD1306_INTERFACE_SPI
                 if (invert == false) {
-                    Oled_WriteRam(*(font_index + k));
+                    SSD1306_WriteRam(*(font_index + k));
                 } else {
-                    Oled_WriteRam(~(*(font_index + k)));
+                    SSD1306_WriteRam(~(*(font_index + k)));
                 }
     #endif
 
@@ -121,9 +121,9 @@ void SSD1306_set_window(uint8_t window, uint8_t byte_value) {
     uint8_t nos_pixels = ((page_window_table[window].X2_seg_value - page_window_table[window].X1_seg_value) + 1);
 
     for (uint8_t i = page_window_table[window].Y1_pag_value ; i <= page_window_table[window].Y2_pag_value ; i++) {
-        Oled_SetPointer(page_window_table[window].X1_seg_value, i);
+        SSD1306_SetPointer(page_window_table[window].X1_seg_value, i);
         for (uint8_t j = page_window_table[window].X1_seg_value; j <= page_window_table[window].X2_seg_value ; j++) {
-            Oled_WriteRam(byte_value);
+            SSD1306_WriteRam(byte_value);
         }
     }
 }
@@ -208,9 +208,9 @@ error_codes_te error;
 //  */
 // uint8_t SSD1306_write_pag_buf(uint8_t font_index, uint8_t *buffer, uint8_t len){
 
-//     //Oled_SetPointer(seg, pag);      // set start point
+//     //SSD1306_SetPointer(seg, pag);      // set start point
 //     for (uint8_t i=0; i < len ; i++) {
-//         Oled_WriteRam(*buffer);     // write sequentially
+//         SSD1306_WriteRam(*buffer);     // write sequentially
 //     }
 //     return 0;
 // }

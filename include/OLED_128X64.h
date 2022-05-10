@@ -137,8 +137,8 @@
     void Oled_Reset(void);
     void SSD1306_command(uint8_t cmd);
     void  SSD1306_command_seq(const uint8_t *cmd_seq, uint32_t len);
-    void Oled_WriteRam(uint8_t dat);
-    void Oled_SetPointer(uint8_t seg, uint8_t pag);
+    void SSD1306_WriteRam(uint8_t dat);
+    void SSD1306_SetPointer(uint8_t seg, uint8_t pag);
     void Oled_SetFont(const unsigned char *_font, uint8_t _width, uint8_t _height, uint8_t _min, uint8_t _max);
     void Oled_WriteChar(uint8_t c, uint8_t seg, uint8_t pag);
     void Oled_ConstText(char *buffer, uint8_t seg, uint8_t pag);
@@ -146,7 +146,7 @@
     void Oled_ConstTextScroll(char *buffer);
     void Oled_TextScroll(char *buffer);
     void Oled_ResetScroll(void);
-    void Oled_FillScreen(uint8_t pattern);
+    void SSD1306_FillScreen(uint8_t pattern);
     void Oled_Image(const unsigned char *buffer);
     void Oled_InvertRam(uint8_t seg1, uint8_t pag1, uint8_t seg2, uint8_t pag2);
     void Oled_Icon(const unsigned char *buffer, uint8_t seg, uint8_t pag, uint8_t _width, uint8_t _height);

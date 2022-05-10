@@ -26,8 +26,8 @@
 #include "bitmap.h"
 
 
-uint8_t  Oled_RAM[1024];  
-int32_t _cursor_x, _cursor_y;
+// uint8_t  SSD1306_RAM[1024];  
+//int32_t _cursor_x, _cursor_y;
 
 //==============================================================================
 // Display configuration information
@@ -54,9 +54,10 @@ uint8_t cnt_character;
 //==============================================================================
 const unsigned char *font, *font2;
 uint8_t width, height, min, max;
-uint8_t Oled_RAM[1024];
+uint8_t SSD1306_RAM[1024];
 uint8_t cnt_width = 0;
 uint8_t cnt_character = 0;
+int32_t _cursor_x, _cursor_y;
 
 //==============================================================================
 // Sequence of commands to initialise SSD1306 display
@@ -153,9 +154,9 @@ void  SSD1306_init(void){
     SSD1306_command(0x8D); SSD1306_command(0x14); // Charge Pump Setting
 
     SSD1306_command(SET_DISPLAY_ON);           // Set Display ON
-    Oled_FillScreen(0x00);                  // Clear screen */
+    SSD1306_FillScreen(0x00);                  // Clear screen */
 
-    Oled_FillScreen(0x00);                  // Clear screen */
+    SSD1306_FillScreen(0x00);                  // Clear screen */
     SSD1306_command(SET_DISPLAY_ON);           // Set Display ON
 }
 
@@ -235,7 +236,7 @@ void  SSD1306_command_seq(const uint8_t *cmd_seq, uint32_t len)
 //==============================================================================
 // Write a byte to RAM memory.
 //==============================================================================
-void  Oled_WriteRam(uint8_t dat)
+void  SSD1306_WriteRam(uint8_t dat)
 {
 #ifdef SSD1306_INTERFACE_SPI
     gpio_put(OLED_CS, 1);
@@ -257,7 +258,7 @@ void  Oled_WriteRam(uint8_t dat)
 // seg: sets the segment.
 // pag: sets the  page.
 //==============================================================================
-void  Oled_SetPointer(uint8_t seg, uint8_t pag)
+void  SSD1306_SetPointer(uint8_t seg, uint8_t pag)
 {
 uint8_t low_column, hig_column;
 
@@ -313,9 +314,9 @@ uint x_seg, y_pag;
         y_pag = pag;
         for(j = 0; j < height; j++) {
             if(x_seg < 128) {
-                Oled_SetPointer(x_seg, y_pag);
-                Oled_WriteRam(*font);
-                Oled_RAM[x_seg + (y_pag * 128)] = *font;  // keep copy
+                SSD1306_SetPointer(x_seg, y_pag);
+                SSD1306_WriteRam(*font);
+                SSD1306_RAM[x_seg + (y_pag * 128)] = *font;  // keep copy
             }
             y_pag++;
             font++;
@@ -377,15 +378,15 @@ uint i;
         cnt_character++;
         cnt_width = 0; 
     }
-    Oled_SetPointer(0, 0);
+    SSD1306_SetPointer(0, 0);
     for(i = 0; i < 127; i++) {
-        Oled_RAM[i] = Oled_RAM[i+1];
-        Oled_WriteRam(Oled_RAM[i]);
+        SSD1306_RAM[i] = SSD1306_RAM[i+1];
+        SSD1306_WriteRam(SSD1306_RAM[i]);
     } 
-    Oled_SetPointer(0, 1);
+    SSD1306_SetPointer(0, 1);
     for(i = 128; i < 255; i++) {
-        Oled_RAM[i] = Oled_RAM[i+1];
-        Oled_WriteRam(Oled_RAM[i]);
+        SSD1306_RAM[i] = SSD1306_RAM[i+1];
+        SSD1306_WriteRam(SSD1306_RAM[i]);
     }
 }
 
@@ -409,15 +410,15 @@ uint i;
         cnt_character++;
         cnt_width = 0; 
     }
-    Oled_SetPointer(0, 0);
+    SSD1306_SetPointer(0, 0);
     for(i = 0; i < 127; i++) {
-        Oled_RAM[i] = Oled_RAM[i+1];
-        Oled_WriteRam(Oled_RAM[i]);
+        SSD1306_RAM[i] = SSD1306_RAM[i+1];
+        SSD1306_WriteRam(SSD1306_RAM[i]);
     } 
-    Oled_SetPointer(0, 1);
+    SSD1306_SetPointer(0, 1);
     for(i = 128; i < 255; i++) {
-        Oled_RAM[i] = Oled_RAM[i+1];
-        Oled_WriteRam(Oled_RAM[i]);
+        SSD1306_RAM[i] = SSD1306_RAM[i+1];
+        SSD1306_WriteRam(SSD1306_RAM[i]);
     }
 }
 
@@ -435,16 +436,16 @@ void  Oled_ResetScroll(void)
 // Fills OLED memory.
 // pattern: byte to fill OLED memory.
 //==============================================================================
-void  Oled_FillScreen(uint8_t pattern)
+void  SSD1306_FillScreen(uint8_t pattern)
 {
 uint8_t i, j;
 uint k = 0;
 
     for(i = 0; i < 8; i++) {
-        Oled_SetPointer(0, i);
+        SSD1306_SetPointer(0, i);
         for(j = 0; j < 128; j++) {
-            Oled_WriteRam(pattern);
-            Oled_RAM[k] = pattern;
+            SSD1306_WriteRam(pattern);
+            SSD1306_RAM[k] = pattern;
             k++;
         }
     }
@@ -460,10 +461,10 @@ uint8_t i, j;
 uint k = 0;
 
     for(i = 0; i < 8; i++) {
-        Oled_SetPointer(0, i);
+        SSD1306_SetPointer(0, i);
         for(j = 0; j < 128; j++) {
-            Oled_WriteRam(*buffer);
-            Oled_RAM[k] = *buffer;
+            SSD1306_WriteRam(*buffer);
+            SSD1306_RAM[k] = *buffer;
             buffer++;
             k++;
         }
@@ -488,9 +489,9 @@ uint x_seg, y_pag;
         x_seg = seg;
         for(j = 0; j < _width; j++) {
             if(x_seg < 128) {
-                Oled_SetPointer(x_seg, y_pag);
-                Oled_WriteRam(*buffer);
-                Oled_RAM[x_seg + (y_pag * 128)] = *buffer;
+                SSD1306_SetPointer(x_seg, y_pag);
+                SSD1306_WriteRam(*buffer);
+                SSD1306_RAM[x_seg + (y_pag * 128)] = *buffer;
             }
             buffer++;
             x_seg++;
@@ -513,9 +514,9 @@ uint i, j, k;
     for(i = pag1; i <= pag2; i++) {
         for(j = seg1; j <= seg2; j++) {
             k = j + (i * 128);
-            Oled_RAM[k] = ~Oled_RAM[k];
-            Oled_SetPointer(j, i);
-            Oled_WriteRam(Oled_RAM[k]);
+            SSD1306_RAM[k] = ~SSD1306_RAM[k];
+            SSD1306_SetPointer(j, i);
+            SSD1306_WriteRam(SSD1306_RAM[k]);
         }
     }
 }
@@ -532,11 +533,11 @@ void  Oled_Pixel(uint8_t x, uint8_t y, uint8_t color)
     if((x < 0) || (x > 127) || (y < 0) || (y > 63)){
         return;
     }  
-    Oled_SetPointer(x, y/8);    
+    SSD1306_SetPointer(x, y/8);    
     switch(color) {
-       case 1: Oled_WriteRam(Oled_RAM[x+((y/8)*128)] |=  (1<<(y%8))); break;
-       case 2: Oled_WriteRam(Oled_RAM[x+((y/8)*128)] &= ~(1<<(y%8))); break;
-       case 3: Oled_WriteRam(Oled_RAM[x+((y/8)*128)] ^=  (1<<(y%8))); break;
+       case 1: SSD1306_WriteRam(SSD1306_RAM[x+((y/8)*128)] |=  (1<<(y%8))); break;
+       case 2: SSD1306_WriteRam(SSD1306_RAM[x+((y/8)*128)] &= ~(1<<(y%8))); break;
+       case 3: SSD1306_WriteRam(SSD1306_RAM[x+((y/8)*128)] ^=  (1<<(y%8))); break;
     }
 }
 
@@ -718,7 +719,7 @@ void  Oled_Demo(void)
 uint32_t  i, j, k;
 char buffer2[20];
 
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("lines", 30, 0);
     for(i=16; i<64; i=i+4) {
         Oled_Line(0, 16, 127, i, BLACK);
@@ -726,7 +727,7 @@ char buffer2[20];
     }
     sleep_ms(3000);
 
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("Circles", 10, 0);
     for(i=1; i<16; i=i+3) {
         Oled_Circle(63, 31, i, BLACK);
@@ -734,7 +735,7 @@ char buffer2[20];
     }
     sleep_ms(3000);
 
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("Rectangles", 0, 0);
     for(i = 0; i < 15; i = i + 4) {
         Oled_Rectangle(16+i, 16+i, 112-i, 46-i, BLACK);
@@ -742,7 +743,7 @@ char buffer2[20];
     }
     sleep_ms(3000);
 
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("  Inverts  ", 0, 0);
     for(i=0; i<8; i++) {
         Oled_InvertRam(0, 0, 127, 7);
@@ -750,7 +751,7 @@ char buffer2[20];
     } 
 
     sleep_ms(1000);
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("Main Menu", 8, 0);
     Oled_Icon(icon1,20,3,32,32); 
     Oled_Icon(icon2,72,3,32,32); sleep_ms(3000);
@@ -758,7 +759,7 @@ char buffer2[20];
     Oled_Icon(icon4,72,3,32,32); sleep_ms(3000);
 
     sleep_ms(1000);
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_ConstText("Fonts", 35, 0);
     for(i=0; i<113; i++) {
         sprintf(buffer2,"%03d",i);
@@ -775,7 +776,7 @@ char buffer2[20];
     Oled_Image(truck_bmp);
 
     sleep_ms(5000);
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     Oled_SetFont(Terminal_12x16, 12, 16, 32 ,127);
     Oled_ResetScroll();
     for(k=0; k<500; k++) {
@@ -783,7 +784,7 @@ char buffer2[20];
         sleep_ms(50);
     }
 
-    Oled_FillScreen(0x00);
+    SSD1306_FillScreen(0x00);
     i=10; j=0;
     Oled_ResetScroll();
     while(1) {

@@ -178,7 +178,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define SCROLL_WINDOW       5
 
 #define SSD1306_SPI_SPEED   8000000         // SSD1306 SPIMax=10MHz
-#define SSD1306_I2C_SPEED   (400 * 1000)
+#define SSD1306_I2C_SPEED   (400 * 1000)    // 400K bits/sec
 
 // fonts
 

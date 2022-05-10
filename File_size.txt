@@ -289,3 +289,12 @@
 09/05/2022 
       text       data        bss      total filename
      44332      10152      55616     110100 Robokid_Pico_FreeRTOS.elf
+10/05/2022 
+      text       data        bss      total filename
+     44332      10152      55616     110100 Robokid_Pico_FreeRTOS.elf
+10/05/2022 
+      text       data        bss      total filename
+     44332      10152      55616     110100 Robokid_Pico_FreeRTOS.elf
+10/05/2022 
+      text       data        bss      total filename
+     44332      10152      55616     110100 Robokid_Pico_FreeRTOS.elf
