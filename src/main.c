@@ -167,7 +167,7 @@ int main()
                 "Robokid_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
-                TASK_PRIORITYIDLE,
+                TASK_PRIORITYLOW,
                 &taskhndl_Task_Robokid
     );
 
@@ -191,7 +191,7 @@ int main()
                 "Task_display_LCD",
                 configMINIMAL_STACK_SIZE,
                 NULL,
-                TASK_PRIORITYNORMAL,
+                TASK_PRIORITYBELOWNORMAL,
                 &taskhndl_Task_display_LCD
     );
 

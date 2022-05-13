@@ -10,7 +10,7 @@
 #include "SSD1306.h"
 #include "Robokid_strings.h"
 #include "tunes.h"
-#include "joystick.h"
+#include "gamepad.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -66,7 +66,7 @@ error_codes_te              error;
                 case PRIMARY_NULL_MODE :  // no mode selected as yet
                     break;
                 case JOYSTICK_MODE : 
-                    error = run_joystick_mode();
+                    error = run_gamepad_modes();
                     if (error != OK) {
                         log_error(error, TASK_ROBOKID);
                     }

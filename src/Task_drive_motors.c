@@ -31,7 +31,7 @@ struct motor_cmd_packet_s  command;
 uint32_t                   value;
 uint8_t                    i;
 struct motor_data_s        temp_motor_data;
-TickType_t  xLastWakeTime;
+TickType_t                  xLastWakeTime;
 TickType_t                   start_time, end_time;
 error_codes_te             error;
 

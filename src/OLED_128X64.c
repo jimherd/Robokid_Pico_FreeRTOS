@@ -624,8 +624,7 @@ void  Oled_Circle(uint8_t x1, uint8_t y1, uint8_t radius, uint8_t color)
 
     
 
-    while(x 
-    >= y) {
+    while(x >= y) {
         Oled_Pixel(x + x1, y + y1, color);
         Oled_Pixel(y + x1, x + y1, color);
         Oled_Pixel(-x + x1, y + y1, color);
