@@ -44,7 +44,7 @@ error_codes_te              error;
 
     SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
-    first_mode = JOYSTICK_MODE;
+    first_mode = GAMEPAD_MODE;
     last_mode = EXPERIMENT_MODE - 1;  // hide experiment mode from normal operation
     LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
@@ -65,7 +65,7 @@ error_codes_te              error;
             switch (primary_mode) {
                 case PRIMARY_NULL_MODE :  // no mode selected as yet
                     break;
-                case JOYSTICK_MODE : 
+                case GAMEPAD_MODE : 
                     error = run_gamepad_modes();
                     if (error != OK) {
                         log_error(error, TASK_ROBOKID);

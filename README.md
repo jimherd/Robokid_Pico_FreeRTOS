@@ -7,7 +7,7 @@ Conversion of original Robokid system to use RP2040 Pico device
 | NXP MC9S08AW60 | Raspberry Pico RP2040 |
 | 7-segment | SSD1306 LCD|
 | MPC17511 H-bridge | DRV8833 H-bridge |
-| Custom joystick | USB SNES joypad |
+| Custom joystick | USB SNES gamepad |
 | Custom timing code | FreeRTOS |
 | Custom joystick code | TinyUSB |
 

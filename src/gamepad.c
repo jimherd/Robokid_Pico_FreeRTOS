@@ -27,30 +27,29 @@ EventBits_t             event_bits;
 secondary_sys_modes_te  secondary_mode;
 error_codes_te          error;
 
-    secondary_mode = JOYSTICK_MODE_1;
-    LCD_write_row(0, MESSAGE_ROW, mode_J[secondary_mode - (10 * JOYSTICK_MODE)], true);
+    secondary_mode = GAMEPAD_MODE_1;
+    LCD_write_row(0, MESSAGE_ROW, mode_G[secondary_mode - (10 * GAMEPAD_MODE)], true);
     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
-    set_leds(LED_FLASH, LED_FLASH, LED_OFF, LED_OFF);
+    set_leds(LED_ON, LED_ON, LED_OFF, LED_OFF);
     event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
     if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
         switch (secondary_mode) {
-            case JOYSTICK_MODE_1 : {
-                return (execute_gamepad_activities(JOYSTICK_MODE_1));
+            case GAMEPAD_MODE_1 : {
+                return (execute_gamepad_activities(GAMEPAD_MODE_1));
             }
-            case JOYSTICK_MODE_2 : {
-                return(execute_gamepad_activities(JOYSTICK_MODE_2));
+            case GAMEPAD_MODE_2 : {
+                return(execute_gamepad_activities(GAMEPAD_MODE_2));
                 break;
             }
-            case SECONDARY_NULL_MODE :
             default : {
                 break;
             }
         } 
     }
     if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
-        if (secondary_mode == LAST_JOYSTICK_MODE) {
-            secondary_mode = FIRST_JOYSTICK_MODE;
+        if (secondary_mode == LAST_GAMEPAD_MODE) {
+            secondary_mode = FIRST_GAMEPAD_MODE;
         } else {
             secondary_mode++;
         }
@@ -69,6 +68,8 @@ error_codes_te          error;
  * 
  * DPAD : forward, backward, left, right
  * SELECT : exit this mode
+ * 
+ * @param mode   joystick mode
  * 
  * @note
  * The same motor packet command structure is used to send both right
@@ -121,18 +122,21 @@ int8_t                      left_PWM, right_PWM;
         } else if (DPAD_code == DPAD_SPIN_LEFT) {
             right_cmd = MOVE; left_cmd = MOVE;
             right_PWM = +100; left_PWM = -100;
-        } else if (DPAD_code == ARC_FORWARD_RIGHT) {
-            right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-            right_PWM = 0; left_PWM = +100;
-        } else if (DPAD_code == ARC_FORWARD_LEFT) {
-            right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-            right_PWM = +100; left_PWM = 0;
-        } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
-            right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-            right_PWM = 0; left_PWM = -100;
-        } else if (DPAD_code == ARC_BACKWARD_LEFT) {
-            right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-            right_PWM = -100; left_PWM = 0;
+        } 
+        if (mode == GAMEPAD_MODE_2) {
+            if (DPAD_code == ARC_FORWARD_RIGHT) {
+                right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
+                right_PWM = 0; left_PWM = +100;
+            } else if (DPAD_code == ARC_FORWARD_LEFT) {
+                right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
+                right_PWM = +100; left_PWM = 0;
+            } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
+                right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
+                right_PWM = 0; left_PWM = -100;
+            } else if (DPAD_code == ARC_BACKWARD_LEFT) {
+                right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
+                right_PWM = -100; left_PWM = 0;
+            }
         }
 
 // If Y-switch pressed then set half speed

@@ -40,15 +40,6 @@
 #define     RIGHT_MOTOR_FLIP_MODE       false
 
 //==============================================================================
-// TMC7300 H-bridge
-// #define     TMC7300_UART_PORT   uart1  
-// #define     BAUD_RATE           115200   
-
-// #define     UART_TX_PIN         GP8         // Pin 11
-// #define     UART_RX_PIN         GP9         // Pin 12
-// #define     TMC7300_EN_PIN      GP10        // Pin 14
-
-//==============================================================================
 // DRV8833 H-bridge
 
 #define MOTOR_COUNT_FREQ        25000000    // 25MHz
@@ -269,7 +260,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 typedef enum {
     PRIMARY_NULL_MODE,
-    JOYSTICK_MODE, ACTIVITY_MODE, BUMP_MODE, FOLLOW_MODE, PROGRAM_MODE, 
+    GAMEPAD_MODE, ACTIVITY_MODE, BUMP_MODE, FOLLOW_MODE, PROGRAM_MODE, 
     SKETCH_MODE, LAB_MODE, DISTANCE_MODE, EXPERIMENT_MODE
 } primary_sys_modes_te;
 
@@ -279,7 +270,7 @@ typedef enum {
 
 typedef enum { 
     SECONDARY_NULL_MODE,
-    JOYSTICK_MODE_1=(JOYSTICK_MODE*10), JOYSTICK_MODE_2, JOYSTICK_MODE_3,
+    GAMEPAD_MODE_1=(GAMEPAD_MODE*10), GAMEPAD_MODE_2, GAMEPAD_MODE_3,
     RUN_FORWARD=(ACTIVITY_MODE*10), RUN_BACKWARD, RUN_SPIN_RIGHT, RUN_SPIN_LEFT, RUN_TEST,  DEMO_MODE,
     LINE_BUMP_MODE=(BUMP_MODE*10), LINE_BUG_BUMP_MODE, WALL_BUMP_MODE,
     LINE_FOLLOW_MODE=(FOLLOW_MODE*10), LIGHT_FOLLOW_MODE,
@@ -290,8 +281,8 @@ typedef enum {
     experiment_1=(EXPERIMENT_MODE*10),experiment_2, experiment_3, experiment_4, experiment_5,
 } secondary_sys_modes_te;
 
-#define   FIRST_JOYSTICK_MODE  JOYSTICK_MODE_1
-#define   LAST_JOYSTICK_MODE   JOYSTICK_MODE_3
+#define   FIRST_GAMEPAD_MODE  GAMEPAD_MODE_1
+#define   LAST_GAMEPAD_MODE   GAMEPAD_MODE_3
 
 #define   FIRST_ACTIVITY_MODE  RUN_FORWARD
 #define   LAST_ACTIVITY_MODE   RUN_TEST
@@ -372,9 +363,6 @@ typedef enum TASKS {
 
 #define     START_PULSE         gpio_put(LOG_PIN, 1)
 #define     STOP_PULSE          gpio_put(LOG_PIN, 0)
-
-#define     DISABLE_POWER_STAGE gpio_put(TMC7300_EN_PIN, 0)
-#define     ENABLE_POWER_STAGE  gpio_put(TMC7300_EN_PIN, 1)
 
 #define     FOREVER     for(;;)
 #define     HANG        for(;;)

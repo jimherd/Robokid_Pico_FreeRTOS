@@ -75,32 +75,3 @@ error_codes_te             error;
         update_task_execution_time(TASK_DRIVE_MOTORS, start_time, end_time);
     }
 }
-
-//        vTaskDelay(3000/portTICK_PERIOD_MS);
-
-//            vTaskDelay(1/portTICK_PERIOD_MS);
-//            TMC7300_read_register(IFCNT, &value);
-//            execute_cmd(SET_PWM_A, WRITE_CMD, i);
-//            vTaskDelay(50/portTICK_PERIOD_MS);
-
-
-        // for (i=0 ; i<=100 ; i++) {
-        //     DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
-        //     DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
-        //     vTaskDelay(50/portTICK_PERIOD_MS);
-        // }
-        // for (i=100 ; i>=0 ; i--) {
-        //     DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
-        //     DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
-        //     vTaskDelay(50/portTICK_PERIOD_MS);
-        // }
-        //  for (i=0 ; i>=-100 ; i--) {
-        //     DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
-        //     DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
-        //     vTaskDelay(50/portTICK_PERIOD_MS);
-        // }
-        // for (i=-100 ; i<=0 ; i++) {
-        //     DRV8833_set_motor(LEFT_MOTOR, MOVE, i);
-        //     DRV8833_set_motor(RIGHT_MOTOR, MOVE, i);
-        //     vTaskDelay(50/portTICK_PERIOD_MS);
-        // }

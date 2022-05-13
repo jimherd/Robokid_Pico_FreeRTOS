@@ -29,7 +29,7 @@ const char* wait_start[1] = {
 
 const char* main_modes[NOS_PRIMARY_MODES+1] = {
     "No mode       ",
-    "Mode Jstick   ",
+    "Mode Gamepad  ",
     "Mode Activity ",
     "Mode Bump     ",
     "Mode Follow   ",
@@ -46,15 +46,14 @@ const char* gamepad_connect[3] = {
     "A: When done  ",
 };
 
-const char* mode_J[3] = {
+const char* mode_G[2] = {
 //    "No J mode     ",
-    "   J mode 1   ",
-    "   J mode 2   ",
-    "   J mode 3   ",
+    "   G mode 1   ",
+    "   G mode 2   ",
 };
 
 const char mode_tank[16] = {
-    "Jmode: Tank   ",
+    "Gmode: Tank   ",
 };
 
 const char* top_level_button_data[2] = {
@@ -62,7 +61,7 @@ const char* top_level_button_data[2] = {
     "B: Next mode  ",
 };
 
-const char* mode_J_button_data[4] = {
+const char* mode_G_button_data[4] = {
     "A: go/stop    ",
     "B: Next mode  ",
     "C: -----      ",
