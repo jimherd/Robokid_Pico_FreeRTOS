@@ -47,13 +47,8 @@ const char* gamepad_connect[3] = {
 };
 
 const char* mode_G[2] = {
-//    "No J mode     ",
     "   G mode 1   ",
     "   G mode 2   ",
-};
-
-const char mode_tank[16] = {
-    "Gmode: Tank   ",
 };
 
 const char* top_level_button_data[2] = {

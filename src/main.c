@@ -120,10 +120,10 @@ uint8_t     index;
             system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
             system_IO_data.LED_data[index].flash_counter = 0;   
         };
-        system_IO_data.LED_data[0].pin_number = LED_0_PIN;
-        system_IO_data.LED_data[1].pin_number = LED_1_PIN;
-        system_IO_data.LED_data[2].pin_number = LED_2_PIN;
-        system_IO_data.LED_data[3].pin_number = LED_3_PIN;
+        system_IO_data.LED_data[0].pin_number = LED_A_PIN;
+        system_IO_data.LED_data[1].pin_number = LED_B_PIN;
+        system_IO_data.LED_data[2].pin_number = LED_C_PIN;
+        system_IO_data.LED_data[3].pin_number = LED_D_PIN;
     // Floor sensor data
         for (index=0; index < NOS_ROBOKID_FLOOR_SENSORS ; index++ ) {
             system_IO_data.floor_sensor_data[index].raw_value = 0;

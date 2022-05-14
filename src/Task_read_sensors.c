@@ -47,10 +47,10 @@ uint32_t    start_time, end_time;
     gpio_init(PUSH_BUTTON_C_PIN); gpio_set_dir(PUSH_BUTTON_C_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_C_PIN);  
     gpio_init(PUSH_BUTTON_D_PIN); gpio_set_dir(PUSH_BUTTON_D_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_D_PIN);  
 
-    gpio_init(LED_0_PIN); gpio_set_dir(LED_0_PIN, GPIO_OUT);
-    gpio_init(LED_1_PIN); gpio_set_dir(LED_1_PIN, GPIO_OUT);
-    gpio_init(LED_2_PIN); gpio_set_dir(LED_2_PIN, GPIO_OUT);
-    gpio_init(LED_3_PIN); gpio_set_dir(LED_3_PIN, GPIO_OUT);
+    gpio_init(LED_A_PIN); gpio_set_dir(LED_A_PIN, GPIO_OUT);
+    gpio_init(LED_B_PIN); gpio_set_dir(LED_B_PIN, GPIO_OUT);
+    gpio_init(LED_C_PIN); gpio_set_dir(LED_C_PIN, GPIO_OUT);
+    gpio_init(LED_D_PIN); gpio_set_dir(LED_D_PIN, GPIO_OUT);
     
     for (uint8_t i=0; i < NOS_SWITCH_SAMPLES ; i++) {
         switch_samples[i] = 0;

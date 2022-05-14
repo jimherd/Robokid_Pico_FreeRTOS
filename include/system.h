@@ -104,10 +104,10 @@ enum {LED_A, LED_B, LED_C, LED_D};
 
 #define     DEFAULT_FLASH_TIME      10
 
-#define     LED_0_PIN       GP16
-#define     LED_1_PIN       GP17
-#define     LED_2_PIN       GP27
-#define     LED_3_PIN       GP28
+#define     LED_A_PIN       GP16
+#define     LED_B_PIN       GP17
+#define     LED_C_PIN       GP27
+#define     LED_D_PIN       GP28
 
 //==============================================================================
 // SNES Gamepad
