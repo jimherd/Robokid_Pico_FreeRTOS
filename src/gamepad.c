@@ -112,37 +112,37 @@ int8_t                      left_PWM, right_PWM;
             right_PWM = 0; left_PWM = 0;
         } else if (DPAD_code == DPAD_FORWARD) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = +100; left_PWM = +100;
+            right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
         } else if (DPAD_code == DPAD_BACKWARD) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = -100; left_PWM = -100;
+            right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
         } else if (DPAD_code == DPAD_SPIN_RIGHT) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = -100; left_PWM = +100;
+            right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
         } else if (DPAD_code == DPAD_SPIN_LEFT) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = +100; left_PWM = -100;
+            right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
         } 
         if (mode == GAMEPAD_MODE_2) {
             if (DPAD_code == ARC_FORWARD_RIGHT) {
                 right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-                right_PWM = 0; left_PWM = +100;
+                right_PWM = 0; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
             } else if (DPAD_code == ARC_FORWARD_LEFT) {
                 right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-                right_PWM = +100; left_PWM = 0;
+                right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = 0;
             } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
                 right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-                right_PWM = 0; left_PWM = -100;
+                right_PWM = 0; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
             } else if (DPAD_code == ARC_BACKWARD_LEFT) {
                 right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-                right_PWM = -100; left_PWM = 0;
+                right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = 0;
             }
         }
 
 // If Y-switch pressed then set half speed
         if (temp_gamepad_data.button_Y == true) {
-            left_PWM  = (left_PWM < 0)  ? -50 : 50;  // -(abs(left_PWM) >> 1) : (left_PWM >> 1);
-            right_PWM = (right_PWM < 0) ? -50 : 50;  // -(abs(right_PWM) >> 1) : (right_PWM >> 1);
+            left_PWM  = (left_PWM < 0)  ? -GAMEPAD_MODE_1_FAST_SPEED : +GAMEPAD_MODE_1_FAST_SPEED;
+            right_PWM = (right_PWM < 0) ? -GAMEPAD_MODE_1_FAST_SPEED : +GAMEPAD_MODE_1_FAST_SPEED;
         }
 
 

@@ -1,3 +1,6 @@
+//
+// Untested Jlink parameters (commented at this time - 19/5/22)
+//
 {
     "version": "0.2.0",
     "configurations": [
@@ -8,6 +11,8 @@
             "request": "launch",
             "type": "cortex-debug",
             "servertype": "openocd",
+            // "servertype": "jlink",
+            // "serverpath": "C:/Program Files/SEGGER/JLink/JLinkGDBServerCL.exe",
             // This may need to be arm-none-eabi-gdb depending on your system
             "gdbPath" : "arm-none-eabi-gdb",
             "device": "RP2040",
@@ -16,6 +21,7 @@
                 "target/rp2040.cfg"
             ],
             "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+            "rtos": "FreeRTOS",
             "runToEntryPoint": "main",
             // Work around for stopping at main on restart
             "postRestartCommands": [

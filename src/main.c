@@ -161,6 +161,11 @@ int main()
     gpio_set_dir(LOG_PIN, GPIO_OUT);
     gpio_pull_down(LOG_PIN);         // should default but just make sure
 
+    uart_init(UART_ID, BAUD_RATE);
+    gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
+    gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
+    uart_puts(UART_ID, "Robokid 2\n");
+
     init_system_data();
  
     xTaskCreate(Task_Robokid,

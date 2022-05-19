@@ -40,6 +40,15 @@
 #define     RIGHT_MOTOR_FLIP_MODE       false
 
 //==============================================================================
+// Serial comms port (UART)
+
+#define UART_TX_PIN GP0
+#define UART_RX_PIN GP1
+
+#define UART_ID uart0
+#define BAUD_RATE 115200
+
+//==============================================================================
 // DRV8833 H-bridge
 
 #define MOTOR_COUNT_FREQ        25000000    // 25MHz
@@ -146,7 +155,6 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 
 //==============================================================================
 // SSD1306 display
-
 
 #define SSD1306_LCDWIDTH    128
 #define SSD1306_LCDHEIGHT   64
@@ -315,8 +323,14 @@ typedef enum {
 
 typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 
-#define   FIRST_SEQUENCE_MODE    PLAY
-#define   LAST_SEQUENCE_MODE     DUMP
+
+//==============================================================================
+// Constants for system modes
+//
+// 1. gamepad mode 1
+//
+#define GAMEPAD_MODE_1_SLOW_SPEED  60
+#define GAMEPAD_MODE_1_FAST_SPEED  80
 
 //==============================================================================
 // Freertos
