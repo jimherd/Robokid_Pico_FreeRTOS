@@ -37,6 +37,7 @@ void Task_error(void *p)
 
     // update circular buffer
 
+        // add to queue
         if (error_log_ptr >= LOG_SIZE) { 
             error_log_ptr = 0;
         }
