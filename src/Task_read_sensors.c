@@ -42,10 +42,10 @@ uint32_t    start_time, end_time;
 //
 // Task init
 //
-    gpio_init(PUSH_BUTTON_A_PIN); gpio_set_dir(PUSH_BUTTON_A_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_A_PIN); 
-    gpio_init(PUSH_BUTTON_B_PIN); gpio_set_dir(PUSH_BUTTON_B_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_B_PIN); 
-    gpio_init(PUSH_BUTTON_C_PIN); gpio_set_dir(PUSH_BUTTON_C_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_C_PIN);  
-    gpio_init(PUSH_BUTTON_D_PIN); gpio_set_dir(PUSH_BUTTON_D_PIN, GPIO_IN); gpio_pull_down(PUSH_BUTTON_D_PIN);  
+    gpio_init(PUSH_BUTTON_A_PIN); gpio_set_dir(PUSH_BUTTON_A_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_A_PIN); 
+    gpio_init(PUSH_BUTTON_B_PIN); gpio_set_dir(PUSH_BUTTON_B_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_B_PIN); 
+    gpio_init(PUSH_BUTTON_C_PIN); gpio_set_dir(PUSH_BUTTON_C_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_C_PIN);  
+    gpio_init(PUSH_BUTTON_D_PIN); gpio_set_dir(PUSH_BUTTON_D_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_D_PIN);  
 
     gpio_init(LED_A_PIN); gpio_set_dir(LED_A_PIN, GPIO_OUT);
     gpio_init(LED_B_PIN); gpio_set_dir(LED_B_PIN, GPIO_OUT);
@@ -65,7 +65,7 @@ uint32_t    start_time, end_time;
 START_PULSE;
         start_time = time_us_32();
     //
-    // Get currect switch and LED data
+    // Get current switch and LED data
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
             memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
@@ -73,8 +73,14 @@ START_PULSE;
         xSemaphoreGive(semaphore_system_IO_data);
     //
     // read push switches and debounce
+    // Set read to give results as if default is low
     //
-        switch_samples[switch_sample_index] = gpio_get_all() & PUSH_BUTTON_HARDWARE_MASK;
+    #ifdef PUSH_SWITCH_DEFAULT_LOW
+        switch_samples[switch_sample_index] = (gpio_get_all() & PUSH_BUTTON_HARDWARE_MASK);
+    #else
+        switch_samples[switch_sample_index] = ~(gpio_get_all() & PUSH_BUTTON_HARDWARE_MASK);
+    #endif
+
         uint32_t switch_value = 0xFFFF;
         for (index=0; index < NOS_SWITCH_SAMPLES ; index++) {
             switch_value &= switch_samples[index];

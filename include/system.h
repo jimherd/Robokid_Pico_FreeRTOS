@@ -23,6 +23,9 @@
 //#define SSD1306_INTERFACE_SPI
 #define SSD1306_INTERFACE_I2C
 
+// #define PUSH_SWITCH_DEFAULT_LOW
+ #define PUSH_SWITCH_DEFAULT_HIGH
+
 //==============================================================================
 // Constants
 //==============================================================================
