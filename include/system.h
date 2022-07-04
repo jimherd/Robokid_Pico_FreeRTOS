@@ -122,6 +122,36 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define     LED_D_PIN       GP28
 
 //==============================================================================
+// 3+8 channel analogue input system
+// 3 RP2040 channels + 1 RP2040 channel fed by CD4051 8-line multiplexer
+
+#define NOS_RP2040_CHANNELS     3
+#define NOS_CD4051_CHANNELS     8
+
+#define CD4051_ADDRESS_A_PIN       GP4
+#define CD4051_ADDRESS_B_PIN       GP5
+#define CD4051_ADDRESS_C_PIN       GP6
+
+#define CD4051_RP2040_channel       0
+
+#define CD4051_ADDRESS_MASK    ((1 << CD4051_ADDRESS_A_PIN) + \
+                                (1 << CD4051_ADDRESS_B_PIN) + \
+                                (1 << CD4051_ADDRESS_C_PIN))
+
+#define ANALOGUE_CD4051_INPUT_CHANNEL       GP26
+
+// CD4051 channel allocation
+
+#define POT_A_channel               0
+#define POT_B_channel               1
+#define POT_C_channel               7
+#define LINE_SENSOR_LEFT_CHANNEL    4
+#define LINE_SENSOR_MID_CHANNEL     5
+#define LINE_SENSOR_RIGHT_CHANNEL   6
+#define MOTOR_VOLTAGE_CHANNEL       3
+#define spare_channel               2
+
+//==============================================================================
 // SNES Gamepad
 
 #define     GENERIC_GAMEPAD_VID         0x081F
@@ -458,10 +488,17 @@ struct  push_button_data_s {
     uint32_t  on_time;
 };
 
+struct analogue_data_s {
+    struct  {
+        uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
+        uint16_t CD4051_raw_data[NOS_CD4051_CHANNELS];
+    };
+};
+
 struct vehicle_data_s {
     vehicle_state_t     vehicle_state;
     uint32_t            speed;
-} ;
+};
 
 struct LED_data_s {
     uint8_t         pin_number;
@@ -492,7 +529,7 @@ struct system_modes_s {
 
 //==============================================================================
 /**
- * @brief   Central store of system data. Access by mutex.
+ * @brief   Central store of system data. Access by mutex - semaphore_system_IO_data
  */
 struct system_IO_data_s  {
     struct system_modes_s       robokid_modes;
@@ -501,6 +538,7 @@ struct system_IO_data_s  {
     struct motor_data_s         motor_data[NOS_ROBOKID_MOTORS];
     struct LED_data_s           LED_data[NOS_ROBOKID_LEDS];
     struct push_button_data_s   push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+    struct analogue_data_s      analogue_data;
     struct floor_sensor_data_s  floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
     struct vehicle_data_s       vehicle_data;
 } ;

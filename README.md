@@ -21,5 +21,6 @@ Conversion of original Robokid system to use RP2040 Pico device
 * GLCD Font Creator
 * USBlyzer
 * PicoScope 2203
+* VeeCAD : great tool to layout stripboard circuits
 
 Jim Herd March 2022

@@ -13,6 +13,7 @@
 #include "pico/stdlib.h"
 #include "pico/multicore.h"
 #include "pico/binary_info.h"
+#include "hardware/adc.h"
 
 #include  "Pico_IO.h"
 
@@ -165,6 +166,8 @@ int main()
     gpio_set_function(UART_TX_PIN, GPIO_FUNC_UART);
     gpio_set_function(UART_RX_PIN, GPIO_FUNC_UART);
     uart_puts(UART_ID, "Robokid 2\n");
+
+    adc_init();
 
     init_system_data();
  

@@ -14,7 +14,6 @@
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
-#include "hardware/spi.h"
 
 #include "FreeRTOS.h"
 

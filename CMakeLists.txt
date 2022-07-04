@@ -51,6 +51,7 @@ target_link_libraries( ${PROJECT_NAME}
     hardware_i2c
     hardware_spi
     hardware_pwm
+    hardware_adc
     FreeRTOS
     tinyusb_board 
     tinyusb_host
