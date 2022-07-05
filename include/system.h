@@ -140,7 +140,7 @@ enum {LED_A, LED_B, LED_C, LED_D};
 
 #define ANALOGUE_CD4051_INPUT_CHANNEL       GP26
 
-// CD4051 channel allocation
+// CD4051 channel allocation (8 inputs)
 
 #define POT_A_channel               0
 #define POT_B_channel               1
@@ -149,7 +149,11 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define LINE_SENSOR_MID_CHANNEL     5
 #define LINE_SENSOR_RIGHT_CHANNEL   6
 #define MOTOR_VOLTAGE_CHANNEL       3
-#define spare_channel               2
+#define SPARE_CHANNEL               2
+
+
+
+
 
 //==============================================================================
 // SNES Gamepad
@@ -490,8 +494,13 @@ struct  push_button_data_s {
 
 struct analogue_data_s {
     struct  {
-        uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
-        uint16_t CD4051_raw_data[NOS_CD4051_CHANNELS];
+        struct rp2040 {
+            uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
+        } rp2040;
+        struct CD4051 {
+            uint16_t raw_data;
+            uint8_t  percent;
+        } CD4051[NOS_CD4051_CHANNELS];
     };
 };
 
