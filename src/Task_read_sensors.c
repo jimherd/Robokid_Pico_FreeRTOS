@@ -197,7 +197,7 @@ START_PULSE;
             uint16_t tmp_data = adc_read();
             temp_analogue_data.CD4051[index].raw_data = tmp_data;
             temp_analogue_data.CD4051[index].percent  = byte_to_percent[(tmp_data >> 4)];
-            busy_wait_us_32(1);
+            
         }
         set_CD4051_address(0);    // reset CD4051 address to 0
 
@@ -225,11 +225,17 @@ STOP_PULSE;
  * @param index value 0 to 7 to specify 1 of 8 CD4051 analogue channels
  * 
  * @note
- *      This reoutine relies on CD4051 address ABC to be consecutive digital
+ *      This routine relies on CD4051 address ABC to be consecutive digital
  *      output lines.
+ * 
+ *      The datasheet gives a MAXIMUM Propogation Delay Time (at 5V) for
+ *      Address-to-signal OUT of 750nS (typ. 450nS).  We are using 3.3v so it 
+ *      may be a little greater.  Initial design to insert a 3000nS delay to
+ *      allow analogue value to settle. Checked on oscilloscope.
  */
 static void set_CD4051_address(uint8_t index)
 {
     gpio_put_masked(CD4051_ADDRESS_MASK, (index << CD4051_ADDRESS_A_PIN));
+    busy_wait_us_32(3);
 }
 
