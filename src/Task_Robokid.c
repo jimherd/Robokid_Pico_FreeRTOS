@@ -42,6 +42,7 @@ error_codes_te              error;
         vTaskDelay(HALF_SECOND);
     }
 
+    set_n_LEDS(STRING_COUNT(wait_start));
     SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
     first_mode = GAMEPAD_MODE;
@@ -57,8 +58,9 @@ error_codes_te              error;
 
     FOREVER {
         LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode], true);
+        set_n_LEDS(STRING_COUNT(top_level_button_data));
         SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
-        set_leds(LED_FLASH, LED_OFF, LED_FLASH, LED_FLASH);
+        
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
         if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {

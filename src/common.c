@@ -229,6 +229,29 @@ void set_leds(LED_state_te LED_A_state,
 }
 
 /**
+ * @brief Set the n LED
+ * 
+ * @param nos_LEDS  1=light A, 2=light AB, 3=light ABC, 4=light ABCD
+ * @return * void 
+ * 
+ * Light LED in sequence. values
+ * 
+ *  0       all LEDs off
+ * 1->4     light sequence of LEDs
+ * >4       light all 4 LEDs
+ */
+void set_n_LEDS (uint8_t nos_LEDS)
+{
+    switch (nos_LEDS) {
+        case 0 : set_leds(LED_OFF, LED_OFF, LED_OFF, LED_OFF); break;
+        case 1 : set_leds(LED_ON , LED_OFF, LED_OFF, LED_OFF); break;
+        case 2 : set_leds(LED_ON , LED_ON , LED_OFF, LED_OFF); break;
+        case 3 : set_leds(LED_ON , LED_ON , LED_ON , LED_OFF); break;
+        default: set_leds(LED_ON , LED_ON , LED_ON , LED_ON ); break;
+    }
+}
+
+/**
  * @brief Reset USB subsystem
  * 
  */

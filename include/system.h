@@ -151,9 +151,7 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define MOTOR_VOLTAGE_CHANNEL       3
 #define SPARE_CHANNEL               2
 
-
-
-
+#define CD4051_SETTLING_TIME_US     3
 
 //==============================================================================
 // SNES Gamepad

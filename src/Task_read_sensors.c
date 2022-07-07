@@ -236,6 +236,6 @@ STOP_PULSE;
 static void set_CD4051_address(uint8_t index)
 {
     gpio_put_masked(CD4051_ADDRESS_MASK, (index << CD4051_ADDRESS_A_PIN));
-    busy_wait_us_32(3);
+    busy_wait_us_32(CD4051_SETTLING_TIME_US);
 }
 
