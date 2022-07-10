@@ -67,6 +67,7 @@ BaseType_t  xWasDelayed;
 static void process_icons(void) 
 {
 char            buffer[16], buffer_pt;
+uint16_t        battery_volts;
 error_codes_te  error;
 
     buffer_pt = 0;
@@ -75,6 +76,7 @@ error_codes_te  error;
 
     xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
         error = system_status.error_state;
+        battery_volts = system_IO_data.analogue_data.CD4051[MOTOR_VOLTAGE_CHANNEL].raw_data;
     xSemaphoreGive(semaphore_system_status);
     if (error <= OK) {
         buffer[buffer_pt++] = ERROR_ICON;
@@ -82,15 +84,13 @@ error_codes_te  error;
 
 // Battery icon
 
-    uint8_t battery_volts = 73;   // % value
- 
-    if (battery_volts > 80) {
+    if (battery_volts > V_BATT_100_PERCENT) {
         buffer[buffer_pt] = BATTERY_FULL;
-    } else if (battery_volts > 60) {
+    } else if (battery_volts > V_BATT_75_PERCENT) {
         buffer[buffer_pt] = BATTERY_75;
-    } else if (battery_volts > 40) {
+    } else if (battery_volts > V_BATT_50_PERCENT) {
         buffer[buffer_pt] = BATTERY_HALF;
-    } else if (battery_volts > 20) {
+    } else if (battery_volts > V_BATT_25_PERCENT) {
         buffer[buffer_pt] = BATTERY_25;
     } else
         buffer[buffer_pt] = BATTERY_EMPTY;

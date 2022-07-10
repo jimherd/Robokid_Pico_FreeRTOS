@@ -37,7 +37,7 @@
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_PUSH_BUTTONS    4
 #define     NOS_ROBOKID_LEDS            4
-#define     NOS_ROBOKID_FLOOR_SENSORS   3
+#define     NOS_ROBOKID_LINE_SENSORS    3
 
 #define     LEFT_MOTOR_FLIP_MODE        true
 #define     RIGHT_MOTOR_FLIP_MODE       false
@@ -299,6 +299,16 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     SILENT_NOTE 12
 
 //==============================================================================
+// Battery data
+//
+// Battery levels to be defined by experimentation.  
+
+#define V_BATT_100_PERCENT  1743
+#define V_BATT_75_PERCENT   1713
+#define V_BATT_50_PERCENT   1676
+#define V_BATT_25_PERCENT   1609
+
+//==============================================================================
 // System modes
 
 typedef enum {
@@ -516,8 +526,8 @@ struct LED_data_s {
     bool            flash_value;
 } ;
 
-struct floor_sensor_data_s {
-    uint8_t     raw_value;
+struct line_sensor_data_s {
+    uint8_t     percent_value;
     uint8_t     threshhold;
     bool        binary_value;
 } ;
@@ -546,7 +556,7 @@ struct system_IO_data_s  {
     struct LED_data_s           LED_data[NOS_ROBOKID_LEDS];
     struct push_button_data_s   push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
     struct analogue_data_s      analogue_data;
-    struct floor_sensor_data_s  floor_sensor_data[NOS_ROBOKID_FLOOR_SENSORS];
+    struct line_sensor_data_s   line_sensor_data[NOS_ROBOKID_LINE_SENSORS];
     struct vehicle_data_s       vehicle_data;
 } ;
 

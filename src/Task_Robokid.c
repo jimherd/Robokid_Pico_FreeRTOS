@@ -20,7 +20,7 @@
 #include "task.h"
 #include "queue.h"
 
-#define     TASK_ROBOKID_START_DELAY_SECONDS    10
+#define     TASK_ROBOKID_START_DELAY_SECONDS    5
 #define     HALF_SECOND      (500/portTICK_PERIOD_MS)
 
 #define  LONG_PRESS_MS  4000        // 4 seconds

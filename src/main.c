@@ -126,10 +126,10 @@ uint8_t     index;
         system_IO_data.LED_data[2].pin_number = LED_C_PIN;
         system_IO_data.LED_data[3].pin_number = LED_D_PIN;
     // Floor sensor data
-        for (index=0; index < NOS_ROBOKID_FLOOR_SENSORS ; index++ ) {
-            system_IO_data.floor_sensor_data[index].raw_value = 0;
-            system_IO_data.floor_sensor_data[index].threshhold = 128;
-            system_IO_data.floor_sensor_data[index].threshhold = false;
+        for (index=0; index < NOS_ROBOKID_LINE_SENSORS ; index++ ) {
+            system_IO_data.line_sensor_data[index].percent_value = 0;
+            system_IO_data.line_sensor_data[index].threshhold = 50;
+            system_IO_data.line_sensor_data[index].binary_value = 0;
         };
     // Vehicle data
         system_IO_data.vehicle_data.vehicle_state = STOPPED;

@@ -201,6 +201,19 @@ START_PULSE;
         }
         set_CD4051_address(0);    // reset CD4051 address to 0
 
+    // Threshold IR line sensors
+
+        system_IO_data.line_sensor_data[0].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_LEFT_CHANNEL].percent;
+        system_IO_data.line_sensor_data[1].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_MID_CHANNEL].percent;
+        system_IO_data.line_sensor_data[2].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_RIGHT_CHANNEL].percent;
+        for(index=0;index <NOS_ROBOKID_LINE_SENSORS ; index++) {
+            if (system_IO_data.line_sensor_data[index].percent_value > (system_IO_data.line_sensor_data[index].threshhold)) {
+                system_IO_data.line_sensor_data[index].binary_value = 1;
+            } else {
+                system_IO_data.line_sensor_data[index].binary_value = 0;
+            }
+        }
+
     // Update global system data 
 
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
