@@ -13,6 +13,7 @@
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
 #include "hardware/adc.h"
+#include "hardware/divider.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
@@ -43,18 +44,22 @@ const uint8_t byte_to_percent[] = {
     94,95,95,95,96,96,96,97,97,98,98,98,99,99,100,100
 };
 
-struct push_button_data_s  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-struct LED_data_s          temp_LED_data[NOS_ROBOKID_LEDS];
-struct analogue_data_s     temp_analogue_data;
-
-uint32_t            switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
-uint8_t             switch_sample_index;
-
 //==============================================================================
 // function prototypes for local routines
 //==============================================================================
 
 static void set_CD4051_address(uint8_t index);
+
+//==============================================================================
+// Local globals
+//==============================================================================
+static struct push_button_data_s  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+static struct LED_data_s          temp_LED_data[NOS_ROBOKID_LEDS];
+static struct analogue_data_s     temp_analogue_data;
+
+uint32_t    switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
+uint8_t     switch_sample_index;
+uint32_t    sample_count;
 
 //==============================================================================
 // Main task routine
@@ -71,6 +76,7 @@ TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
 uint8_t     index;
 uint32_t    start_time, end_time;
+uint32_t    sample_count;
 //
 // Task init
 //
@@ -94,7 +100,9 @@ uint32_t    start_time, end_time;
     gpio_init(CD4051_ADDRESS_C_PIN); gpio_set_dir(CD4051_ADDRESS_C_PIN, GPIO_OUT); gpio_pull_down(CD4051_ADDRESS_C_PIN);
 
     adc_gpio_init(ANALOGUE_CD4051_INPUT_CHANNEL);       // Make sure GPIO is high-impedance, no pullups etc
-    adc_select_input(0);                                // Select ADC input 0 (GPIO26)
+    adc_select_input(0);  
+    
+    sample_count = 0;                              // Select ADC input 0 (GPIO26)
 
 //
 // Task code
@@ -104,6 +112,7 @@ uint32_t    start_time, end_time;
         xWasDelayed = xTaskDelayUntil( &xLastWakeTime, TASK_READ_SENSORS_FREQUENCY_TICK_COUNT );
 START_PULSE;
         start_time = time_us_32();
+        sample_count++;
     //
     // Get current switch and LED data
     //
@@ -250,5 +259,73 @@ static void set_CD4051_address(uint8_t index)
 {
     gpio_put_masked(CD4051_ADDRESS_MASK, (index << CD4051_ADDRESS_A_PIN));
     busy_wait_us_32(CD4051_SETTLING_TIME_US);
+}
+
+struct analogue_raw_data_s analogue_raw_data[NOS_CD4051_CHANNELS];
+struct analogue_processed_data_s analogue_processed_data[NOS_CD4051_CHANNELS];
+
+static void filter_analogue(void){
+
+struct analogue_raw_data_s *raw_data_pt;
+struct analogue_processed_data_s *processed_data_pt;
+
+uint32_t delta;
+
+    for(uint8_t index ; index < NOS_CD4051_CHANNELS; index++){
+        raw_data_pt       = &analogue_raw_data[index];
+        processed_data_pt = &analogue_processed_data[index];
+        set_CD4051_address(index);
+        uint16_t tmp_data = adc_read();
+        raw_data_pt->sample_count++;
+        raw_data_pt->current_value = tmp_data;
+    //
+    // Set all relevant variables to read value until averaging buffer is full
+    //
+        if (sample_count < BUFF_SIZE) {  // circular buffer not full
+            raw_data_pt->last_value = tmp_data;
+            raw_data_pt->cir_buffer.buffer[raw_data_pt->cir_buffer.buff_ptr++] = tmp_data;
+            processed_data_pt->value = tmp_data;
+            if (raw_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
+                raw_data_pt->cir_buffer.buff_ptr = 0;
+            }
+            return;
+        }
+    //
+    // run glitch filter by testing between this and last value
+    //
+        if(tmp_data > raw_data_pt->last_value) {
+            delta = tmp_data - raw_data_pt->last_value;
+        } else {
+            delta = raw_data_pt->last_value - tmp_data;
+        }
+        if (delta > processed_data_pt->glitch_threshold) {
+            raw_data_pt->current_value = raw_data_pt->last_value;
+            raw_data_pt->glitch_count++;
+            // log glitch detected
+            if (raw_data_pt->glitch_count > processed_data_pt->glitch_error_threshold) {  // run of glitches
+                raw_data_pt->sample_count = 0;
+                raw_data_pt->glitch_count =0;
+            }
+        } else {
+            raw_data_pt->glitch_count = 0;
+        }
+    //
+    // Add value to circular buffer and adjust pointer as necessary
+    //
+        raw_data_pt->cir_buffer.buffer[raw_data_pt->cir_buffer.buff_ptr++] = tmp_data;
+        if (raw_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
+            raw_data_pt->cir_buffer.buff_ptr = 0;
+        }
+    //
+    // calculate average
+    //
+        uint32_t sum = 0;
+        for(uint8_t i = 0; i <BUFF_SIZE; i++) {
+            sum += raw_data_pt->cir_buffer.buffer[i];
+        }
+        hw_divider_divmod_u32(sum, BUFF_SIZE);
+        processed_data_pt->value = tmp_data;
+    }
+    
 }
 
