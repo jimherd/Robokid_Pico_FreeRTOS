@@ -545,6 +545,33 @@ struct system_modes_s {
 };
 
 //==============================================================================
+// **** in development
+
+typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
+
+struct analogue_processed_data_s {        // global
+    channel_type_te     channel_type;
+    uint32_t            value;
+    uint32_t            glitch_threshold;
+    uint32_t            glitch_error_threshold;
+};
+
+#define     BUFF_SIZE   4
+
+struct circular_buffer_s {
+    uint32_t    buffer[BUFF_SIZE];
+    uint32_t    buff_ptr;
+};
+
+struct analogue_raw_data_s {        // local
+    struct circular_buffer_s   cir_buffer;
+    uint32_t            current_value;
+    uint32_t            last_value;
+    uint32_t            sample_count;
+    uint32_t            glitch_count;
+};
+
+//==============================================================================
 /**
  * @brief   Central store of system data. Access by mutex - semaphore_system_IO_data
  */
