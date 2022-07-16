@@ -10,7 +10,7 @@
 #include "SSD1306.h"
 #include "Robokid_strings.h"
 #include "tunes.h"
-#include "gamepad.h"
+#include "run_gamepad_modes.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"

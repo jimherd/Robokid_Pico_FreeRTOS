@@ -323,7 +323,7 @@ uint32_t delta;
         for(uint8_t i = 0; i <BUFF_SIZE; i++) {
             sum += raw_data_pt->cir_buffer.buffer[i];
         }
-        processed_data_pt->value = hw_divider_divmod_u32(sum, BUFF_SIZE);
+        processed_data_pt->value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
     }
     
 }

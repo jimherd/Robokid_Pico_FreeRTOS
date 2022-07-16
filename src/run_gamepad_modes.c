@@ -17,7 +17,7 @@
 #include "common.h"
 #include "SSD1306.h"
 #include "Robokid_strings.h"
-#include "gamepad.h"
+#include "run_gamepad_modes.h"
 
 #include "FreeRTOS.h"
 
