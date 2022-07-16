@@ -46,11 +46,11 @@ error_codes_te              error;
     SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
     first_mode = GAMEPAD_MODE;
-    last_mode = EXPERIMENT_MODE - 1;  // hide experiment mode from normal operation
+    last_mode = TEST_MODE - 1;  // hide experiment mode from normal operation
     LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     if (press_time > LONG_PRESS_MS) {
-        last_mode = EXPERIMENT_MODE;   // expose experiment mode if press time is > xxxx
+        last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
     }
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
 

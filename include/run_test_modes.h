@@ -9,4 +9,4 @@
 
 error_codes_te run_test_modes(void);
 
-#endif  /* __JOYSTICK_H__  */
+#endif  /* __RUN_TEST_MODES_H__  */

@@ -1,7 +1,7 @@
 /**
- * @file joystick.c
- * @author Jim Herd (you@domain.com)
- * @brief Implement joystick activities
+ * @file run_gamepad_modes.c
+ * @author Jim Herd
+ * @brief Implement gamepad activities
  */
 
 // Notes

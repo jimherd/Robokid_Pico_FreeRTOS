@@ -21,7 +21,7 @@
 
 #include "FreeRTOS.h"
 
-error_codes_te run_gamepad_modes(void) 
+error_codes_te run_test_modes(void) 
 {
     return OK;
 }
