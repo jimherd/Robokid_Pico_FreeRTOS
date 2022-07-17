@@ -17,6 +17,13 @@
 #include    "error_codes.h"
 
 //==============================================================================
+// Version number
+//==============================================================================
+#define     MAJOR_VERSION       0
+#define     MINOR_VERSION       1
+#define     PATCH_VERSION       0
+
+//==============================================================================
 // Complie time configuration
 //==============================================================================
 
@@ -31,6 +38,13 @@
 //==============================================================================
 // CPU
 #define     CPU_CLOCK_FREQUENCY         125000000   // 125MHz
+
+//==============================================================================
+// Useful times
+
+#define     HALF_SECOND      (500/portTICK_PERIOD_MS)
+#define     ONE_SECOND       (1000/portTICK_PERIOD_MS)
+#define     TWO_SECONDS      (2000/portTICK_PERIOD_MS)
 
 //==============================================================================
 // Robokid parameters
@@ -323,7 +337,7 @@ typedef enum {
 
 typedef enum { 
     SECONDARY_NULL_MODE,
-    GAMEPAD_MODE_1=(GAMEPAD_MODE*10), GAMEPAD_MODE_2, GAMEPAD_MODE_3,
+    GAMEPAD_MODE_0=(GAMEPAD_MODE*10), GAMEPAD_MODE_1, GAMEPAD_MODE_2,
     RUN_FORWARD=(ACTIVITY_MODE*10), RUN_BACKWARD, RUN_SPIN_RIGHT, RUN_SPIN_LEFT, RUN_TEST,  DEMO_MODE,
     LINE_BUMP_MODE=(BUMP_MODE*10), LINE_BUG_BUMP_MODE, WALL_BUMP_MODE,
     LINE_FOLLOW_MODE=(FOLLOW_MODE*10), LIGHT_FOLLOW_MODE,
@@ -334,8 +348,8 @@ typedef enum {
     TEST_MODE_0=(TEST_MODE*10),TEST_MODE_1, TEST_MODE_2, TEST_MODE_4, TEST_MODE_5,
 } secondary_sys_modes_te;
 
-#define   FIRST_GAMEPAD_MODE  GAMEPAD_MODE_1
-#define   LAST_GAMEPAD_MODE   GAMEPAD_MODE_3
+#define   FIRST_GAMEPAD_MODE  GAMEPAD_MODE_0
+#define   LAST_GAMEPAD_MODE   GAMEPAD_MODE_2
 
 #define   FIRST_ACTIVITY_MODE  RUN_FORWARD
 #define   LAST_ACTIVITY_MODE   RUN_TEST
@@ -372,10 +386,10 @@ typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 //==============================================================================
 // Constants for system modes
 //
-// 1. gamepad mode 1
+// 1. gamepad mode 0
 //
-#define GAMEPAD_MODE_1_SLOW_SPEED  60
-#define GAMEPAD_MODE_1_FAST_SPEED  80
+#define GAMEPAD_MODE_0_SLOW_SPEED  60
+#define GAMEPAD_MODE_0_FAST_SPEED  80
 
 //==============================================================================
 // Freertos
@@ -672,6 +686,15 @@ extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
 extern void Task_sounder (void *p);
 extern void Task_blink_LED(void *p);
+
+extern  TaskHandle_t taskhndl_Task_Robokid;
+extern  TaskHandle_t taskhndl_Task_read_sensors;
+extern  TaskHandle_t taskhndl_Task_read_gamepad;
+extern  TaskHandle_t taskhndl_Task_display_LCD;
+extern  TaskHandle_t taskhndl_Task_drive_motors;
+extern  TaskHandle_t taskhndl_Task_error;
+extern  TaskHandle_t taskhndl_Task_sounder;
+extern  TaskHandle_t taskhndl_Task_blink_LED;
 
 extern SemaphoreHandle_t semaphore_LCD_data;            //semaphores
 extern SemaphoreHandle_t semaphore_SSD1306_display;

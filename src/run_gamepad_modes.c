@@ -27,7 +27,7 @@ EventBits_t             event_bits;
 secondary_sys_modes_te  secondary_mode;
 error_codes_te          error;
 
-    secondary_mode = GAMEPAD_MODE_1;
+    secondary_mode = GAMEPAD_MODE_0;
     LCD_write_row(0, MESSAGE_ROW, mode_G[secondary_mode - (10 * GAMEPAD_MODE)], true);
     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
     set_leds(LED_ON, LED_ON, LED_OFF, LED_OFF);
@@ -35,11 +35,11 @@ error_codes_te          error;
 
     if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
         switch (secondary_mode) {
-            case GAMEPAD_MODE_1 : {
-                return (execute_gamepad_activities(GAMEPAD_MODE_1));
+            case GAMEPAD_MODE_0 : {
+                return (execute_gamepad_activities(GAMEPAD_MODE_0));
             }
-            case GAMEPAD_MODE_2 : {
-                return(execute_gamepad_activities(GAMEPAD_MODE_2));
+            case GAMEPAD_MODE_1 : {
+                return(execute_gamepad_activities(GAMEPAD_MODE_1));
                 break;
             }
             default : {
@@ -69,7 +69,7 @@ error_codes_te          error;
  * DPAD : forward, backward, left, right
  * SELECT : exit this mode
  * 
- * @param mode   joystick mode
+ * @param mode   gamepad mode
  * 
  * @note
  * The same motor packet command structure is used to send both right
@@ -112,37 +112,37 @@ int8_t                      left_PWM, right_PWM;
             right_PWM = 0; left_PWM = 0;
         } else if (DPAD_code == DPAD_FORWARD) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
+            right_PWM = +GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_0_SLOW_SPEED;
         } else if (DPAD_code == DPAD_BACKWARD) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
+            right_PWM = -GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_0_SLOW_SPEED;
         } else if (DPAD_code == DPAD_SPIN_RIGHT) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
+            right_PWM = -GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = +GAMEPAD_MODE_0_SLOW_SPEED;
         } else if (DPAD_code == DPAD_SPIN_LEFT) {
             right_cmd = MOVE; left_cmd = MOVE;
-            right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
+            right_PWM = +GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_0_SLOW_SPEED;
         } 
-        if (mode == GAMEPAD_MODE_2) {
+        if (mode == GAMEPAD_MODE_1) {
             if (DPAD_code == ARC_FORWARD_RIGHT) {
                 right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-                right_PWM = 0; left_PWM = +GAMEPAD_MODE_1_SLOW_SPEED;
+                right_PWM = 0; left_PWM = +GAMEPAD_MODE_0_SLOW_SPEED;
             } else if (DPAD_code == ARC_FORWARD_LEFT) {
                 right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-                right_PWM = +GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = 0;
+                right_PWM = +GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = 0;
             } else if (DPAD_code == ARC_BACKWARD_RIGHT) {
                 right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
-                right_PWM = 0; left_PWM = -GAMEPAD_MODE_1_SLOW_SPEED;
+                right_PWM = 0; left_PWM = -GAMEPAD_MODE_0_SLOW_SPEED;
             } else if (DPAD_code == ARC_BACKWARD_LEFT) {
                 right_cmd = MOVE; left_cmd = MOTOR_BRAKE;
-                right_PWM = -GAMEPAD_MODE_1_SLOW_SPEED; left_PWM = 0;
+                right_PWM = -GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = 0;
             }
         }
 
 // If Y-switch pressed then set half speed
         if (temp_gamepad_data.button_Y == true) {
-            left_PWM  = (left_PWM < 0)  ? -GAMEPAD_MODE_1_FAST_SPEED : +GAMEPAD_MODE_1_FAST_SPEED;
-            right_PWM = (right_PWM < 0) ? -GAMEPAD_MODE_1_FAST_SPEED : +GAMEPAD_MODE_1_FAST_SPEED;
+            left_PWM  = (left_PWM < 0)  ? -GAMEPAD_MODE_0_FAST_SPEED : +GAMEPAD_MODE_0_FAST_SPEED;
+            right_PWM = (right_PWM < 0) ? -GAMEPAD_MODE_0_FAST_SPEED : +GAMEPAD_MODE_0_FAST_SPEED;
         }
 
 

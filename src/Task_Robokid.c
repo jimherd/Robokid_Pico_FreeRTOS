@@ -11,6 +11,7 @@
 #include "Robokid_strings.h"
 #include "tunes.h"
 #include "run_gamepad_modes.h"
+#include "run_test_modes.h"
 
 #include "pico/stdlib.h"
 #include "pico/binary_info.h"
@@ -21,7 +22,7 @@
 #include "queue.h"
 
 #define     TASK_ROBOKID_START_DELAY_SECONDS    5
-#define     HALF_SECOND      (500/portTICK_PERIOD_MS)
+
 
 #define  LONG_PRESS_MS  4000        // 4 seconds
 
@@ -72,6 +73,9 @@ error_codes_te              error;
                     if (error != OK) {
                         log_error(error, TASK_ROBOKID);
                     }
+                    break;
+                case TEST_MODE : 
+                    error = run_test_modes();
                     break;
                 default : 
                     break;
