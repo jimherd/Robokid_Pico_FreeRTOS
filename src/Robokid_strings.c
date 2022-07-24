@@ -37,7 +37,7 @@ const char* main_modes[NOS_PRIMARY_MODES+1] = {
     "Mode Sketch   ",
     "Mode Lab      ",
     "Mode Distance ",
-    "Mode Exp      "
+    "Mode TEST     "
 };
 
 const char* gamepad_connect[3] = {
@@ -47,13 +47,29 @@ const char* gamepad_connect[3] = {
 };
 
 const char* mode_G[2] = {
+    "   G mode 0   ",
     "   G mode 1   ",
-    "   G mode 2   ",
 };
+
+const char* mode_T[5] = {
+    "   T mode 0   ",
+    "   T mode 1   ",
+    "   T mode 2   ",
+    "   T mode 3   ",
+    "   T mode 4   ",
+};
+
 
 const char* top_level_button_data[2] = {
     "A: Accept     ",
     "B: Next mode  ",
+};
+
+const char* menu_button_data[4] = {
+    "A: Accept     ",
+    "B: Next mode  ",
+    "C: Last mode  ",
+    "D: Exit menu  "
 };
 
 const char* mode_G_button_data[4] = {
