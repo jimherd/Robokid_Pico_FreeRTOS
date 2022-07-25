@@ -25,37 +25,13 @@
 #include <string.h>
 
 #include "system.h"
+#include "menus.h"
 #include "common.h"
 #include "SSD1306.h"
 #include "Robokid_strings.h"
 #include "run_test_modes.h"
 
 #include "FreeRTOS.h"
-
-//==============================================================================
-//  Table for test mode selection
-//==============================================================================
-
-#define     MAX_NOS_MODES      16
-
-struct menu {
-    uint8_t         nos_modes;
-    const char      *mode_strings[MAX_NOS_MODES];
-    error_codes_te  (* const mode_function[MAX_NOS_MODES])(uint32_t);
-};
-
-struct menu test_mode_menu = {
-    4,
-    {   "   T mode 0   ",
-        "   T mode 1   ",
-        "   T mode 2   ",
-        "   T mode 3   ",  },
-    {   run_test_mode_0, 
-        run_test_mode_1,
-        run_test_mode_2,
-        run_test_mode_3
-    }
-};
 
 //==============================================================================
 // Execute test menu table
@@ -108,8 +84,6 @@ error_codes_te run_test_modes(void)
     return OK;
 }
 
-
-
 //==============================================================================
 // Test routines
 //==============================================================================
@@ -119,7 +93,7 @@ error_codes_te run_test_modes(void)
  * 
  * @return * error_codes_te 
  */
-error_codes_te run_test_mode_0(uint32_t parameter)
+error_codes_te run_test_0(uint32_t parameter)
 {
     printf("Major Verion : %d\n", MAJOR_VERSION);
     printf("Minor Verion : %d\n", MINOR_VERSION);
@@ -153,9 +127,9 @@ error_codes_te run_test_mode_0(uint32_t parameter)
  * 
  * @return error_codes_te 
  */
- error_codes_te run_test_mode_1(uint32_t parameter)
+ error_codes_te run_test_1(uint32_t parameter)
 {
-    printf("Test mode 1\n");
+    printf("Test 1\n");
     return OK;
 }
 
@@ -164,9 +138,9 @@ error_codes_te run_test_mode_0(uint32_t parameter)
  * 
  * @return error_codes_te 
  */
- error_codes_te run_test_mode_2(uint32_t parameter)
+ error_codes_te run_test_2(uint32_t parameter)
 {
-    printf("Test mode 2\n");
+    printf("Test 2\n");
     return OK;
 }
 
@@ -175,9 +149,9 @@ error_codes_te run_test_mode_0(uint32_t parameter)
  * 
  * @return error_codes_te 
  */
- error_codes_te run_test_mode_3(uint32_t parameter)
+ error_codes_te run_test_3(uint32_t parameter)
 {
-    printf("Test mode 3\n");
+    printf("Test 3\n");
     return OK;
 }
 
