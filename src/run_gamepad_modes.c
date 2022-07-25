@@ -21,7 +21,7 @@
 
 #include "FreeRTOS.h"
 
-error_codes_te run_gamepad_modes(void)
+error_codes_te run_gamepad_modes(uint32_t parameter)
 {
 EventBits_t             event_bits;
 secondary_sys_modes_te  secondary_mode;
@@ -77,7 +77,7 @@ error_codes_te          error;
  * as the queue entries are based on data copying and are not passed by
  * reference.
  */
-error_codes_te execute_gamepad_activities(secondary_sys_modes_te mode)
+error_codes_te execute_gamepad_activities(uint32_t  parameter)
 {
 struct gamepad_data_s       temp_gamepad_data;
 struct motor_cmd_packet_s   motor_cmd_packet;
@@ -123,7 +123,7 @@ int8_t                      left_PWM, right_PWM;
             right_cmd = MOVE; left_cmd = MOVE;
             right_PWM = +GAMEPAD_MODE_0_SLOW_SPEED; left_PWM = -GAMEPAD_MODE_0_SLOW_SPEED;
         } 
-        if (mode == GAMEPAD_MODE_1) {
+        if (parameter == GAMEPAD_MODE_1) {
             if (DPAD_code == ARC_FORWARD_RIGHT) {
                 right_cmd = MOTOR_BRAKE; left_cmd = MOVE;
                 right_PWM = 0; left_PWM = +GAMEPAD_MODE_0_SLOW_SPEED;

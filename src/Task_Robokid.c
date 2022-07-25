@@ -10,6 +10,7 @@
 #include "SSD1306.h"
 #include "Robokid_strings.h"
 #include "tunes.h"
+#include "menus.h"
 #include "run_gamepad_modes.h"
 #include "run_test_modes.h"
 
@@ -21,10 +22,9 @@
 #include "task.h"
 #include "queue.h"
 
-#define     TASK_ROBOKID_START_DELAY_SECONDS    5
+#define   TASK_ROBOKID_START_DELAY_SECONDS    5
 
-
-#define  LONG_PRESS_MS  4000        // 4 seconds
+#define   LONG_PRESS_MS  4000        // 4 seconds
 
 //==============================================================================
 // Main task routine
@@ -51,6 +51,7 @@ error_codes_te              error;
     LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     if (press_time > LONG_PRESS_MS) {
+        primary_menu.nos_modes++;
         last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
     }
     set_tune_data(beep, NOS_NOTES(beep), true, 1);
@@ -69,13 +70,13 @@ error_codes_te              error;
                 case PRIMARY_NULL_MODE :  // no mode selected as yet
                     break;
                 case GAMEPAD_MODE : 
-                    error = run_gamepad_modes();
+                    error = run_gamepad_modes(0);
                     if (error != OK) {
                         log_error(error, TASK_ROBOKID);
                     }
                     break;
                 case TEST_MODE : 
-                    error = run_test_modes();
+                    error = run_test_modes(0);
                     break;
                 default : 
                     break;

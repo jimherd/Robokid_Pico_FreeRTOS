@@ -7,7 +7,7 @@
 #ifndef __RUN_GAMEPAD_MODES_H__
 #define __RUN_GAMEPAD_MODES_H__
 
-error_codes_te run_gamepad_modes(void);
-error_codes_te execute_gamepad_activities(secondary_sys_modes_te mode);
+error_codes_te run_gamepad_modes(uint32_t parameter);
+error_codes_te execute_gamepad_activities(uint32_t  parameter);
 
 #endif  /* __RUN_GAMEPAD_MODES_H__  */
