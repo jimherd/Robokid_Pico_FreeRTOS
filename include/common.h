@@ -9,7 +9,6 @@
 
 #include <stdio.h>
 #include "system.h"
-#include "menus.h"
 
 void update_task_execution_time(task_t task, uint32_t start_time, uint32_t end_time);
 void log_error(error_codes_te error_code, task_t task);
@@ -27,6 +26,6 @@ void set_leds(LED_state_te LED_A_state,
 void set_n_LEDS (uint8_t nos_LEDS);
 void reset_USB(void);
 error_codes_te null_function(uint32_t parameter);
-error_codes_te  run_menu(struct menu *menu_pt);
+
 
 #endif

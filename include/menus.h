@@ -24,4 +24,6 @@ extern struct menu primary_menu;
 extern struct menu gamepad_mode_menu;
 extern struct menu test_mode_menu;
 
+error_codes_te  run_menu(struct menu *menu_pt);
+
 #endif

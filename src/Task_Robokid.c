@@ -54,43 +54,50 @@ error_codes_te              error;
         primary_menu.nos_modes++;
         last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
     }
-    set_tune_data(beep, NOS_NOTES(beep), true, 1);
+    set_tune_data(beep, NOS_NOTES(beep), true, 2);
 
-    primary_mode = PRIMARY_NULL_MODE;
+    // primary_mode = PRIMARY_NULL_MODE;
 
     FOREVER {
-        LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode], true);
-        set_n_LEDS(STRING_COUNT(top_level_button_data));
-        SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
-        
-        event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
-
-        if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
-            switch (primary_mode) {
-                case PRIMARY_NULL_MODE :  // no mode selected as yet
-                    break;
-                case GAMEPAD_MODE : 
-                    error = run_gamepad_modes(0);
-                    if (error != OK) {
-                        log_error(error, TASK_ROBOKID);
-                    }
-                    break;
-                case TEST_MODE : 
-                    error = run_test_modes(0);
-                    break;
-                default : 
-                    break;
-            }  // end of switch 
-        } else if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
-            if (primary_mode == last_mode) {
-                primary_mode = first_mode;
-            } else {
-                primary_mode++;
-            }
-        } else if (event_bits == PUSH_BUTTON_C_EVENT_MASK) {
-            NULL;  // ignore press of button C
-        } else if (event_bits == PUSH_BUTTON_D_EVENT_MASK) {
-            NULL;  // ignore press of button D
+        error = run_menu(&primary_menu);
+        if (error != OK) {
+            log_error(error, TASK_ROBOKID);
         }
     }
+
+    // FOREVER {
+    //     LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode], true);
+    //     set_n_LEDS(STRING_COUNT(top_level_button_data));
+    //     SSD1306_set_text_area_scroller(STRING_COUNT(top_level_button_data), top_level_button_data);
+        
+    //     event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
+
+    //     if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {
+    //         switch (primary_mode) {
+    //             case PRIMARY_NULL_MODE :  // no mode selected as yet
+    //                 break;
+    //             case GAMEPAD_MODE : 
+    //                 error = run_gamepad_modes(0);
+    //                 if (error != OK) {
+    //                     log_error(error, TASK_ROBOKID);
+    //                 }
+    //                 break;
+    //             case TEST_MODE : 
+    //                 error = run_test_modes(0);
+    //                 break;
+    //             default : 
+    //                 break;
+    //         }  // end of switch 
+    //     } else if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {
+    //         if (primary_mode == last_mode) {
+    //             primary_mode = first_mode;
+    //         } else {
+    //             primary_mode++;
+    //         }
+    //     } else if (event_bits == PUSH_BUTTON_C_EVENT_MASK) {
+    //         NULL;  // ignore press of button C
+    //     } else if (event_bits == PUSH_BUTTON_D_EVENT_MASK) {
+    //         NULL;  // ignore press of button D
+    //     }
+    // }
 }
