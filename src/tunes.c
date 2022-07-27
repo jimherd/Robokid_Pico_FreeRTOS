@@ -19,9 +19,9 @@ struct  note_data_s next_mode[4] = {
 };
 
 struct note_data_s last_mode[4] = {
-        {NOTE_G, 2},
-        {SILENT_NOTE, 1},
         {NOTE_F, 2},
+        {SILENT_NOTE, 1},
+        {NOTE_E, 2},
         {SILENT_NOTE, 2},
 };
 

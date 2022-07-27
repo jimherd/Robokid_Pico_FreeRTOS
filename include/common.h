@@ -26,6 +26,8 @@ void set_leds(LED_state_te LED_A_state,
 void set_n_LEDS (uint8_t nos_LEDS);
 void reset_USB(void);
 error_codes_te null_function(uint32_t parameter);
+void prime_free_buffer_queue(void);
+void print_string(char *string_pt);
 
 
 #endif

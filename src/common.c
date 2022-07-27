@@ -5,11 +5,14 @@
  * @date    2022-02-26
  */
 
+#include "string.h"
+
 #include "pico/stdlib.h"
 #include "hardware/resets.h"
 
 #include "FreeRTOS.h"
 #include "event_groups.h"
+#include "queue.h"
 
 #include "system.h"
 #include "common.h"
@@ -267,4 +270,41 @@ error_codes_te null_function(uint32_t parameter)
 {
     return OK;
 }
+
+//==============================================================================
+/**
+ * @brief prime free buffer queue with pointers to all free buffers
+ * 
+ */
+void prime_free_buffer_queue(void)
+{
+struct string_buffer_s free_buffer_index;
+
+    for (uint8_t i = 0; i < NOS_STRING_BUFFERS; i++) {
+        free_buffer_index.buffer_index  = i;
+        xQueueSend(queue_free_buffers, &free_buffer_index, portMAX_DELAY);
+    }
+    return;
+}
+
+//==============================================================================
+/**
+ * @brief send '\0' terminated string to print task
+ * 
+ * 1. get index of free buffer
+ * 2. load buffer
+ * 3. send index to print task
+ */
+void print_string(char *string_pt)
+{
+struct string_buffer_s free_buffer_index;
+
+    xQueueReceive(queue_free_buffers, &free_buffer_index,  portMAX_DELAY);
+    uint32_t index = free_buffer_index.buffer_index;
+    strncpy(string_buffers[index], string_pt, (STRING_WIDTH-1));
+    xQueueSend(queue_string_buffers, &free_buffer_index, portMAX_DELAY);
+
+    return;
+}
+
 

@@ -64,6 +64,8 @@ error_codes_te              error;
             log_error(error, TASK_ROBOKID);
         }
     }
+}
+
 
     // FOREVER {
     //     LCD_write_row(0, MESSAGE_ROW, main_modes[primary_mode], true);
@@ -100,4 +102,4 @@ error_codes_te              error;
     //         NULL;  // ignore press of button D
     //     }
     // }
-}
+

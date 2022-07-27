@@ -2,8 +2,6 @@
  * @file Task_drive_motors.c
  * @author Jim Herd
  * @brief   Execute motor move commands
- * @version 0.1
- * @date 2022-02-16
  * 
  */
 #include <string.h>

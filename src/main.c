@@ -42,6 +42,7 @@ TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
 TaskHandle_t taskhndl_Task_error;
 TaskHandle_t taskhndl_Task_sounder;
+TaskHandle_t taskhndl_Task_serial_output;
 TaskHandle_t taskhndl_Task_blink_LED;
 
 SemaphoreHandle_t semaphore_LCD_data;
@@ -53,6 +54,8 @@ SemaphoreHandle_t semaphore_tune_data;
 
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
+QueueHandle_t queue_string_buffers;
+QueueHandle_t queue_free_buffers;
 
 EventGroupHandle_t eventgroup_push_buttons;
 
@@ -72,6 +75,10 @@ struct font_data_s         font_data[NOS_FONTS] = {
     {robokid_LCD_icons_font_15x16, (SSD1306_LCDWIDTH / ROBOKID_LCD_ICONS_FONT_15x16_WIDTH)},    // font 1
 };
 struct LCD_row_data_s      LCD_row_data[SS1306_NOS_LCD_ROWS];
+
+// ASCII string buffers
+
+char string_buffers[NOS_STRING_BUFFERS][STRING_WIDTH];
 
 //==============================================================================
 // System initiation
@@ -227,6 +234,14 @@ int main()
                 &taskhndl_Task_error
     );
 
+    xTaskCreate(Task_serial_output,
+                "send ASCII strings to serial port",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_serial_output
+    );
+
     xTaskCreate(Task_blink_LED,
                 "blink_task",
                 configMINIMAL_STACK_SIZE,
@@ -244,8 +259,12 @@ int main()
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(struct motor_cmd_packet_s));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(struct error_message_s));
+    queue_string_buffers = xQueueCreate(NOS_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
+    queue_free_buffers   = xQueueCreate(NOS_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
 
     eventgroup_push_buttons = xEventGroupCreate (); 
+
+    prime_free_buffer_queue();
 
     vTaskStartScheduler();
 

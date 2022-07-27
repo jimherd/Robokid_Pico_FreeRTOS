@@ -396,7 +396,7 @@ typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 
 typedef enum TASKS {
     TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
-    TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_BLINK
+    TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_SERIAL_OUTPUT, TASK_BLINK
 } task_t;
 
 #define     NOS_TASKS   (TASK_BLINK + 1)
@@ -559,6 +559,16 @@ struct system_modes_s {
 };
 
 //==============================================================================
+// queue element for serial print facility
+
+#define     NOS_STRING_BUFFERS    8
+#define     STRING_WIDTH        128
+
+struct string_buffer_s {
+    uint32_t    buffer_index;
+};
+
+//==============================================================================
 // **** in development
 
 typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
@@ -685,6 +695,7 @@ extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
 extern void Task_sounder (void *p);
+extern void Task_serial_output(void *p);
 extern void Task_blink_LED(void *p);
 
 extern  TaskHandle_t taskhndl_Task_Robokid;
@@ -694,6 +705,7 @@ extern  TaskHandle_t taskhndl_Task_display_LCD;
 extern  TaskHandle_t taskhndl_Task_drive_motors;
 extern  TaskHandle_t taskhndl_Task_error;
 extern  TaskHandle_t taskhndl_Task_sounder;
+extern  TaskHandle_t taskhndl_Task_serial_output;
 extern  TaskHandle_t taskhndl_Task_blink_LED;
 
 extern SemaphoreHandle_t semaphore_LCD_data;            //semaphores
@@ -705,6 +717,8 @@ extern SemaphoreHandle_t semaphore_tune_data;
 
 extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;
+extern QueueHandle_t queue_string_buffers;
+extern QueueHandle_t queue_free_buffers;
 
 extern EventGroupHandle_t eventgroup_push_buttons;      // event groups
 
@@ -723,5 +737,7 @@ extern const unsigned char truck_bmp[1024];
 
 extern struct LCD_row_data_s  LCD_row_data[];
 extern struct LCD_scroll_data_s   LCD_scroll_data;
+
+extern char string_buffers[NOS_STRING_BUFFERS][STRING_WIDTH];
 
 #endif /* __SYSTEM_H__ */
