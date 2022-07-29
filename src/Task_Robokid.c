@@ -34,7 +34,7 @@ void Task_Robokid(void *p)
 uint32_t                    start_time, end_time;
 uint8_t                     index;
 EventBits_t                 event_bits;
-primary_sys_modes_te        primary_mode, first_mode, last_mode;
+//primary_sys_modes_te        primary_mode, first_mode, last_mode;
 uint32_t                    press_time;
 error_codes_te              error;
 
@@ -46,13 +46,13 @@ error_codes_te              error;
     set_n_LEDS(STRING_COUNT(wait_start));
     SSD1306_set_text_area_scroller(STRING_COUNT(wait_start), wait_start);
 
-    first_mode = GAMEPAD_MODE;
-    last_mode = TEST_MODE - 1;  // hide experiment mode from normal operation
+    // first_mode = GAMEPAD_MODE;
+    // last_mode = TEST_MODE - 1;  // hide experiment mode from normal operation
     LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     if (press_time > LONG_PRESS_MS) {
         primary_menu.nos_modes++;
-        last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
+//        last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
     }
     set_tune_data(beep, NOS_NOTES(beep), true, 2);
 

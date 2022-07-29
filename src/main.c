@@ -54,7 +54,7 @@ SemaphoreHandle_t semaphore_tune_data;
 
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
-QueueHandle_t queue_string_buffers;
+QueueHandle_t queue_print_string_buffers;
 QueueHandle_t queue_free_buffers;
 
 EventGroupHandle_t eventgroup_push_buttons;
@@ -78,7 +78,7 @@ struct LCD_row_data_s      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
 // ASCII string buffers
 
-char string_buffers[NOS_STRING_BUFFERS][STRING_WIDTH];
+char print_string_buffers[NOS_PRINT_STRING_BUFFERS][STRING_LENGTH];
 
 //==============================================================================
 // System initiation
@@ -180,7 +180,7 @@ int main()
  
     xTaskCreate(Task_Robokid,
                 "Robokid_task",
-                configMINIMAL_STACK_SIZE,
+                1024,  // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYLOW,
                 &taskhndl_Task_Robokid
@@ -236,7 +236,7 @@ int main()
 
     xTaskCreate(Task_serial_output,
                 "send ASCII strings to serial port",
-                configMINIMAL_STACK_SIZE,
+                1024,  // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_serial_output
@@ -259,8 +259,8 @@ int main()
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(struct motor_cmd_packet_s));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(struct error_message_s));
-    queue_string_buffers = xQueueCreate(NOS_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
-    queue_free_buffers   = xQueueCreate(NOS_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
+    queue_print_string_buffers = xQueueCreate(NOS_PRINT_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
+    queue_free_buffers   = xQueueCreate(NOS_PRINT_STRING_BUFFERS+1, sizeof(struct string_buffer_s));
 
     eventgroup_push_buttons = xEventGroupCreate (); 
 

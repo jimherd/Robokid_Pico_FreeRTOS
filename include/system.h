@@ -561,8 +561,8 @@ struct system_modes_s {
 //==============================================================================
 // queue element for serial print facility
 
-#define     NOS_STRING_BUFFERS    8
-#define     STRING_WIDTH        128
+#define     NOS_PRINT_STRING_BUFFERS    8
+#define     STRING_LENGTH        128
 
 struct string_buffer_s {
     uint32_t    buffer_index;
@@ -717,7 +717,7 @@ extern SemaphoreHandle_t semaphore_tune_data;
 
 extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;
-extern QueueHandle_t queue_string_buffers;
+extern QueueHandle_t queue_print_string_buffers;
 extern QueueHandle_t queue_free_buffers;
 
 extern EventGroupHandle_t eventgroup_push_buttons;      // event groups
@@ -738,6 +738,6 @@ extern const unsigned char truck_bmp[1024];
 extern struct LCD_row_data_s  LCD_row_data[];
 extern struct LCD_scroll_data_s   LCD_scroll_data;
 
-extern char string_buffers[NOS_STRING_BUFFERS][STRING_WIDTH];
+extern char print_string_buffers[NOS_PRINT_STRING_BUFFERS][STRING_LENGTH];
 
 #endif /* __SYSTEM_H__ */

@@ -280,7 +280,7 @@ void prime_free_buffer_queue(void)
 {
 struct string_buffer_s free_buffer_index;
 
-    for (uint8_t i = 0; i < NOS_STRING_BUFFERS; i++) {
+    for (uint8_t i = 0; i < NOS_PRINT_STRING_BUFFERS; i++) {
         free_buffer_index.buffer_index  = i;
         xQueueSend(queue_free_buffers, &free_buffer_index, portMAX_DELAY);
     }
@@ -301,8 +301,10 @@ struct string_buffer_s free_buffer_index;
 
     xQueueReceive(queue_free_buffers, &free_buffer_index,  portMAX_DELAY);
     uint32_t index = free_buffer_index.buffer_index;
-    strncpy(string_buffers[index], string_pt, (STRING_WIDTH-1));
-    xQueueSend(queue_string_buffers, &free_buffer_index, portMAX_DELAY);
+
+    strncpy(print_string_buffers[index], string_pt, (STRING_LENGTH-1));
+    
+    xQueueSend(queue_print_string_buffers, &free_buffer_index, portMAX_DELAY);
 
     return;
 }

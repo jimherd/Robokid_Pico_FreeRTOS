@@ -12,14 +12,9 @@
 //      imported into excel for display.
 //
 //      Tests
-//          a. Print version and cycle LEDs
-//          b. Read raw battery voltage value and send to com port
-//          c. 
-//
-//      Active switches are 
-//          switch A = go/stop button
-//          switch C = exit to main slection level
-//          switch D = step through selections
+//          0. Print version and cycle LEDs
+//          1. Read raw data from CD4051 8-channel analogue inputs
+//          2. 
 
 #include <stdlib.h>
 #include <string.h>
@@ -32,6 +27,13 @@
 #include "run_test_modes.h"
 
 #include "FreeRTOS.h"
+
+//==============================================================================
+// Global data
+//==============================================================================
+
+char    temp_string[128];
+struct  analogue_data_s  temp_analogue_data;
 
 //==============================================================================
 // Main routine
@@ -53,9 +55,12 @@ error_codes_te run_test_modes(uint32_t parameter)
  */
 error_codes_te run_test_0(uint32_t parameter)
 {
-    printf("Major Verion : %d\n", MAJOR_VERSION);
-    printf("Minor Verion : %d\n", MINOR_VERSION);
-    printf("Patch Verion : %d\n", PATCH_VERSION);
+    sprintf(temp_string, "Major Verion : %d\n", MAJOR_VERSION);
+    print_string(temp_string);
+    sprintf(temp_string, "Minor Verion : %d\n", MINOR_VERSION);
+    print_string(temp_string);
+    sprintf(temp_string, "Patch Verion : %d\n", PATCH_VERSION);
+    print_string(temp_string);
 
     set_leds(LED_ON, LED_ON, LED_ON, LED_ON);
     vTaskDelay(TWO_SECONDS);
@@ -81,13 +86,30 @@ error_codes_te run_test_0(uint32_t parameter)
 }
 
 /**
- * @brief Read battery data and print results 
+ * @brief Read raw data from CD4051 8-channel analogue inputs
  * 
  * @return error_codes_te 
  */
  error_codes_te run_test_1(uint32_t parameter)
 {
-    printf("Test 1\n");
+    print_string("Test 1\n");
+    for (uint32_t index = 0; index < 10; index++) {
+        xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+           memcpy(&temp_analogue_data, &system_IO_data.analogue_data, sizeof(struct analogue_data_s));
+        xSemaphoreGive(semaphore_system_IO_data);
+        sprintf(temp_string, "%u,%u,%u,%u,%u,%u,%u,%u\n", 
+            temp_analogue_data.CD4051[0].raw_data,
+            temp_analogue_data.CD4051[1].raw_data,
+            temp_analogue_data.CD4051[2].raw_data,
+            temp_analogue_data.CD4051[3].raw_data,
+            temp_analogue_data.CD4051[4].raw_data,
+            temp_analogue_data.CD4051[5].raw_data,
+            temp_analogue_data.CD4051[6].raw_data,
+            temp_analogue_data.CD4051[7].raw_data
+        );
+        print_string(temp_string);
+        vTaskDelay(TWO_SECONDS);
+    }
     return OK;
 }
 
@@ -98,7 +120,7 @@ error_codes_te run_test_0(uint32_t parameter)
  */
  error_codes_te run_test_2(uint32_t parameter)
 {
-    printf("Test 2\n");
+    print_string("Test 2\n");
     return OK;
 }
 
@@ -109,7 +131,7 @@ error_codes_te run_test_0(uint32_t parameter)
  */
  error_codes_te run_test_3(uint32_t parameter)
 {
-    printf("Test 3\n");
+    print_string("Test 3\n");
     return OK;
 }
 
