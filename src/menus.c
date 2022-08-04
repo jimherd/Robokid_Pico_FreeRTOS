@@ -73,8 +73,33 @@ struct menu test_mode_menu = {
     {   
         run_test_0, 
         run_test_1,
-        run_test_2,
+        run_test_2_menu,
         run_test_3,
+    }
+};
+
+struct menu test_mode_2_menu = {
+    false,
+    8,
+    {
+        "log POT A     ",
+        "log POT B     ",
+        "log POT C     ",
+        "log IR right  ",  
+        "log IR middle ",  
+        "log IR left   ",  
+        "log Vmotor    ", 
+        "log spare     " 
+    },
+    {   
+        run_test_2, 
+        run_test_2,
+        run_test_2,
+        run_test_2, 
+        run_test_2,
+        run_test_2,
+        run_test_2, 
+        run_test_2,
     }
 };
 
@@ -102,12 +127,12 @@ error_codes_te      error;
         event_bits = (wait_for_any_button_press(portMAX_DELAY) & PUSH_BUTTON_ON_EVENT_MASK);
 
         if (event_bits == PUSH_BUTTON_A_EVENT_MASK) {  // run current mode
-            error = menu_pt->mode_function[mode_index](0);
+            error = menu_pt->mode_function[mode_index](mode_index, 0);
             return error;
         }
 
         if (event_bits == PUSH_BUTTON_B_EVENT_MASK) {  // next mode
-            mode_index = (mode_index < (menu_pt->nos_modes - 1)) ? (mode_index+ + 1) : 0;
+            mode_index = (mode_index < (menu_pt->nos_modes - 1)) ? (mode_index + 1) : 0;
             set_tune_data(next_mode, NOS_NOTES(next_mode), true, 1);
         }
         if (event_bits == PUSH_BUTTON_C_EVENT_MASK) {  // previous mode

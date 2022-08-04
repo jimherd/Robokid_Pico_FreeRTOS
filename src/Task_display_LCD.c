@@ -76,7 +76,7 @@ error_codes_te  error;
 
     xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
         error = system_status.error_state;
-        battery_volts = system_IO_data.analogue_data.CD4051[MOTOR_VOLTAGE_CHANNEL].raw_data;
+//battery_volts = system_IO_data.analogue_global_data.processed[MOTOR_VOLTAGE_CHANNEL].value;
     xSemaphoreGive(semaphore_system_status);
     if (error <= OK) {
         buffer[buffer_pt++] = ERROR_ICON;

@@ -33,13 +33,14 @@
 //==============================================================================
 
 char    temp_string[128];
-struct  analogue_data_s  temp_analogue_data;
+struct  analogue_global_data_s      temp_analogue_global_data;
+//struct  analogue_processed_data_s   temp_analogue_processed_data;
 
 //==============================================================================
 // Main routine
 //==============================================================================
 
-error_codes_te run_test_modes(uint32_t parameter) 
+error_codes_te run_test_modes(uint8_t mode_index, uint32_t parameter) 
 {
     return run_menu(&test_mode_menu);
 }
@@ -53,7 +54,7 @@ error_codes_te run_test_modes(uint32_t parameter)
  * 
  * @return * error_codes_te 
  */
-error_codes_te run_test_0(uint32_t parameter)
+error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
 {
     sprintf(temp_string, "Major Verion : %d\n", MAJOR_VERSION);
     print_string(temp_string);
@@ -88,24 +89,25 @@ error_codes_te run_test_0(uint32_t parameter)
 /**
  * @brief Read raw data from CD4051 8-channel analogue inputs
  * 
+ * @param parameter 
  * @return error_codes_te 
  */
- error_codes_te run_test_1(uint32_t parameter)
+ error_codes_te run_test_1(uint8_t mode_index, uint32_t parameter)
 {
-    print_string("Test 1\n");
-    for (uint32_t index = 0; index < 10; index++) {
+    print_string("POT A,POT B,Spare,Vm,IR Left,IR Mid,IR Right, POT C\n");
+    for (uint32_t index = 0; index < 100; index++) {
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-           memcpy(&temp_analogue_data, &system_IO_data.analogue_data, sizeof(struct analogue_data_s));
+           memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
         xSemaphoreGive(semaphore_system_IO_data);
         sprintf(temp_string, "%u,%u,%u,%u,%u,%u,%u,%u\n", 
-            temp_analogue_data.CD4051[0].raw_data,
-            temp_analogue_data.CD4051[1].raw_data,
-            temp_analogue_data.CD4051[2].raw_data,
-            temp_analogue_data.CD4051[3].raw_data,
-            temp_analogue_data.CD4051[4].raw_data,
-            temp_analogue_data.CD4051[5].raw_data,
-            temp_analogue_data.CD4051[6].raw_data,
-            temp_analogue_data.CD4051[7].raw_data
+            temp_analogue_global_data.processed[0].value,
+            temp_analogue_global_data.processed[1].value,
+            temp_analogue_global_data.processed[2].value,
+            temp_analogue_global_data.processed[3].value,
+            temp_analogue_global_data.processed[4].value,
+            temp_analogue_global_data.processed[5].value,
+            temp_analogue_global_data.processed[6].value,
+            temp_analogue_global_data.processed[7].value
         );
         print_string(temp_string);
         vTaskDelay(TWO_SECONDS);
@@ -114,22 +116,44 @@ error_codes_te run_test_0(uint32_t parameter)
 }
 
 /**
- * @brief Read battery data and print results 
+ * @brief Select a CD4051 channel to read and log
  * 
+ * @param parameter 
  * @return error_codes_te 
  */
- error_codes_te run_test_2(uint32_t parameter)
+ error_codes_te run_test_2_menu(uint8_t mode_index, uint32_t parameter)
 {
-    print_string("Test 2\n");
+    run_menu(&test_mode_2_menu);
     return OK;
 }
 
 /**
- * @brief Read battery data and print results 
+ * @brief 
  * 
+ * @param parameter 
  * @return error_codes_te 
  */
- error_codes_te run_test_3(uint32_t parameter)
+ error_codes_te run_test_2(uint8_t mode_index, uint32_t parameter)
+{
+    sprintf(temp_string, "Channel %u\n", mode_index);
+    print_string(temp_string);
+    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+        memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
+    xSemaphoreGive(semaphore_system_IO_data);
+    sprintf(temp_string, "%u\n", 
+            temp_analogue_global_data.processed[mode_index].value
+    );
+    print_string(temp_string);
+    return OK;
+}
+
+/**
+ * @brief 
+ * 
+ * @param parameter 
+ * @return error_codes_te 
+ */
+ error_codes_te run_test_3(uint8_t mode_index, uint32_t parameter)
 {
     print_string("Test 3\n");
     return OK;

@@ -53,9 +53,10 @@ static void set_CD4051_address(uint8_t index);
 //==============================================================================
 // Local globals
 //==============================================================================
-static struct push_button_data_s  temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-static struct LED_data_s          temp_LED_data[NOS_ROBOKID_LEDS];
-static struct analogue_data_s     temp_analogue_data;
+static struct push_button_data_s       temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+static struct LED_data_s               temp_LED_data[NOS_ROBOKID_LEDS];
+static struct analogue_global_data_s   temp_analogue_global_data;
+static struct analogue_local_data_s    analogue_local_data;
 
 uint32_t    switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
 uint8_t     switch_sample_index;
@@ -119,7 +120,7 @@ START_PULSE;
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
             memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
             memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
-            memcpy(&temp_analogue_data , &system_IO_data.analogue_data, sizeof(struct analogue_data_s));
+            memcpy(&temp_analogue_global_data , &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
         xSemaphoreGive(semaphore_system_IO_data);
     //
     // read push switches and debounce
@@ -200,21 +201,23 @@ START_PULSE;
         }
 
     // read 8-channel CD4051 A/D subsystem
+
         adc_select_input(CD4051_RP2040_channel);
         for (index = 0 ; index < NOS_CD4051_CHANNELS ; index++) {
             set_CD4051_address(index);
             uint16_t tmp_data = adc_read();
-            temp_analogue_data.CD4051[index].raw_data = tmp_data;
-            temp_analogue_data.CD4051[index].percent  = byte_to_percent[(tmp_data >> 4)];
+            temp_analogue_global_data.raw->current_value = tmp_data;
+            temp_analogue_global_data.raw->percent_current_value  = byte_to_percent[(tmp_data >> 4)];
             
         }
         set_CD4051_address(0);    // reset CD4051 address to 0
 
     // Threshold IR line sensors
 
-        system_IO_data.line_sensor_data[0].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_LEFT_CHANNEL].percent;
-        system_IO_data.line_sensor_data[1].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_MID_CHANNEL].percent;
-        system_IO_data.line_sensor_data[2].percent_value = system_IO_data.analogue_data.CD4051[LINE_SENSOR_RIGHT_CHANNEL].percent;
+xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+        system_IO_data.line_sensor_data[0].percent_value = temp_analogue_global_data.raw[LINE_SENSOR_LEFT_CHANNEL].percent_current_value;
+        system_IO_data.line_sensor_data[1].percent_value = temp_analogue_global_data.raw[LINE_SENSOR_MID_CHANNEL].percent_current_value;;
+        system_IO_data.line_sensor_data[2].percent_value = temp_analogue_global_data.raw[LINE_SENSOR_RIGHT_CHANNEL].percent_current_value;;
         for(index=0;index <NOS_ROBOKID_LINE_SENSORS ; index++) {
             if (system_IO_data.line_sensor_data[index].percent_value > (system_IO_data.line_sensor_data[index].threshhold)) {
                 system_IO_data.line_sensor_data[index].binary_value = 1;
@@ -222,13 +225,13 @@ START_PULSE;
                 system_IO_data.line_sensor_data[index].binary_value = 0;
             }
         }
-
+xSemaphoreGive(semaphore_system_IO_data);
     // Update global system data 
 
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
            memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
            memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
-           memcpy(&system_IO_data.analogue_data, &temp_analogue_data , sizeof(struct analogue_data_s));
+           memcpy(&system_IO_data.analogue_global_data, &temp_analogue_global_data , sizeof(struct analogue_global_data_s));
         xSemaphoreGive(semaphore_system_IO_data);
 
         end_time = time_us_32();
@@ -261,69 +264,75 @@ static void set_CD4051_address(uint8_t index)
     busy_wait_us_32(CD4051_SETTLING_TIME_US);
 }
 
-struct analogue_raw_data_s analogue_raw_data[NOS_CD4051_CHANNELS];
-struct analogue_processed_data_s analogue_processed_data[NOS_CD4051_CHANNELS];
+//struct analogue_raw_data_s analogue_raw_data[NOS_CD4051_CHANNELS];
+//struct analogue_processed_data_s analogue_processed_data[NOS_CD4051_CHANNELS];
 
-static void filter_analogue(void){
+/**
+ * @brief apply a cleanup filter to data
+ * 
+ */
+static void filter_analogue(void)
+{
 
-struct analogue_raw_data_s *raw_data_pt;
-struct analogue_processed_data_s *processed_data_pt;
+struct analogue_data_s          *analogue_data_pt;
+struct analogue_local_data_s    *local_data_pt;
+struct analogue_global_data_s   *global_data_pt;
 
 uint32_t delta;
 
     for(uint8_t index ; index < NOS_CD4051_CHANNELS; index++){
-        raw_data_pt       = &analogue_raw_data[index];
-        processed_data_pt = &analogue_processed_data[index];
+        local_data_pt  = &analogue_local_data.raw[index];
+        global_data_pt = &temp_analogue_global_data[index];
         set_CD4051_address(index);
         uint16_t tmp_data = adc_read();
-        raw_data_pt->sample_count++;
-        raw_data_pt->current_value = tmp_data;
+        local_data_pt->raw[index]sample_count++;
+        local_data_pt->current_value = tmp_data;
     //
     // Set all relevant variables to read value until averaging buffer is full
     //
         if (sample_count < BUFF_SIZE) {  // circular buffer not full
-            raw_data_pt->last_value = tmp_data;
-            raw_data_pt->cir_buffer.buffer[raw_data_pt->cir_buffer.buff_ptr++] = tmp_data;
-            processed_data_pt->value = tmp_data;
-            if (raw_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
-                raw_data_pt->cir_buffer.buff_ptr = 0;
+            local_data_pt->last_value = tmp_data;
+            local_data_pt->cir_buffer.buffer[local_data_pt->cir_buffer.buff_ptr++] = tmp_data;
+            global_data_pt->value = tmp_data;
+            if (local_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
+                local_data_pt->cir_buffer.buff_ptr = 0;
             }
             return;
         }
     //
     // run glitch filter by testing between this and last value
     //
-        if(tmp_data > raw_data_pt->last_value) {
-            delta = tmp_data - raw_data_pt->last_value;
+        if(tmp_data > local_data_pt->last_value) {
+            delta = tmp_data - local_data_pt->last_value;
         } else {
-            delta = raw_data_pt->last_value - tmp_data;
+            delta = local_data_pt->last_value - tmp_data;
         }
-        if (delta > processed_data_pt->glitch_threshold) {
-            raw_data_pt->current_value = raw_data_pt->last_value;
-            raw_data_pt->glitch_count++;
+        if (delta > global_data_pt->glitch_threshold) {
+            local_data_pt->current_value = local_data_pt->last_value;
+            local_data_pt->glitch_count++;
             // log glitch detected
-            if (raw_data_pt->glitch_count > processed_data_pt->glitch_error_threshold) {  // run of glitches
-                raw_data_pt->sample_count = 0;
-                raw_data_pt->glitch_count =0;
+            if (local_data_pt->glitch_count > global_data_pt->glitch_error_threshold) {  // run of glitches
+                local_data_pt->sample_count = 0;
+                local_data_pt->glitch_count =0;
             }
         } else {
-            raw_data_pt->glitch_count = 0;
+            local_data_pt->glitch_count = 0;
         }
     //
     // Add value to circular buffer and adjust pointer as necessary
     //
-        raw_data_pt->cir_buffer.buffer[raw_data_pt->cir_buffer.buff_ptr++] = tmp_data;
-        if (raw_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
-            raw_data_pt->cir_buffer.buff_ptr = 0;
+        local_data_pt->cir_buffer.buffer[local_data_pt->cir_buffer.buff_ptr++] = tmp_data;
+        if (local_data_pt->cir_buffer.buff_ptr >= BUFF_SIZE) {
+            local_data_pt->cir_buffer.buff_ptr = 0;
         }
     //
     // calculate average
     //
         uint32_t sum = 0;
         for(uint8_t i = 0; i <BUFF_SIZE; i++) {
-            sum += raw_data_pt->cir_buffer.buffer[i];
+            sum += local_data_pt->cir_buffer.buffer[i];
         }
-        processed_data_pt->value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
+        global_data_pt->value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
     }
     
 }

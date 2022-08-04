@@ -22,7 +22,7 @@
 
 #include "FreeRTOS.h"
 
-error_codes_te run_gamepad_modes(uint32_t parameter) 
+error_codes_te run_gamepad_modes(uint8_t mode_index, uint32_t parameter) 
 {
     return run_menu(&gamepad_mode_menu);
 }
@@ -83,7 +83,7 @@ error_codes_te run_gamepad_modes(uint32_t parameter)
  * as the queue entries are based on data copying and are not passed by
  * reference.
  */
-error_codes_te execute_gamepad_activities(uint32_t  parameter)
+error_codes_te execute_gamepad_activities(uint8_t mode_index, uint32_t  parameter)
 {
 struct gamepad_data_s       temp_gamepad_data;
 struct motor_cmd_packet_s   motor_cmd_packet;

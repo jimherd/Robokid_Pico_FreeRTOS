@@ -1,7 +1,6 @@
 {
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "files.associations": {
-    //    "tmc7300_registers.h": "c",
         "bit": "c",
         "compare": "c",
         "cstddef": "c",
@@ -11,7 +10,8 @@
         "memory": "c",
         "new": "c",
         "ranges": "c",
-        "functional": "c"
+        "functional": "c",
+        "type_traits": "c"
     },
     "cmake.buildEnvironment": {
         "PICO_SDK_PATH ": "C:\\jth\\Pico\\pico-sdk"

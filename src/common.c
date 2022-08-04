@@ -266,7 +266,7 @@ void reset_USB(void)
      unreset_block_wait(RESETS_RESET_USBCTRL_BITS);
 }
 
-error_codes_te null_function(uint32_t parameter)
+error_codes_te null_function(uint8_t mode_index, uint32_t parameter)
 {
     return OK;
 }

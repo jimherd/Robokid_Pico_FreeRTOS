@@ -159,9 +159,9 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define POT_A_channel               0
 #define POT_B_channel               1
 #define POT_C_channel               7
-#define LINE_SENSOR_LEFT_CHANNEL    4
+#define LINE_SENSOR_RIGHT_CHANNEL   4
 #define LINE_SENSOR_MID_CHANNEL     5
-#define LINE_SENSOR_RIGHT_CHANNEL   6
+#define LINE_SENSOR_LEFT_CHANNEL    6
 #define MOTOR_VOLTAGE_CHANNEL       3
 #define SPARE_CHANNEL               2
 
@@ -514,18 +514,6 @@ struct  push_button_data_s {
     uint32_t  on_time;
 };
 
-struct analogue_data_s {
-    struct  {
-        struct rp2040 {
-            uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
-        } rp2040;
-        struct CD4051 {
-            uint16_t raw_data;
-            uint8_t  percent;
-        } CD4051[NOS_CD4051_CHANNELS];
-    };
-};
-
 struct vehicle_data_s {
     vehicle_state_t     vehicle_state;
     uint32_t            speed;
@@ -569,46 +557,90 @@ struct string_buffer_s {
 };
 
 //==============================================================================
-// **** in development
-
-typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
-
-struct analogue_processed_data_s {        // global
-    channel_type_te     channel_type;
-    uint32_t            value;
-    uint32_t            glitch_threshold;
-    uint32_t            glitch_error_threshold;
-};
+//==============================================================================
+// analogue subsystem
 
 #define     BUFF_SIZE   4
+typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
 
 struct circular_buffer_s {
-    uint32_t    buffer[BUFF_SIZE];
-    uint32_t    buff_ptr;
+    uint16_t    buffer[BUFF_SIZE];
+    uint8_t     buff_ptr;
 };
 
-struct analogue_raw_data_s {        // local
-    struct circular_buffer_s   cir_buffer;
-    uint32_t            current_value;
-    uint32_t            last_value;
-    uint32_t            sample_count;
-    uint32_t            glitch_count;
+struct analogue_local_data_s {
+    struct l_raw {
+        struct circular_buffer_s    cir_buffer;
+        uint16_t                    current_value;
+        uint16_t                    last_value;
+        uint8_t                     sample_count;
+        uint8_t                     glitch_count;
+    } raw[NOS_CD4051_CHANNELS];
+    struct l_processed {
+        uint32_t    glitch_threshold;
+        uint32_t    glitch_error_threshold;
+    } processed[NOS_CD4051_CHANNELS];
 };
 
+struct analogue_global_data_s {
+    struct g_raw {
+        uint16_t            current_value;
+        uint8_t             percent_current_value;
+    } raw[NOS_CD4051_CHANNELS];
+    struct g_processed {
+        channel_type_te     channel_type;
+        uint32_t            value;
+    } processed[NOS_CD4051_CHANNELS];
+};
+
+//==============================================================================
+ 
+// struct analogue_raw_data_s { 
+//     struct circular_buffer_s    cir_buffer;
+//     uint16_t                    current_value;
+//     uint16_t                    last_value;
+//     uint8_t                     sample_count;
+//     uint8_t                     glitch_count;
+// };
+
+// struct analogue_processed_data_s {
+//     channel_type_te     channel_type;
+//     uint32_t            value;
+//     uint32_t            glitch_threshold;
+//     uint32_t            glitch_error_threshold;
+// };
+
+// struct analogue_data_s {
+//     struct  {
+// //        struct rp2040 {   /* not used at this time
+// //            uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
+// //        } rp2040;
+//         struct CD4051 {
+//             uint16_t raw_value;         // GLOBAL
+//             uint16_t processed_value;   // global
+//             uint8_t  percent;           // GLOBAL
+
+//             struct   analogue_raw_data_s        analogue_raw_data;        // LOCAL
+//             struct   analogue_processed_data_s  analogue_processed_data;  // local
+//         } CD4051[NOS_CD4051_CHANNELS];
+//     };
+// };
+
+//==============================================================================
 //==============================================================================
 /**
  * @brief   Central store of system data. Access by mutex - semaphore_system_IO_data
  */
 struct system_IO_data_s  {
-    struct system_modes_s       robokid_modes;
-    struct system_status_s      system_status;      // error codes
-    uint16_t                    system_voltage;
-    struct motor_data_s         motor_data[NOS_ROBOKID_MOTORS];
-    struct LED_data_s           LED_data[NOS_ROBOKID_LEDS];
-    struct push_button_data_s   push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-    struct analogue_data_s      analogue_data;
-    struct line_sensor_data_s   line_sensor_data[NOS_ROBOKID_LINE_SENSORS];
-    struct vehicle_data_s       vehicle_data;
+    struct system_modes_s               robokid_modes;
+    struct system_status_s              system_status;      // error codes
+    uint16_t                            system_voltage;
+    struct motor_data_s                 motor_data[NOS_ROBOKID_MOTORS];
+    struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
+    struct push_button_data_s           push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
+    struct analogue_global_data_s       analogue_global_data;
+    struct line_sensor_data_s           line_sensor_data[NOS_ROBOKID_LINE_SENSORS];
+    struct vehicle_data_s               vehicle_data;
 } ;
 
 //==============================================================================
