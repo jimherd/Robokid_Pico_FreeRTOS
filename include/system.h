@@ -575,22 +575,22 @@ struct analogue_local_data_s {
         uint16_t                    last_value;
         uint8_t                     sample_count;
         uint8_t                     glitch_count;
-    } raw[NOS_CD4051_CHANNELS];
+    } raw;
     struct l_processed {
         uint32_t    glitch_threshold;
         uint32_t    glitch_error_threshold;
-    } processed[NOS_CD4051_CHANNELS];
+    } processed;
 };
 
 struct analogue_global_data_s {
     struct g_raw {
         uint16_t            current_value;
         uint8_t             percent_current_value;
-    } raw[NOS_CD4051_CHANNELS];
+    } raw;
     struct g_processed {
         channel_type_te     channel_type;
         uint32_t            value;
-    } processed[NOS_CD4051_CHANNELS];
+    } processed;
 };
 
 //==============================================================================
@@ -638,7 +638,7 @@ struct system_IO_data_s  {
     struct motor_data_s                 motor_data[NOS_ROBOKID_MOTORS];
     struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
     struct push_button_data_s           push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
-    struct analogue_global_data_s       analogue_global_data;
+    struct analogue_global_data_s       analogue_global_data[NOS_CD4051_CHANNELS];
     struct line_sensor_data_s           line_sensor_data[NOS_ROBOKID_LINE_SENSORS];
     struct vehicle_data_s               vehicle_data;
 } ;

@@ -29,12 +29,11 @@
 #include "FreeRTOS.h"
 
 //==============================================================================
-// Global data
+// Local data
 //==============================================================================
 
 char    temp_string[128];
-struct  analogue_global_data_s      temp_analogue_global_data;
-//struct  analogue_processed_data_s   temp_analogue_processed_data;
+struct  analogue_global_data_s      temp_analogue_global_data[NOS_CD4051_CHANNELS];
 
 //==============================================================================
 // Main routine
@@ -100,14 +99,14 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
            memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
         xSemaphoreGive(semaphore_system_IO_data);
         sprintf(temp_string, "%u,%u,%u,%u,%u,%u,%u,%u\n", 
-            temp_analogue_global_data.processed[0].value,
-            temp_analogue_global_data.processed[1].value,
-            temp_analogue_global_data.processed[2].value,
-            temp_analogue_global_data.processed[3].value,
-            temp_analogue_global_data.processed[4].value,
-            temp_analogue_global_data.processed[5].value,
-            temp_analogue_global_data.processed[6].value,
-            temp_analogue_global_data.processed[7].value
+            temp_analogue_global_data[0].processed.value,
+            temp_analogue_global_data[1].processed.value,
+            temp_analogue_global_data[2].processed.value,
+            temp_analogue_global_data[3].processed.value,
+            temp_analogue_global_data[4].processed.value,
+            temp_analogue_global_data[5].processed.value,
+            temp_analogue_global_data[6].processed.value,
+            temp_analogue_global_data[7].processed.value
         );
         print_string(temp_string);
         vTaskDelay(TWO_SECONDS);
@@ -141,7 +140,7 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
         memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
     xSemaphoreGive(semaphore_system_IO_data);
     sprintf(temp_string, "%u\n", 
-            temp_analogue_global_data.processed[mode_index].value
+            temp_analogue_global_data[mode_index].processed.value
     );
     print_string(temp_string);
     return OK;

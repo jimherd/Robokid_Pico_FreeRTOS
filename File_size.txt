@@ -874,3 +874,6 @@
 04/08/2022 
       text       data        bss      total filename
      47004      11080      57084     115168 Robokid_Pico_FreeRTOS.elf
+04/08/2022 
+      text       data        bss      total filename
+     47020      11080      57084     115184 Robokid_Pico_FreeRTOS.elf
