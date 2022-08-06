@@ -49,6 +49,7 @@ const uint8_t byte_to_percent[] = {
 //==============================================================================
 
 static void set_CD4051_address(uint8_t index);
+static void process_CD4051_analogue_subsystem(void);
 
 //==============================================================================
 // Local globals
@@ -205,16 +206,18 @@ START_PULSE;
             }
         }
 
-    // read 8-channel CD4051 A/D subsystem
+    // process 8-channel CD4051 A/D subsystem
 
-        adc_select_input(CD4051_RP2040_channel);
-        for (index = 0 ; index < NOS_CD4051_CHANNELS ; index++) {
-            set_CD4051_address(index);
-            uint16_t tmp_data = adc_read();
-            temp_analogue_global_data[index].raw.current_value  = tmp_data;
-            temp_analogue_global_data[index].raw.percent_current_value  = byte_to_percent[(tmp_data >> 4)];
+        process_CD4051_analogue_subsystem();
+
+        // adc_select_input(CD4051_RP2040_channel);
+        // for (index = 0 ; index < NOS_CD4051_CHANNELS ; index++) {
+        //     set_CD4051_address(index);
+        //     uint16_t tmp_data = adc_read();
+        //     temp_analogue_global_data[index].raw.current_value  = tmp_data;
+        //     temp_analogue_global_data[index].raw.percent_current_value  = byte_to_percent[(tmp_data >> 4)];
             
-        }
+        // }
         set_CD4051_address(0);    // reset CD4051 address to 0
 
     // Threshold IR line sensors
@@ -270,55 +273,83 @@ static void set_CD4051_address(uint8_t index)
 }
 
 /**
- * @brief apply a cleanup filter to data
+ * @brief Read and process eight CD4051 A/D channels
  * 
+ * If channel is not active then ignore channel
+ * If no filter needed, use raw data only
  */
-static void filter_analogue(void)
+static void process_CD4051_analogue_subsystem(void)
 {
 
 struct analogue_local_data_s    *local_data_pt;
 struct analogue_global_data_s   *global_data_pt;
 
-uint32_t delta;
+uint16_t    tmp_data;
+uint32_t    delta;
 
     for (uint8_t index=0; index < NOS_CD4051_CHANNELS; index++) {
         local_data_pt = &analogue_local_data[index];
         global_data_pt = &temp_analogue_global_data[index];
+    //
+    // Ensure channel is active
+    //
+        if (global_data_pt->active == false) {
+            continue;   // skip if CD4051 channel is inactive
+        }
+    //
+    // read channel data
+    //
         set_CD4051_address(index);
-        uint16_t tmp_data = adc_read();
+        tmp_data = adc_read();
         local_data_pt->raw.sample_count++;
         local_data_pt->raw.current_value = tmp_data;
     //
+    // if no filtering is required then use raw value and return
+    //
+        if (global_data_pt->apply_filter == false) {
+            global_data_pt->processed.value = tmp_data;
+            return;
+        }
+    //
     // Set all relevant variables to read value until averaging buffer is full
     //
-    if (sample_count < BUFF_SIZE) {  // circular buffer not full
-        local_data_pt->raw.last_value = tmp_data;
-        local_data_pt->raw.cir_buffer.buffer[local_data_pt->raw.cir_buffer.buff_ptr++] = tmp_data;
-        global_data_pt->processed.value = tmp_data;
-        if (local_data_pt->raw.cir_buffer.buff_ptr >= BUFF_SIZE) {
-            local_data_pt->raw.cir_buffer.buff_ptr = 0;
+        if (sample_count < BUFF_SIZE) {  // circular buffer not full
+            local_data_pt->raw.last_value = tmp_data;
+            local_data_pt->raw.cir_buffer.buffer[local_data_pt->raw.cir_buffer.buff_ptr++] = tmp_data;
+            global_data_pt->processed.value = tmp_data;
+            if (local_data_pt->raw.cir_buffer.buff_ptr >= BUFF_SIZE) {
+                local_data_pt->raw.cir_buffer.buff_ptr = 0;
+            }
+            return;
         }
-        return;
-    }
     //
     // run glitch filter by testing between this and last value
+    // If glitch detected, ignore value and use last value
     //
         if(tmp_data > local_data_pt->raw.last_value) {
             delta = tmp_data - local_data_pt->raw.last_value;
         } else {
             delta = local_data_pt->raw.last_value - tmp_data;
         }
-        if (delta > local_data_pt->processed.glitch_threshold) {
+        
+        if (delta > global_data_pt->raw.glitch_threshold) {
             local_data_pt->raw.current_value = local_data_pt->raw.last_value;
             local_data_pt->raw.glitch_count++;
-            // log glitch detected
-            if (local_data_pt->raw.glitch_count > local_data_pt->processed.glitch_error_threshold) {  // run of glitches
+        //
+        // keep note of maximum delta values to help with setting delta threhold
+        //
+            if (delta > local_data_pt->raw.max_delta) {
+                local_data_pt->raw.max_delta = delta;
+            }
+        //
+        // check glitch count and if above a threshold log error and reset counts
+        //
+            if (local_data_pt->raw.glitch_count > local_data_pt->processed.glitch_error_count) {  
                 local_data_pt->raw.sample_count = 0;
                 local_data_pt->raw.glitch_count =0;
+                log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
             }
-        } else {
-            local_data_pt->raw.glitch_count = 0;
-        }
+        } 
     //
     // Add value to circular buffer and adjust pointer as necessary
     //
@@ -334,6 +365,6 @@ uint32_t delta;
             sum += local_data_pt->raw.cir_buffer.buffer[i];
         }
         global_data_pt->processed.value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
-}
+    }
 }
 

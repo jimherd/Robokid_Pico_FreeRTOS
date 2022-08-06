@@ -27,6 +27,9 @@ void Task_error(void *p)
     error_log_ptr = 0;
     
     FOREVER {
+
+    // wait for error message and copy into log queue
+
         xQueueReceive(queue_error_messages, &error_message_log[error_log_ptr],  portMAX_DELAY);
 
     // update global error flag. Blink task will flash this error code
@@ -35,9 +38,8 @@ void Task_error(void *p)
             system_status.error_state = error_message_log[error_log_ptr].error_code;
         xSemaphoreGive(semaphore_system_status);
 
-    // update circular buffer
-
-        // add to queue
+    // update circular buffer pointer
+    
         if (error_log_ptr >= LOG_SIZE) { 
             error_log_ptr = 0;
         }

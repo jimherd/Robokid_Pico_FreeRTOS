@@ -548,6 +548,9 @@ struct system_modes_s {
 
 //==============================================================================
 // queue element for serial print facility
+//
+// Queue to print task  holds list of used indexes pointing to string to be printed
+// Queus fro print task holsd list of indexes pointing to free string buffers
 
 #define     NOS_PRINT_STRING_BUFFERS    8
 #define     STRING_LENGTH        128
@@ -558,7 +561,7 @@ struct string_buffer_s {
 
 //==============================================================================
 //==============================================================================
-// analogue subsystem
+// CD4051 analogue subsystem
 
 #define     BUFF_SIZE   4
 typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
@@ -569,29 +572,34 @@ struct circular_buffer_s {
 };
 
 struct analogue_local_data_s {
-    struct l_raw {
+    struct {
         struct circular_buffer_s    cir_buffer;
-        uint16_t                    current_value;
-        uint16_t                    last_value;
-        uint8_t                     sample_count;
-        uint8_t                     glitch_count;
+        uint16_t    current_value;
+        uint16_t    last_value;
+        uint8_t     sample_count;
+        uint8_t     glitch_count;
+        uint16_t    max_delta;
     } raw;
-    struct l_processed {
-        uint32_t    glitch_threshold;
-        uint32_t    glitch_error_threshold;
+    struct {
+        uint8_t    glitch_error_count;
     } processed;
 };
 
 struct analogue_global_data_s {
-    struct g_raw {
-        uint16_t            current_value;
-        uint8_t             percent_current_value;
+    bool    active;
+    bool    apply_filter;
+    struct {
+        uint16_t    current_value;
+        uint8_t     percent_current_value;
+        uint16_t    glitch_threshold;
     } raw;
-    struct g_processed {
+    struct {
         channel_type_te     channel_type;
         uint32_t            value;
     } processed;
 };
+
+// {true, false, {0, 0}, {ANALOGUE_TYPE, 0}
 
 //==============================================================================
  
@@ -607,7 +615,7 @@ struct analogue_global_data_s {
 //     channel_type_te     channel_type;
 //     uint32_t            value;
 //     uint32_t            glitch_threshold;
-//     uint32_t            glitch_error_threshold;
+//     uint32_t            glitch_error_count;
 // };
 
 // struct analogue_data_s {
