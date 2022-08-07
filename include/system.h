@@ -540,6 +540,12 @@ struct error_message_s {
     uint64_t        log_time;
 } ;
 
+struct error_data_s {
+    struct error_message_s     error_message_log[LOG_SIZE];
+    uint8_t     error_log_ptr;
+    uint16_t    error_count;
+};
+
 struct system_modes_s {
     primary_sys_modes_te    primary_mode;
     secondary_sys_modes_te  secondary_mode;
@@ -715,6 +721,8 @@ extern struct gamepad_data_s   gamepad_data;
 extern struct system_status_s  system_status;
 extern struct system_IO_data_s system_IO_data;
 extern struct tune_data_s      tune_data;
+
+extern struct error_data_s      error_data;
 
 extern struct font_data_s  font_data[];
 

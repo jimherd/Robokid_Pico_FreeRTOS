@@ -68,7 +68,9 @@ struct task_data_s     task_data[NOS_TASKS];
 struct system_IO_data_s    system_IO_data;
 struct gamepad_data_s      gamepad_data;
 struct system_status_s     system_status;
-struct tune_data_s    tune_data;
+struct tune_data_s         tune_data;
+
+struct error_data_s        error_data;
 
 struct font_data_s         font_data[NOS_FONTS] = {
     {Terminal_9x16,                (SSD1306_LCDWIDTH / TERMINAL_9x16_FONT_WIDTH)},              // font 0

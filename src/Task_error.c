@@ -1,7 +1,7 @@
 /**
  * @file Task_error.c
  * @author Jim Herd
- * @brief log received errors and update system error
+ * @brief log received errors in circular buffer and update system error
  * @version 0.1
  * @date 2022-01-10
  */
@@ -18,31 +18,30 @@
 
 // circular buffer to hold last LOG_SIZE errors
 
-struct error_message_s     error_message_log[LOG_SIZE];
-uint8_t error_log_ptr;
-
 //==============================================================================
 void Task_error(void *p) 
 {
-    error_log_ptr = 0;
+    error_data.error_log_ptr = 0;
+    error_data.error_count   = 0;
     
     FOREVER {
 
     // wait for error message and copy into log queue
 
-        xQueueReceive(queue_error_messages, &error_message_log[error_log_ptr],  portMAX_DELAY);
+        xQueueReceive(queue_error_messages, &error_data.error_message_log[error_data.error_log_ptr],  portMAX_DELAY);
 
     // update global error flag. Blink task will flash this error code
 
         xSemaphoreTake(semaphore_system_status, portMAX_DELAY);
-            system_status.error_state = error_message_log[error_log_ptr].error_code;
+            system_status.error_state = error_data.error_message_log[error_data.error_log_ptr].error_code;
         xSemaphoreGive(semaphore_system_status);
 
     // update circular buffer pointer
     
-        if (error_log_ptr >= LOG_SIZE) { 
-            error_log_ptr = 0;
+        if (error_data.error_log_ptr >= LOG_SIZE) { 
+            error_data.error_log_ptr = 0;
         }
+        error_data.error_count++;
     }
 }
 
