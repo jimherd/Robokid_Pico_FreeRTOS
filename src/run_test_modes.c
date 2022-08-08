@@ -33,7 +33,7 @@
 //==============================================================================
 
 char    temp_string[128];
-struct  analogue_global_data_s      temp_analogue_global_data[NOS_CD4051_CHANNELS];
+static struct  analogue_global_data_s      temp_analogue_global_data[NOS_CD4051_CHANNELS];
 
 //==============================================================================
 // Main routine
@@ -127,7 +127,7 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
 }
 
 /**
- * @brief 
+ * @brief output data from selected CD4051 channel
  * 
  * @param parameter 
  * @return error_codes_te 
@@ -136,13 +136,16 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
 {
     sprintf(temp_string, "Channel %u\n", mode_index);
     print_string(temp_string);
-    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-        memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
-    xSemaphoreGive(semaphore_system_IO_data);
-    sprintf(temp_string, "%u\n", 
-            temp_analogue_global_data[mode_index].processed.value
-    );
-    print_string(temp_string);
+    for (uint32_t index = 0; index < 100; index++) {
+        xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+            memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
+        xSemaphoreGive(semaphore_system_IO_data);
+        sprintf(temp_string, "%u\n", 
+                temp_analogue_global_data[mode_index].processed.value
+        );
+        print_string(temp_string);
+        vTaskDelay(ONE_SECOND);
+    }
     return OK;
 }
 

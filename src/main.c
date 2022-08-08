@@ -101,6 +101,16 @@ uint8_t     index;
         system_status.error_state = OK;
     // Battery voltage
         system_IO_data.system_voltage = 500;
+    // CD4051 channel data
+        for (index=0; index < NOS_CD4051_CHANNELS ; index++ ) {
+            system_IO_data.analogue_global_data[index].active = true;
+            system_IO_data.analogue_global_data[index].apply_filter = false;
+            system_IO_data.analogue_global_data[index].raw.current_value = 0;
+            system_IO_data.analogue_global_data[index].raw.percent_current_value = 0;
+            system_IO_data.analogue_global_data[index].raw.glitch_threshold = A_D_GLITCH_THRESHOLD;
+            system_IO_data.analogue_global_data[index].processed.channel_type = ANALOGUE_TYPE;
+            system_IO_data.analogue_global_data[index].processed.value = 0;
+        }
     // USB data
         gamepad_data.state = DISABLED;
         gamepad_data.vid = 0; gamepad_data.pid = 0;
@@ -198,7 +208,7 @@ int main()
 
     xTaskCreate(Task_read_sensors,
                 "Task_read_sensors",
-                configMINIMAL_STACK_SIZE,
+                1024, // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_sensors

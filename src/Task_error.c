@@ -2,8 +2,6 @@
  * @file Task_error.c
  * @author Jim Herd
  * @brief log received errors in circular buffer and update system error
- * @version 0.1
- * @date 2022-01-10
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -15,8 +13,6 @@
 #include "pico/binary_info.h"
 
 #include "FreeRTOS.h"
-
-// circular buffer to hold last LOG_SIZE errors
 
 //==============================================================================
 void Task_error(void *p) 

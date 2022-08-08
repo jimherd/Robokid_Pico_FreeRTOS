@@ -569,7 +569,9 @@ struct string_buffer_s {
 //==============================================================================
 // CD4051 analogue subsystem
 
-#define     BUFF_SIZE   4
+#define     BUFF_SIZE               4
+#define     A_D_GLITCH_THRESHOLD    1000
+
 typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
 
 struct circular_buffer_s {
@@ -580,7 +582,7 @@ struct circular_buffer_s {
 struct analogue_local_data_s {
     struct {
         struct circular_buffer_s    cir_buffer;
-        uint16_t    current_value;
+//        uint16_t    current_value;
         uint16_t    last_value;
         uint8_t     sample_count;
         uint8_t     glitch_count;
@@ -601,14 +603,13 @@ struct analogue_global_data_s {
     } raw;
     struct {
         channel_type_te     channel_type;
-        uint32_t            value;
+        uint16_t            value;
+        uint8_t             percent_value;
     } processed;
 };
 
-// {true, false, {0, 0}, {ANALOGUE_TYPE, 0}
-
 //==============================================================================
- 
+
 // struct analogue_raw_data_s { 
 //     struct circular_buffer_s    cir_buffer;
 //     uint16_t                    current_value;
