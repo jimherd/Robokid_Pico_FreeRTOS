@@ -96,7 +96,7 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
     print_string("POT A,POT B,Spare,Vm,IR Left,IR Mid,IR Right, POT C\n");
     for (uint32_t index = 0; index < 100; index++) {
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-           memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
+           memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, (NOS_CD4051_CHANNELS * sizeof(struct analogue_global_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
         sprintf(temp_string, "%u,%u,%u,%u,%u,%u,%u,%u\n", 
             temp_analogue_global_data[0].processed.value,
@@ -136,12 +136,18 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
 {
     sprintf(temp_string, "Channel %u\n", mode_index);
     print_string(temp_string);
+    sprintf(temp_string,"Raw,Filter,G_thresh,G_count,Max_delta\n");
+    print_string(temp_string);
     for (uint32_t index = 0; index < 100; index++) {
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
-            memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, sizeof(struct analogue_global_data_s));
+            memcpy(&temp_analogue_global_data, &system_IO_data.analogue_global_data, (NOS_CD4051_CHANNELS * sizeof(struct analogue_global_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
-        sprintf(temp_string, "%u\n", 
-                temp_analogue_global_data[mode_index].processed.value
+        sprintf(temp_string, "%u,%u,%u,%u,%u\n", 
+                temp_analogue_global_data[mode_index].raw.current_value,
+                temp_analogue_global_data[mode_index].processed.value,
+                temp_analogue_global_data[mode_index].raw.glitch_threshold,
+                temp_analogue_global_data[mode_index].raw.glitch_count,
+                temp_analogue_global_data[mode_index].raw.max_delta
         );
         print_string(temp_string);
         vTaskDelay(ONE_SECOND);
@@ -150,14 +156,35 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
 }
 
 /**
- * @brief 
+ * @brief Output system data for test/debug
  * 
  * @param parameter 
  * @return error_codes_te 
+ * 
+ * Data includes, task stack info, task execution times info, error counts
  */
- error_codes_te run_test_3(uint8_t mode_index, uint32_t parameter)
+error_codes_te run_test_3(uint8_t mode_index, uint32_t parameter)
 {
-    print_string("Test 3\n");
+     for (uint8_t index; index < NOS_TASKS; index++) {
+        sprintf(temp_string, "%u,%u,%u,%u,%u\n",
+            system_IO_data.task_data[index].pxStackBase,
+            system_IO_data.task_data[index].StackHighWaterMark,
+            system_IO_data.task_data[index].last_exec_time,
+            system_IO_data.task_data[index].lowest_exec_time,
+            system_IO_data.task_data[index].highest_exec_time
+        );
+        print_string(temp_string);
+     }
+    return OK;
+}
+
+error_codes_te run_test_4(uint8_t mode_index, uint32_t parameter)
+{
+    return OK;
+}
+
+error_codes_te run_test_5(uint8_t mode_index, uint32_t parameter)
+{
     return OK;
 }
 

@@ -2,9 +2,7 @@
  * @file    main.c
  * @author  Jim Herd
  * @brief   Development program for Robokid based on 
- *          Pico/FreeRTOS/TinyUSB/1306 LCD/Trinamic H-bridge
- *
- * @date    2022-01-06
+ *          RP2040/FreeRTOS/TinyUSB/1306 LCD/DRV8833 H-bridge
  */
 
 #include "system.h"
@@ -43,6 +41,7 @@ TaskHandle_t taskhndl_Task_drive_motors;
 TaskHandle_t taskhndl_Task_error;
 TaskHandle_t taskhndl_Task_sounder;
 TaskHandle_t taskhndl_Task_serial_output;
+TaskHandle_t taskhndl_Task_log_system;
 TaskHandle_t taskhndl_Task_blink_LED;
 
 SemaphoreHandle_t semaphore_LCD_data;
@@ -59,10 +58,7 @@ QueueHandle_t queue_free_buffers;
 
 EventGroupHandle_t eventgroup_push_buttons;
 
-// Task data
-
-struct task_data_s     task_data[NOS_TASKS];
-
+//==============================================================================
 // System data structures. Protected with MUTEXES
 
 struct system_IO_data_s    system_IO_data;
@@ -155,10 +151,10 @@ uint8_t     index;
         system_IO_data.vehicle_data.speed = 0;
     // Task execution data
         for (index=0 ; index < NOS_TASKS ; index++) {
-            task_data[index].priority = TASK_PRIORITYNORMAL;
-            task_data[index].last_exec_time    = 0;
-            task_data[index].lowest_exec_time  = UINT32_MAX;
-            task_data[index].highest_exec_time = 0;
+            system_IO_data.task_data[index].priority = TASK_PRIORITYNORMAL;
+            system_IO_data.task_data[index].last_exec_time    = 0;
+            system_IO_data.task_data[index].lowest_exec_time  = UINT32_MAX;
+            system_IO_data.task_data[index].highest_exec_time = 0;
         };
     // LCD row data
     for (index=0 ; index < SS1306_NOS_LCD_ROWS ; index++) {
@@ -197,70 +193,88 @@ int main()
                 TASK_PRIORITYLOW,
                 &taskhndl_Task_Robokid
     );
+    system_IO_data.task_data[TASK_ROBOKID].task_handle = taskhndl_Task_Robokid;
 
     xTaskCreate(Task_drive_motors,
-                "Task_drive_motors",
+                "Drive_motors_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_drive_motors
     );
+    system_IO_data.task_data[TASK_DRIVE_MOTORS].task_handle = taskhndl_Task_drive_motors;
 
     xTaskCreate(Task_read_sensors,
-                "Task_read_sensors",
+                "Read_sensors_task",
                 1024, // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_sensors
     );
+    system_IO_data.task_data[TASK_READ_SENSORS].task_handle = taskhndl_Task_read_sensors;
 
     xTaskCreate(Task_display_LCD,
-                "Task_display_LCD",
+                "Display_LCD_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYBELOWNORMAL,
                 &taskhndl_Task_display_LCD
     );
+    system_IO_data.task_data[TASK_DISPLAY].task_handle = taskhndl_Task_display_LCD;
 
     xTaskCreate(Task_read_gamepad,
-                "Task_read_gamepad",
+                "Read_gamepad_task",
                 1024,    // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
                 &taskhndl_Task_read_gamepad
     );
+    system_IO_data.task_data[TASK_READ_GAMEPAD].task_handle = taskhndl_Task_read_gamepad;
 
     xTaskCreate(Task_sounder,
-                "sounder_task",
+                "Sounder_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_sounder
-    );  
+    );
+    system_IO_data.task_data[TASK_SOUNDER].task_handle = taskhndl_Task_sounder;
 
     xTaskCreate(Task_error,
-                "Task_error",
+                "Error_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_error
     );
+    system_IO_data.task_data[TASK_ERROR].task_handle = taskhndl_Task_error;
 
     xTaskCreate(Task_serial_output,
-                "send ASCII strings to serial port",
+                "Send ASCII strings to serial port",
                 1024,  // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_serial_output
     );
+    system_IO_data.task_data[TASK_SERIAL_OUTPUT].task_handle = taskhndl_Task_serial_output;
+
+    xTaskCreate(Task_log_system_data,   
+                "Log task data",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_log_system
+    );
+    system_IO_data.task_data[TASK_LOG].task_handle = taskhndl_Task_log_system;
 
     xTaskCreate(Task_blink_LED,
-                "blink_task",
+                "Blink_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYIDLE,
                 &taskhndl_Task_blink_LED
     );
+    system_IO_data.task_data[TASK_BLINK].task_handle = taskhndl_Task_blink_LED;
 
     semaphore_LCD_data          = xSemaphoreCreateMutex();
     semaphore_SSD1306_display   = xSemaphoreCreateMutex();

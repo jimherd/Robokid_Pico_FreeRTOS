@@ -37,14 +37,14 @@ uint32_t delta_time;
         delta_time = (UINT32_MAX - start_time) + end_time + 1;
     }
 
-    task_data[task].last_exec_time = delta_time;
+    system_IO_data.task_data[task].last_exec_time = delta_time;
 
-    if (delta_time < task_data[task].lowest_exec_time) {
-        task_data[task].lowest_exec_time = delta_time;
+    if (delta_time < system_IO_data.task_data[task].lowest_exec_time) {
+        system_IO_data.task_data[task].lowest_exec_time = delta_time;
     }
     
-    if (delta_time > task_data[task].highest_exec_time) {
-        task_data[task].highest_exec_time = delta_time;
+    if (delta_time > system_IO_data.task_data[task].highest_exec_time) {
+        system_IO_data.task_data[task].highest_exec_time = delta_time;
     }
 }
 

@@ -55,14 +55,14 @@ static void process_CD4051_analogue_subsystem(void);
 // Local globals
 //==============================================================================
 static struct analogue_local_data_s    analogue_local_data[NOS_CD4051_CHANNELS] = {
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
-    {{{0},0,0,0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
+    {{{0},0,0},{0}},
 };
 
 //==============================================================================
@@ -70,7 +70,7 @@ static struct analogue_local_data_s    analogue_local_data[NOS_CD4051_CHANNELS] 
 //==============================================================================
 static struct push_button_data_s    temp_push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
 static struct LED_data_s            temp_LED_data[NOS_ROBOKID_LEDS];
-struct analogue_global_data_s       temp_analogue_global_data[NOS_CD4051_CHANNELS];
+static struct analogue_global_data_s       temp_analogue_global_data[NOS_CD4051_CHANNELS];
 
 
 uint32_t    switch_samples[NOS_SWITCH_SAMPLES];     // circular buffer
@@ -219,19 +219,9 @@ START_PULSE;
 
         process_CD4051_analogue_subsystem();
 
-        // adc_select_input(CD4051_RP2040_channel);
-        // for (index = 0 ; index < NOS_CD4051_CHANNELS ; index++) {
-        //     set_CD4051_address(index);
-        //     uint16_t tmp_data = adc_read();
-        //     temp_analogue_temp_analogue_global_data[index].raw.current_value  = tmp_data;
-        //     temp_analogue_temp_analogue_global_data[index].raw.percent_current_value  = byte_to_percent[(tmp_data >> 4)];
-            
-        // }
-        
-
     // Threshold IR line sensors
 
-xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
+    xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
         system_IO_data.line_sensor_data[0].percent_value = temp_analogue_global_data[LINE_SENSOR_LEFT_CHANNEL].raw.percent_current_value;
         system_IO_data.line_sensor_data[1].percent_value = temp_analogue_global_data[LINE_SENSOR_MID_CHANNEL].raw.percent_current_value;;
         system_IO_data.line_sensor_data[2].percent_value = temp_analogue_global_data[LINE_SENSOR_RIGHT_CHANNEL].raw.percent_current_value;;
@@ -242,13 +232,14 @@ xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
                 system_IO_data.line_sensor_data[index].binary_value = 0;
             }
         }
-xSemaphoreGive(semaphore_system_IO_data);
+    xSemaphoreGive(semaphore_system_IO_data);
+    
     // Update global system data 
 
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
            memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
            memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
-           memcpy(&system_IO_data.analogue_global_data, &temp_analogue_global_data , sizeof(struct analogue_global_data_s));
+           memcpy(&system_IO_data.analogue_global_data[0], &temp_analogue_global_data[0] , (NOS_CD4051_CHANNELS * sizeof(struct analogue_global_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
 
         end_time = time_us_32();
@@ -341,19 +332,19 @@ uint32_t    delta;
         
         if (delta > temp_analogue_global_data[index].raw.glitch_threshold) {
             temp_analogue_global_data[index].raw.current_value = analogue_local_data[index].raw.last_value;
-            analogue_local_data[index].raw.glitch_count++;
+            temp_analogue_global_data[index].raw.glitch_count++;
         
         // keep note of maximum delta values to help with setting delta threhold
         
-            if (delta > analogue_local_data[index].raw.max_delta) {
-                analogue_local_data[index].raw.max_delta = delta;
+            if (delta > temp_analogue_global_data[index].raw.max_delta) {
+                temp_analogue_global_data[index].raw.max_delta = delta;
             }
         
         // check glitch count and if above a threshold log error and reset counts
         
-            if (analogue_local_data[index].raw.glitch_count > analogue_local_data[index].processed.glitch_error_count) {  
+            if (temp_analogue_global_data[index].raw.glitch_count > analogue_local_data[index].processed.glitch_error_count) {  
                 analogue_local_data[index].raw.sample_count = 0;
-                analogue_local_data[index].raw.glitch_count =0;
+                temp_analogue_global_data[index].raw.glitch_count =0;
                 log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
             }
         } 

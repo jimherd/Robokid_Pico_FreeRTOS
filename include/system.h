@@ -396,7 +396,8 @@ typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 
 typedef enum TASKS {
     TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
-    TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_SERIAL_OUTPUT, TASK_BLINK
+    TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_SERIAL_OUTPUT, 
+    TASK_LOG, TASK_BLINK
 } task_t;
 
 #define     NOS_TASKS   (TASK_BLINK + 1)
@@ -413,6 +414,9 @@ typedef enum TASKS {
 #define     TASK_SOUNDER_FREQUENCY                      20  // Hz
 #define     TASK_SOUNDER_TIME_UNIT                      (1000 / TASK_SOUNDER_FREQUENCY)
 #define     TASK_SOUNDER_FREQUENCY_TICK_COUNT           ((1000 / TASK_SOUNDER_FREQUENCY) * portTICK_PERIOD_MS)
+
+#define     TASK_LOG_FREQUENCY                          0.1  //HZ
+#define     TASK_LOG_FREQUENCY_TICK_COUNT               (10000 * portTICK_PERIOD_MS)
 
 #define     MOTOR_CMD_QUEUE_LENGTH          8
 #define     ERROR_MESSAGE_QUEUE_LENGTH      8
@@ -582,11 +586,8 @@ struct circular_buffer_s {
 struct analogue_local_data_s {
     struct {
         struct circular_buffer_s    cir_buffer;
-//        uint16_t    current_value;
         uint16_t    last_value;
         uint8_t     sample_count;
-        uint8_t     glitch_count;
-        uint16_t    max_delta;
     } raw;
     struct {
         uint8_t    glitch_error_count;
@@ -600,6 +601,8 @@ struct analogue_global_data_s {
         uint16_t    current_value;
         uint8_t     percent_current_value;
         uint16_t    glitch_threshold;
+        uint8_t     glitch_count;
+        uint16_t    max_delta;
     } raw;
     struct {
         channel_type_te     channel_type;
@@ -609,37 +612,20 @@ struct analogue_global_data_s {
 };
 
 //==============================================================================
-
-// struct analogue_raw_data_s { 
-//     struct circular_buffer_s    cir_buffer;
-//     uint16_t                    current_value;
-//     uint16_t                    last_value;
-//     uint8_t                     sample_count;
-//     uint8_t                     glitch_count;
-// };
-
-// struct analogue_processed_data_s {
-//     channel_type_te     channel_type;
-//     uint32_t            value;
-//     uint32_t            glitch_threshold;
-//     uint32_t            glitch_error_count;
-// };
-
-// struct analogue_data_s {
-//     struct  {
-// //        struct rp2040 {   /* not used at this time
-// //            uint16_t rp2040_raw_data[NOS_RP2040_CHANNELS];
-// //        } rp2040;
-//         struct CD4051 {
-//             uint16_t raw_value;         // GLOBAL
-//             uint16_t processed_value;   // global
-//             uint8_t  percent;           // GLOBAL
-
-//             struct   analogue_raw_data_s        analogue_raw_data;        // LOCAL
-//             struct   analogue_processed_data_s  analogue_processed_data;  // local
-//         } CD4051[NOS_CD4051_CHANNELS];
-//     };
-// };
+/**
+ * @brief Task data
+ */
+struct task_data_s {
+    TaskHandle_t            task_handle;
+    uint8_t                 priority;
+    StackType_t             *pxStackBase;
+    configSTACK_DEPTH_TYPE  StackHighWaterMark;
+    struct {
+        uint32_t    last_exec_time;
+        uint32_t    lowest_exec_time;
+        uint32_t    highest_exec_time;
+    };
+};
 
 //==============================================================================
 //==============================================================================
@@ -649,6 +635,7 @@ struct analogue_global_data_s {
 struct system_IO_data_s  {
     struct system_modes_s               robokid_modes;
     struct system_status_s              system_status;      // error codes
+    struct task_data_s                  task_data[NOS_TASKS];
     uint16_t                            system_voltage;
     struct motor_data_s                 motor_data[NOS_ROBOKID_MOTORS];
     struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
@@ -659,17 +646,6 @@ struct system_IO_data_s  {
 } ;
 
 //==============================================================================
-/**
- * @brief Task data
- */
-struct task_data_s {
-    uint8_t     priority;
-    struct {
-        uint32_t    last_exec_time;
-        uint32_t    lowest_exec_time;
-        uint32_t    highest_exec_time;
-    };
-};
 
 #define     MAX_SCROLL_STRINGS             8
 #define     MAX_SSD1306_STRING_LENGTH     15
@@ -745,6 +721,7 @@ extern void Task_drive_motors(void *p);
 extern void Task_error(void *p);
 extern void Task_sounder (void *p);
 extern void Task_serial_output(void *p);
+extern void Task_log_system_data(void *p);
 extern void Task_blink_LED(void *p);
 
 extern  TaskHandle_t taskhndl_Task_Robokid;
