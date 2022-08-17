@@ -574,7 +574,8 @@ struct string_buffer_s {
 // CD4051 analogue subsystem
 
 #define     BUFF_SIZE               4
-#define     A_D_GLITCH_THRESHOLD    1000
+#define     A_D_GLITCH_THRESHOLD    2000
+#define     GLITCH_COUNT_THRESHOLD  10
 
 typedef enum {ANALOGUE_TYPE, DIGITAL_TYPE} channel_type_te;
 
@@ -590,7 +591,7 @@ struct analogue_local_data_s {
         uint8_t     sample_count;
     } raw;
     struct {
-        uint8_t    glitch_error_count;
+          uint8_t     dummy;
     } processed;
 };
 
@@ -602,6 +603,7 @@ struct analogue_global_data_s {
         uint8_t     percent_current_value;
         uint16_t    glitch_threshold;
         uint8_t     glitch_count;
+        uint8_t     glitch_error_count_threshold;
         uint16_t    max_delta;
     } raw;
     struct {

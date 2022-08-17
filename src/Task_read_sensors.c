@@ -5,6 +5,7 @@
  */
 
 #include <string.h>
+#include <assert.h>
 
 #include "system.h"
 #include "Pico_IO.h"
@@ -118,6 +119,7 @@ uint32_t    sample_count;
     adc_select_input(0);  
     memset(&analogue_local_data, 0, sizeof(analogue_local_data));
     
+    system_IO_data.analogue_global_data[POT_A_channel].apply_filter = true;
     sample_count = 0;                              // Select ADC input 0 (GPIO26)
 
 //
@@ -283,7 +285,7 @@ static void process_CD4051_analogue_subsystem(void)
 
 uint8_t     index;
 uint16_t    tmp_data;
-uint32_t    delta;
+uint32_t    sum, delta;
 
     for (index = 0; index < NOS_CD4051_CHANNELS; index++) {
     
@@ -333,21 +335,21 @@ uint32_t    delta;
         if (delta > temp_analogue_global_data[index].raw.glitch_threshold) {
             temp_analogue_global_data[index].raw.current_value = analogue_local_data[index].raw.last_value;
             temp_analogue_global_data[index].raw.glitch_count++;
+        }
         
-        // keep note of maximum delta values to help with setting delta threhold
+        // keep note of maximum delta values to help with setting delta threshold
         
-            if (delta > temp_analogue_global_data[index].raw.max_delta) {
-                temp_analogue_global_data[index].raw.max_delta = delta;
-            }
+        if (delta > temp_analogue_global_data[index].raw.max_delta) {
+            temp_analogue_global_data[index].raw.max_delta = delta;
+        }
         
         // check glitch count and if above a threshold log error and reset counts
         
-            if (temp_analogue_global_data[index].raw.glitch_count > analogue_local_data[index].processed.glitch_error_count) {  
-                analogue_local_data[index].raw.sample_count = 0;
-                temp_analogue_global_data[index].raw.glitch_count =0;
-                log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
-            }
-        } 
+        if (temp_analogue_global_data[index].raw.glitch_count > temp_analogue_global_data[index].raw.glitch_error_count_threshold) {  
+            analogue_local_data[index].raw.sample_count = 0;
+            temp_analogue_global_data[index].raw.glitch_count = 0;
+            log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
+        }
     
     // Add value to circular buffer and adjust pointer as necessary
     
@@ -358,11 +360,16 @@ uint32_t    delta;
     
     // calculate average
     
-        uint32_t sum = 0;
-        for(uint8_t i = 0; i <BUFF_SIZE; i++) {
+        sum = 0;
+        for (uint8_t i = 0; i < BUFF_SIZE; i++) {
             sum += analogue_local_data[index].raw.cir_buffer.buffer[i];
         }
         temp_analogue_global_data[index].processed.value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
+
+        analogue_local_data[index].raw.last_value = tmp_data;
+    // assert(analogue_local_data[index].raw.sample_count < 20);
+    assert(index < 8);
     }
+    
     set_CD4051_address(0);    // reset CD4051 address to 0
 }

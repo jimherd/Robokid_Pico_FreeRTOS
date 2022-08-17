@@ -83,13 +83,13 @@ struct menu test_mode_2_menu = {
     8,
     {
         "log POT A     ",
-        "log POT B     ",
-        "log POT C     ",
+        "log POT B     ",  
+        "log spare     ",
+        "log Vmotor    ",  
         "log IR right  ",  
-        "log IR middle ",  
-        "log IR left   ",  
-        "log Vmotor    ", 
-        "log spare     " 
+        "log IR mid    ",  
+        "log IR left   ", 
+        "log POT C     " 
     },
     {   
         run_test_2, 

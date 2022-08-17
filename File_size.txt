@@ -1120,3 +1120,60 @@
 12/08/2022 
       text       data        bss      total filename
      48620      11144     107816     167580 Robokid_Pico_FreeRTOS.elf
+13/08/2022 
+      text       data        bss      total filename
+     48636      11144     107816     167596 Robokid_Pico_FreeRTOS.elf
+15/08/2022 
+      text       data        bss      total filename
+     48636      11144     107816     167596 Robokid_Pico_FreeRTOS.elf
+16/08/2022 
+      text       data        bss      total filename
+     48636      11144     107816     167596 Robokid_Pico_FreeRTOS.elf
+16/08/2022 
+      text       data        bss      total filename
+     48636      11144      57816     117596 Robokid_Pico_FreeRTOS.elf
+16/08/2022 
+      text       data        bss      total filename
+     47996      11144      57780     116920 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47804      11248      57780     116832 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     48012      11248      57780     117040 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     48028      11296      57780     117104 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47996      11296      57780     117072 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11256      57780     117000 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47996      11144      57764     116904 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47996      11144      57764     116904 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     47964      11144      57780     116888 Robokid_Pico_FreeRTOS.elf
+17/08/2022 
+      text       data        bss      total filename
+     48012      11144      57780     116936 Robokid_Pico_FreeRTOS.elf

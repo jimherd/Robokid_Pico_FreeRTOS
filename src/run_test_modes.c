@@ -7,14 +7,16 @@
 // Notes
 //      These tests are used to check various aspects of the robot operation.
 //      Mostly, they exercise some aspect of the system and dump data to the
-//      rp2040 uart channels for collection by a PC.  Where possible, this
+//      rp2040 uart channel for collection by a PC.  Where possible, this
 //      data will be in a comma delimited ASCI format to allow it to be
 //      imported into excel for display.
 //
 //      Tests
 //          0. Print version and cycle LEDs
 //          1. Read raw data from CD4051 8-channel analogue inputs
-//          2. 
+//          2. Log data from a single CD4051 channel
+//          3. Print relevant task data
+//          4. ........
 
 #include <stdlib.h>
 #include <string.h>

@@ -100,10 +100,11 @@ uint8_t     index;
     // CD4051 channel data
         for (index=0; index < NOS_CD4051_CHANNELS ; index++ ) {
             system_IO_data.analogue_global_data[index].active = true;
-            system_IO_data.analogue_global_data[index].apply_filter = false;
+            system_IO_data.analogue_global_data[index].apply_filter = true;
             system_IO_data.analogue_global_data[index].raw.current_value = 0;
             system_IO_data.analogue_global_data[index].raw.percent_current_value = 0;
             system_IO_data.analogue_global_data[index].raw.glitch_threshold = A_D_GLITCH_THRESHOLD;
+            system_IO_data.analogue_global_data[index].raw.glitch_error_count_threshold = GLITCH_COUNT_THRESHOLD;
             system_IO_data.analogue_global_data[index].processed.channel_type = ANALOGUE_TYPE;
             system_IO_data.analogue_global_data[index].processed.value = 0;
         }
