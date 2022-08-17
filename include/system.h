@@ -598,6 +598,7 @@ struct analogue_local_data_s {
 struct analogue_global_data_s {
     bool    active;
     bool    apply_filter;
+    bool    apply_glitch_filter;
     struct {
         uint16_t    current_value;
         uint8_t     percent_current_value;

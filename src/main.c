@@ -101,6 +101,7 @@ uint8_t     index;
         for (index=0; index < NOS_CD4051_CHANNELS ; index++ ) {
             system_IO_data.analogue_global_data[index].active = true;
             system_IO_data.analogue_global_data[index].apply_filter = true;
+            system_IO_data.analogue_global_data[index].apply_glitch_filter =false;
             system_IO_data.analogue_global_data[index].raw.current_value = 0;
             system_IO_data.analogue_global_data[index].raw.percent_current_value = 0;
             system_IO_data.analogue_global_data[index].raw.glitch_threshold = A_D_GLITCH_THRESHOLD;

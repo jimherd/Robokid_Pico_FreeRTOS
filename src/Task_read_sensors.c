@@ -284,6 +284,7 @@ static void process_CD4051_analogue_subsystem(void)
 {
 
 uint8_t     index;
+int8_t      direction;
 uint16_t    tmp_data;
 uint32_t    sum, delta;
 
@@ -323,32 +324,43 @@ uint32_t    sum, delta;
             continue;
         }
     
-    // run glitch filter by testing between this and last value
+    // run glitch filter if requested
+    // Test between this and last value.
     // If glitch detected, ignore value and use last value
     
-        if(tmp_data > analogue_local_data[index].raw.last_value) {
-            delta = tmp_data - analogue_local_data[index].raw.last_value;
-        } else {
-            delta = analogue_local_data[index].raw.last_value - tmp_data;
-        }
-        
-        if (delta > temp_analogue_global_data[index].raw.glitch_threshold) {
-            temp_analogue_global_data[index].raw.current_value = analogue_local_data[index].raw.last_value;
-            temp_analogue_global_data[index].raw.glitch_count++;
-        }
-        
-        // keep note of maximum delta values to help with setting delta threshold
-        
-        if (delta > temp_analogue_global_data[index].raw.max_delta) {
-            temp_analogue_global_data[index].raw.max_delta = delta;
-        }
-        
-        // check glitch count and if above a threshold log error and reset counts
-        
-        if (temp_analogue_global_data[index].raw.glitch_count > temp_analogue_global_data[index].raw.glitch_error_count_threshold) {  
-            analogue_local_data[index].raw.sample_count = 0;
-            temp_analogue_global_data[index].raw.glitch_count = 0;
-            log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
+        if (temp_analogue_global_data[index].apply_glitch_filter == true) {
+            if(tmp_data > analogue_local_data[index].raw.last_value) {
+                delta = tmp_data - analogue_local_data[index].raw.last_value;
+                direction = +1;
+            } else {
+                delta = analogue_local_data[index].raw.last_value - tmp_data;
+                direction = -1;
+            }
+            
+        // adjust new value to include a small amount of delta value
+
+            if (delta > temp_analogue_global_data[index].raw.glitch_threshold) {
+                if (direction == +1) {
+                    temp_analogue_global_data[index].raw.current_value = temp_analogue_global_data[index].raw.current_value - (delta >> 1);
+                } else {
+                    temp_analogue_global_data[index].raw.current_value = temp_analogue_global_data[index].raw.current_value + (delta >> 1);
+                }
+                temp_analogue_global_data[index].raw.glitch_count++;
+            }
+            
+            // keep note of maximum delta values to help with setting delta threshold
+            
+            if (delta > temp_analogue_global_data[index].raw.max_delta) {
+                temp_analogue_global_data[index].raw.max_delta = delta;
+            }
+            
+            // check glitch count and if above a threshold log error and reset counts
+            
+            if (temp_analogue_global_data[index].raw.glitch_count > temp_analogue_global_data[index].raw.glitch_error_count_threshold) {  
+                analogue_local_data[index].raw.sample_count = 0;
+                temp_analogue_global_data[index].raw.glitch_count = 0;
+                log_error(GLITCH_ERRORS_ON_AD_READ, TASK_READ_SENSORS);
+            }
         }
     
     // Add value to circular buffer and adjust pointer as necessary
@@ -367,8 +379,6 @@ uint32_t    sum, delta;
         temp_analogue_global_data[index].processed.value = hw_divider_u32_quotient_inlined(sum, BUFF_SIZE);
 
         analogue_local_data[index].raw.last_value = tmp_data;
-    // assert(analogue_local_data[index].raw.sample_count < 20);
-    assert(index < 8);
     }
     
     set_CD4051_address(0);    // reset CD4051 address to 0
