@@ -29,7 +29,7 @@ FILE(GLOB FreeRTOS_src ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/*.c)
 add_library( FreeRTOS STATIC
     ${FreeRTOS_src}
     ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/portable/GCC/ARM_CM0/port.c
-    ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/portable/MemMang/heap_4.c
+    ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/portable/MemMang/heap_1.c    # heap_4.c
 )
 
 target_include_directories( FreeRTOS PUBLIC

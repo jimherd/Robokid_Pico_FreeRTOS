@@ -30,13 +30,13 @@
 #define configUSE_NEWLIB_REENTRANT              0
 #define configENABLE_BACKWARD_COMPATIBILITY     0
 #define configNUM_THREAD_LOCAL_STORAGE_POINTERS 5
-#define configSTACK_DEPTH_TYPE                  uint32_t  // the default ifndef is uint16_t
+#define configSTACK_DEPTH_TYPE                  uint16_t  // the default ifndef is uint16_t
 #define configMESSAGE_BUFFER_LENGTH_TYPE        size_t
 
 /* Memory allocation related definitions. */
 #define configSUPPORT_STATIC_ALLOCATION         0
 #define configSUPPORT_DYNAMIC_ALLOCATION        1
-#define configTOTAL_HEAP_SIZE                   50000  // default 50000
+#define configTOTAL_HEAP_SIZE                   75000  // default 50000
 #define configAPPLICATION_ALLOCATED_HEAP        0
 
 /* Hook function related definitions. */
