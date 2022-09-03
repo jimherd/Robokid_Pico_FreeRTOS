@@ -1,5 +1,4 @@
 //
-// Untested Jlink parameters (commented at this time - 19/5/22)
 //
 {
     "version": "0.2.0",
@@ -36,13 +35,9 @@
                 "continue"
             ],
             "searchDir": ["C:/jth/Pico/Tools/openocd/tcl"],    // openocd
-            "showDevDebugOutput": "raw",
+        // "showDevDebugOutput": "raw",   // for debug
         }
     ]
 }
 
-            // "servertype": "jlink",       // segger
-            // "serverpath": "C:/Program Files/SEGGER/JLink/JLinkGDBServerCL.exe",    // segger
-            // "device": "RP2040_M0_0",     // segger
-            // "interface": "swd",          // segger
 
