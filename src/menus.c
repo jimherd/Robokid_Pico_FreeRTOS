@@ -15,6 +15,7 @@
 #include "tunes.h"
 
 #include "run_gamepad_modes.h"
+#include "run_bump_modes.h"
 #include "run_test_modes.h"
 
 //==============================================================================
@@ -38,7 +39,7 @@ struct menu primary_menu = {
     {
         run_gamepad_modes,
         null_function,
-        null_function,
+        run_bump_modes,
         null_function,
         null_function,
         null_function,
@@ -60,6 +61,21 @@ struct menu gamepad_mode_menu = {
         execute_gamepad_activities,
     }
 };
+
+// struct menu bump_mode_menu = {
+//     false,
+//     3,
+//     {
+//         " Line bump 1  ",
+//         " Line bump 2  ",
+//         " Line bump 3  ",
+//     },
+//     {   
+//         execute_bump_activities, 
+//         execute_bump_activities,
+//         execute_bump_activities,
+//     }
+// };
 
 struct menu test_mode_menu = {
     false,

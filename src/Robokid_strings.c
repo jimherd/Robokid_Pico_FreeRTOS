@@ -66,16 +66,23 @@ const char* top_level_button_data[2] = {
 };
 
 const char* menu_button_data[4] = {
-    "A: Accept     ",
-    "B: Next mode  ",
-    "C: Last mode  ",
-    "D: Exit menu  "
+    "A: Go         ",
+    "B: -> Next    ",
+    "C: <- Last    ",
+    "D: Exit       ",
 };
 
 const char* mode_G_button_data[4] = {
     "A: go/stop    ",
     "B: Next mode  ",
     "C: -----      ",
+    "D: Exit mode  "  
+};
+
+const char* mode_B_button_data[4] = {
+    "A: go/stop    ",
+    "B: Next mode  ",
+    "C: Read POTs  ",
     "D: Exit mode  "  
 };
 

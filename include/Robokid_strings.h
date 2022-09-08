@@ -20,6 +20,7 @@ extern const char   mode_tank[16];
 extern const char*  top_level_button_data[2];
 extern const char*  menu_button_data[4];
 extern const char*  mode_G_button_data[4];
+extern const char*  mode_B_button_data[4];
 extern const char*  blank_scroll_area[2];
 
 #endif
