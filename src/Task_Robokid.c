@@ -51,7 +51,7 @@ error_codes_te              error;
     LCD_write_row(0, MESSAGE_ROW, system_ready[0], true);
     press_time = wait_for_button_press(PUSH_BUTTON_A, portMAX_DELAY);
     if (press_time > LONG_PRESS_MS) {
-        primary_menu.nos_modes++;
+        menu_1.nos_modes++;
 //        last_mode = TEST_MODE;   // expose experiment mode if press time is > xxxx
     }
     set_tune_data(beep, NOS_NOTES(beep), true, 2);
@@ -59,7 +59,7 @@ error_codes_te              error;
     // primary_mode = PRIMARY_NULL_MODE;
 
     FOREVER {
-        error = run_menu(&primary_menu);
+        error = run_menu(&menu_1);   // &primary_menu
         if (error != OK) {
             log_error(error, TASK_ROBOKID);
         }

@@ -24,7 +24,7 @@
 
 error_codes_te run_gamepad_modes(uint8_t mode_index, uint32_t parameter) 
 {
-    return run_menu(&gamepad_mode_menu);
+    return run_menu(&menu_1_1);
 }
 
 // error_codes_te run_gamepad_modes(uint32_t parameter)

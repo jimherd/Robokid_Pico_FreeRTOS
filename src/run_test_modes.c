@@ -43,7 +43,7 @@ static struct  analogue_global_data_s      temp_analogue_global_data[NOS_CD4051_
 
 error_codes_te run_test_modes(uint8_t mode_index, uint32_t parameter) 
 {
-    return run_menu(&test_mode_menu);
+    return run_menu(&menu_1_9);
 }
 
 //==============================================================================
@@ -124,7 +124,7 @@ error_codes_te run_test_0(uint8_t mode_index, uint32_t parameter)
  */
  error_codes_te run_test_2_menu(uint8_t mode_index, uint32_t parameter)
 {
-    run_menu(&test_mode_2_menu);
+    run_menu(&menu_1_9_2);
     return OK;
 }
 

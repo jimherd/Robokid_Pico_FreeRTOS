@@ -27,20 +27,20 @@
 
 enum b_modes {LINE_BUMP_MODE, LINE_BUG_BUMP_MODE, WALL_BUMP_MODE};
 
-struct menu bump_mode_menu = {
-    false,
-    3,
-    {
-        " Line bump 1  ",
-        " Line bump 2  ",
-        " Line bump 3  ",
-    },
-    {   
-        execute_bump_activities, 
-        execute_bump_activities,
-        execute_bump_activities,
-    }
-};
+// struct menu bump_mode_menu = {
+//     false,
+//     3,
+//     {
+//         " Line bump 1  ",
+//         " Line bump 2  ",
+//         " Line bump 3  ",
+//     },
+//     {   
+//         execute_bump_activities, 
+//         execute_bump_activities,
+//         execute_bump_activities,
+//     }
+// };
 
 // const char* mode_B_button_data[4] = {
 //     "A: go/stop    ",
@@ -61,7 +61,7 @@ const char* config_button_data[4] = {
 
 error_codes_te run_bump_modes(uint8_t mode_index, uint32_t parameter) 
 {
-    return run_menu(&bump_mode_menu);
+    return run_menu(&menu_1_3);
 }
 
 error_codes_te execute_bump_activities(uint8_t mode_index, uint32_t  parameter)
