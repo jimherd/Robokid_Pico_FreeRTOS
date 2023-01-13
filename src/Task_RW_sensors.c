@@ -1,5 +1,5 @@
 /**
- * @file    Task_read_sensors.c
+ * @file    Task_RW_sensors.c
  * @author  Jim Herd
  * @brief   read Robokid sensors
  */
@@ -15,12 +15,15 @@
 #include "pico/binary_info.h"
 #include "hardware/adc.h"
 #include "hardware/divider.h"
+#include "hardware/pio.h"
 
 #include "FreeRTOS.h"
 #include "task.h"
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+
+#include "ws2812.pio.h"
 
 //==============================================================================
 // look-up table to convert 8-bit a/d values to %
@@ -86,7 +89,7 @@ uint8_t     switch_sample_index;
 // 3. read analogue sensors
 // 3. update central data store
 
-void Task_read_sensors(void *p) 
+void Task_RW_sensors(void *p) 
 {
 TickType_t  xLastWakeTime;
 BaseType_t  xWasDelayed;
@@ -101,10 +104,19 @@ uint32_t    sample_count;
     gpio_init(PUSH_BUTTON_C_PIN); gpio_set_dir(PUSH_BUTTON_C_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_C_PIN);  
     gpio_init(PUSH_BUTTON_D_PIN); gpio_set_dir(PUSH_BUTTON_D_PIN, GPIO_IN); gpio_pull_up(PUSH_BUTTON_D_PIN);  
 
-    gpio_init(LED_A_PIN); gpio_set_dir(LED_A_PIN, GPIO_OUT);
-    gpio_init(LED_B_PIN); gpio_set_dir(LED_B_PIN, GPIO_OUT);
-    gpio_init(LED_C_PIN); gpio_set_dir(LED_C_PIN, GPIO_OUT);
-    gpio_init(LED_D_PIN); gpio_set_dir(LED_D_PIN, GPIO_OUT);
+    uint offset = pio_add_program(NEOPIXEL_PIO_UNIT, &ws2812_program);
+    ws2812_program_init(NEOPIXEL_PIO_UNIT, 
+                        NEOPIXEL_STATE_MACHINE, 
+                        offset, 
+                        NEOPIXEL_DOUT_PIN, 
+                        NEOPIXEL_DATA_RATE,
+                        NEOPIXEL_BITS_PER_UNIT 
+                        );
+
+    // gpio_init(LED_A_PIN); gpio_set_dir(LED_A_PIN, GPIO_OUT);
+    // gpio_init(LED_B_PIN); gpio_set_dir(LED_B_PIN, GPIO_OUT);
+    // gpio_init(LED_C_PIN); gpio_set_dir(LED_C_PIN, GPIO_OUT);
+    // gpio_init(LED_D_PIN); gpio_set_dir(LED_D_PIN, GPIO_OUT);
     
     for (uint8_t i=0; i < NOS_SWITCH_SAMPLES ; i++) {
         switch_samples[i] = 0;
@@ -192,30 +204,33 @@ START_PULSE;
     // Process LED data
 
         for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {
-            switch (temp_LED_data[index].state) {
-                case LED_OFF : {
-                    gpio_put(temp_LED_data[index].pin_number, false);
-                    break;
-                }
-                case LED_ON : {
-                    gpio_put(temp_LED_data[index].pin_number, true);
-                    break;
-                }
-                case LED_NO_CHANGE : {
-                    break;
-                }
-                case LED_FLASH : {
-                    if (temp_LED_data[index].flash_counter == 0) {
-                        temp_LED_data[index].flash_counter = temp_LED_data[index].flash_time;
-                        temp_LED_data[index].flash_value = !temp_LED_data[index].flash_value;
-                        gpio_put(temp_LED_data[index].pin_number, temp_LED_data[index].flash_value);
-                    } else {
-                        temp_LED_data[index].flash_counter--;
-                    }
-                    break;
-                }
-            }
         }
+
+        // for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {
+        //     switch (temp_LED_data[index].state) {
+        //         case LED_OFF : {
+        //             gpio_put(temp_LED_data[index].pin_number, false);
+        //             break;
+        //         }
+        //         case LED_ON : {
+        //             gpio_put(temp_LED_data[index].pin_number, true);
+        //             break;
+        //         }
+        //         case LED_NO_CHANGE : {
+        //             break;
+        //         }
+        //         case LED_FLASH : {
+        //             if (temp_LED_data[index].flash_counter == 0) {
+        //                 temp_LED_data[index].flash_counter = temp_LED_data[index].flash_time;
+        //                 temp_LED_data[index].flash_value = !temp_LED_data[index].flash_value;
+        //                 gpio_put(temp_LED_data[index].pin_number, temp_LED_data[index].flash_value);
+        //             } else {
+        //                 temp_LED_data[index].flash_counter--;
+        //             }
+        //             break;
+        //         }
+        //     }
+        // }
 
     // process 8-channel CD4051 A/D subsystem
 
@@ -383,3 +398,4 @@ uint32_t    sum, delta;
     
     set_CD4051_address(0);    // reset CD4051 address to 0
 }
+

@@ -4,6 +4,7 @@ file(TO_CMAKE_PATH "$ENV{PICO_SDK_PATH}" PICO_SDK_PATH_CMAKE)
 
 # initialize the SDK based on PICO_SDK_PATH
 include($ENV{PICO_SDK_PATH}/external/pico_sdk_import.cmake)
+include($ENV{PICO_SDK_PATH}/tools/CMakeLists.txt)
 
 project(Robokid_Pico_FreeRTOS C CXX ASM)
 
@@ -18,11 +19,15 @@ pico_sdk_init()
 set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fshort-enums -Wunused-result ")
 
 # collect all source .c files
-FILE(GLOB Robokid_Pico_Freetros_src ${CMAKE_SOURCE_DIR}/src/*.c)
+FILE(GLOB Robokid_Pico_FreeRTOS_src ${CMAKE_SOURCE_DIR}/src/*.c)
 
 add_executable(${PROJECT_NAME}
-    ${Robokid_Pico_Freetros_src}
+    ${Robokid_Pico_FreeRTOS_src}
 )
+
+# generate the header file into the source tree as it is included in the RP2040 datasheet
+pico_generate_pio_header(${PROJECT_NAME} 
+   ${CMAKE_CURRENT_LIST_DIR}/src/ws2812.pio OUTPUT_DIR ${CMAKE_CURRENT_LIST_DIR}/generated)
 
 FILE(GLOB FreeRTOS_src ${CMAKE_SOURCE_DIR}/lib/FreeRTOS-Kernel/*.c)
 
@@ -52,6 +57,8 @@ target_link_libraries( ${PROJECT_NAME}
     hardware_spi
     hardware_pwm
     hardware_adc
+    hardware_pio
+    hardware_dma
     FreeRTOS
     tinyusb_board 
     tinyusb_host

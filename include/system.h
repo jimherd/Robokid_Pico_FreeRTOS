@@ -48,6 +48,7 @@
 
 //==============================================================================
 // Robokid parameters
+
 #define     NOS_ROBOKID_MOTORS          2
 #define     NOS_ROBOKID_PUSH_BUTTONS    4
 #define     NOS_ROBOKID_LEDS            4
@@ -134,6 +135,18 @@ enum {LED_A, LED_B, LED_C, LED_D};
 #define     LED_B_PIN       GP17
 #define     LED_C_PIN       GP27
 #define     LED_D_PIN       GP28
+
+//==============================================================================
+// Neopixel subsystem
+
+#define     NEOPIXEL_DOUT_PIN       GP16
+
+#define     NEOPIXEL_DATA_RATE      800000      // 800KHz
+#define     NEOPIXEL_BITS_PER_UNIT  24
+#define     NOS_NEOPIXELS           4
+
+#define     NEOPIXEL_PIO_UNIT       pio0
+#define     NEOPIXEL_STATE_MACHINE  0
 
 //==============================================================================
 // 3+8 channel analogue input system
@@ -528,7 +541,8 @@ struct vehicle_data_s {
 };
 
 struct LED_data_s {
-    uint8_t         pin_number;
+    //uint8_t         pin_number;
+    uint32_t        colour;   // 3 8-bit RGB values
     LED_state_te    state;
     bool            flash;
     uint8_t         flash_time;    // units of 20mS
@@ -721,7 +735,7 @@ extern const uint BLINK_PIN;
 // FreeRTOS components
 
 extern void Task_Robokid(void *p);                      // tasks
-extern void Task_read_sensors(void *p);
+extern void Task_RW_sensors(void *p);
 extern void Task_read_gamepad(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
@@ -732,7 +746,7 @@ extern void Task_log_system_data(void *p);
 extern void Task_blink_LED(void *p);
 
 extern  TaskHandle_t taskhndl_Task_Robokid;
-extern  TaskHandle_t taskhndl_Task_read_sensors;
+extern  TaskHandle_t taskhndl_Task_RW_sensors;
 extern  TaskHandle_t taskhndl_Task_read_gamepad;
 extern  TaskHandle_t taskhndl_Task_display_LCD;
 extern  TaskHandle_t taskhndl_Task_drive_motors;

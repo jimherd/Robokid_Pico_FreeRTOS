@@ -12,6 +12,7 @@
 #include "pico/multicore.h"
 #include "pico/binary_info.h"
 #include "hardware/adc.h"
+#include "hardware/dma.h"
 
 #include  "Pico_IO.h"
 
@@ -20,6 +21,8 @@
 #include "queue.h"
 #include "semphr.h"
 #include "event_groups.h"
+
+//#include "ws2812.pio.h"
 
 //==============================================================================
 // Global data
@@ -34,7 +37,7 @@ const uint BLINK_PIN = LED_PIN;
 // FreeRTOS components handles
 
 TaskHandle_t taskhndl_Task_Robokid;
-TaskHandle_t taskhndl_Task_read_sensors;
+TaskHandle_t taskhndl_Task_RW_sensors;
 TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
@@ -138,10 +141,10 @@ uint8_t     index;
             system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
             system_IO_data.LED_data[index].flash_counter = 0;   
         };
-        system_IO_data.LED_data[0].pin_number = LED_A_PIN;
-        system_IO_data.LED_data[1].pin_number = LED_B_PIN;
-        system_IO_data.LED_data[2].pin_number = LED_C_PIN;
-        system_IO_data.LED_data[3].pin_number = LED_D_PIN;
+        system_IO_data.LED_data[0].colour = 0x000000;
+        system_IO_data.LED_data[1].colour = 0x000000;
+        system_IO_data.LED_data[2].colour = 0x000000;
+        system_IO_data.LED_data[3].colour = 0x000000;
     // Floor sensor data
         for (index=0; index < NOS_ROBOKID_LINE_SENSORS ; index++ ) {
             system_IO_data.line_sensor_data[index].percent_value = 0;
@@ -187,7 +190,7 @@ int main()
     adc_init();
 
     init_system_data();
- 
+
     xTaskCreate(Task_Robokid,
                 "Robokid_task",
                 1024,  // configMINIMAL_STACK_SIZE,
@@ -206,14 +209,14 @@ int main()
     );
     system_IO_data.task_data[TASK_DRIVE_MOTORS].task_handle = taskhndl_Task_drive_motors;
 
-    xTaskCreate(Task_read_sensors,
+    xTaskCreate(Task_RW_sensors,
                 "Read_sensors_task",
                 1024, // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
-                &taskhndl_Task_read_sensors
+                &taskhndl_Task_RW_sensors
     );
-    system_IO_data.task_data[TASK_READ_SENSORS].task_handle = taskhndl_Task_read_sensors;
+    system_IO_data.task_data[TASK_READ_SENSORS].task_handle = taskhndl_Task_RW_sensors;
 
     xTaskCreate(Task_display_LCD,
                 "Display_LCD_task",

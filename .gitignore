@@ -6,6 +6,7 @@ build/
 Archive/
 generated/
 elf2uf2/
+Temp/
 
 lib/
 
@@ -13,5 +14,6 @@ lib/
 *.vcxproj
 *.filters
 *.sln
+*.jpg
 
 FreeRTOS-Kernel/

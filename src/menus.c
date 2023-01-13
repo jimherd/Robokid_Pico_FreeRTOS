@@ -21,7 +21,7 @@
 //==============================================================================
 //  System menu tables
 //==============================================================================
-// Data
+//  Data
 //==============================================================================
 //
 // List of new menus structures
@@ -31,7 +31,6 @@
 // menu_1_9   : test modes menu
 // menu_1_9_1 : test mode 9 menu
 //
-
 #define     NOS_PRIMARY_MENU_MODES  9
 
 const char* menu_1_strings[NOS_PRIMARY_MENU_MODES] = {
@@ -91,14 +90,15 @@ struct menu menu_1_1 = {
 #define NOS_BUMP_MODES   3
 
 const char* menu_1_3_strings[NOS_BUMP_MODES] = {
-    " Line bump 1  ",
-    " Line bump 2  ",
-    " Line bump 3  ",
+    " Tape bump 1  ",       // reverse and spin 
+    " Tape bump 2  ",       //
+    " Wall bump    ",
 };
 
 mode_function menu_1_3_mode_functions[NOS_BUMP_MODES] = {
-     execute_bump_activities,
-     execute_bump_activities,
+     run_bump_mode_0,
+     run_bump_mode_1,
+     run_bump_mode_2,
 };
 
 struct menu menu_1_3 = {
@@ -109,7 +109,7 @@ struct menu menu_1_3 = {
 
 //==============================================================================
 // menu_1_9 : test modes
-
+//
 #define     NOS_TEST_MODES      4
 
 const char* menu_1_9_strings[NOS_TEST_MODES] = {
@@ -134,7 +134,7 @@ struct menu menu_1_9 = {
 
 //==============================================================================
 // menu_1_9_2 : test mode 9 menu
-
+//
 #define     NOS_TEST_MODE_2_OPTIONS      8
 
 const char* menu_1_9_2_strings[NOS_TEST_MODE_2_OPTIONS] = {
@@ -166,9 +166,9 @@ struct menu menu_1_9_2 = {
 };
 
 //==============================================================================
-// Code
+//  Code
 //==============================================================================
-// Execute test menu table
+//  Execute test menu table
 //==============================================================================
 /**
  * @brief 
@@ -207,7 +207,7 @@ error_codes_te      error;
             return OK;
         }
     }
-}
+};
 
 // struct menu primary_menu = {
 //     true,

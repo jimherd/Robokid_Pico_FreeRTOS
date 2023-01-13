@@ -31,9 +31,9 @@ enum b_modes {LINE_BUMP_MODE, LINE_BUG_BUMP_MODE, WALL_BUMP_MODE};
 //     false,
 //     3,
 //     {
-//         " Line bump 1  ",
-//         " Line bump 2  ",
-//         " Line bump 3  ",
+//         " Tape bump 1  ",
+//         " Tape bump 2  ",
+//         " Wall bump    ",
 //     },
 //     {   
 //         execute_bump_activities, 
@@ -64,10 +64,17 @@ error_codes_te run_bump_modes(uint8_t mode_index, uint32_t parameter)
     return run_menu(&menu_1_3);
 }
 
-error_codes_te execute_bump_activities(uint8_t mode_index, uint32_t  parameter)
+error_codes_te run_bump_mode_0(uint8_t mode_index, uint32_t  parameter)
 {
+    return OK;
+}
 
+error_codes_te run_bump_mode_1(uint8_t mode_index, uint32_t  parameter)
+{
+    return OK;
+}
 
-
+error_codes_te run_bump_mode_2(uint8_t mode_index, uint32_t  parameter)
+{
     return OK;
 }
