@@ -739,7 +739,7 @@ extern const uint BLINK_PIN;
 // FreeRTOS components
 
 extern void Task_Robokid(void *p);                      // tasks
-extern void Task_RW_sensors(void *p);
+extern void Task_read_sensors(void *p);
 extern void Task_read_gamepad(void *p);
 extern void Task_display_LCD(void *p);
 extern void Task_drive_motors(void *p);
@@ -748,6 +748,8 @@ extern void Task_sounder (void *p);
 extern void Task_serial_output(void *p);
 extern void Task_log_system_data(void *p);
 extern void Task_blink_LED(void *p);
+extern void Task_write_neopixels(void *p);
+
 
 extern  TaskHandle_t taskhndl_Task_Robokid;
 extern  TaskHandle_t taskhndl_Task_RW_sensors;

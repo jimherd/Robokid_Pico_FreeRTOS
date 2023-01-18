@@ -46,8 +46,12 @@
 // 3. read analogue sensors
 // 3. update central data store
 
-void Task_neopixels(void *p) 
+void Task_write_neopixels(void *p) 
 {
+TickType_t  xLastWakeTime;
+BaseType_t  xWasDelayed;
+uint8_t     index;
+uint32_t    start_time, end_time;
 
 
     uint offset = pio_add_program(NEOPIXEL_PIO_UNIT, &ws2812_program);
@@ -68,8 +72,8 @@ void Task_neopixels(void *p)
 
 // Process LED data
 
-        put_pixel(urgb_u32(0xff, 0, 0));  // Red
-        put_pixel(urgb_u32(0, 0x7f, 0));
+        put_pixel(urgb_u32(0x3f, 0, 0));  // Red
+        put_pixel(urgb_u32(0, 0x3f, 0));
         put_pixel(urgb_u32(0, 0, 0x3f));
 
         for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {

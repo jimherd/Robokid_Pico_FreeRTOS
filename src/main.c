@@ -210,14 +210,14 @@ int main()
     );
     system_IO_data.task_data[TASK_DRIVE_MOTORS].task_handle = taskhndl_Task_drive_motors;
 
-    xTaskCreate(Task_RW_sensors,
+    xTaskCreate(Task_read_sensors,
                 "Read_sensors_task",
                 1024, // configMINIMAL_STACK_SIZE,
                 NULL,
                 TASK_PRIORITYNORMAL,
-                &taskhndl_Task_RW_sensors
+                &taskhndl_Task_read_sensors
     );
-    system_IO_data.task_data[TASK_READ_SENSORS].task_handle = taskhndl_Task_RW_sensors;
+    system_IO_data.task_data[TASK_READ_SENSORS].task_handle = taskhndl_Task_read_sensors;
 
     xTaskCreate(Task_display_LCD,
                 "Display_LCD_task",
@@ -282,7 +282,7 @@ int main()
     );
     system_IO_data.task_data[TASK_BLINK].task_handle = taskhndl_Task_blink_LED;
 
-    xTaskCreate(Task_read_neopixels,
+    xTaskCreate(Task_write_neopixels,
                 "Neopixel_task",
                 configMINIMAL_STACK_SIZE,
                 NULL,
