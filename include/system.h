@@ -296,7 +296,7 @@ enum  gamepad_dpad_Y_axis {Y_AXIS_OFF, Y_AXIS_UP, Y_AXIS_DOWN};
 #define     MAX_TUNE_NOTES          32
 
 //
-// Frequencies of octave 4
+// Frequencies of 4th octave 4
 //
 #define     FREQ_C      262
 #define     FREQ_CS     277
@@ -414,7 +414,7 @@ typedef enum {PLAY, COLLECT, SAVE, RECALL, DUMP} sequence_mode_te;
 typedef enum TASKS {
     TASK_ROBOKID, TASK_DRIVE_MOTORS, TASK_READ_SENSORS, TASK_DISPLAY,
     TASK_READ_GAMEPAD, TASK_SOUNDER, TASK_ERROR, TASK_SERIAL_OUTPUT, 
-    TASK_LOG, TASK_BLINK
+    TASK_LOG, TASK_NEOPIXELS, TASK_BLINK
 } task_t;
 
 #define     NOS_TASKS   (TASK_BLINK + 1)
@@ -427,6 +427,10 @@ typedef enum TASKS {
 #define     TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT       ((1000/TASK_DISPLAY_LCD_FREQUENCY) * portTICK_PERIOD_MS)
 #define     SCROLL_DELAY_MS                             2000
 #define     SCROLL_DELAY_TICK_COUNT                     (SCROLL_DELAY_MS / TASK_DISPLAY_LCD_FREQUENCY_TICK_COUNT)    
+
+#define     TASK_NEOPIXELS_FREQUENCY                    5  // Hz
+#define     TASK_NEOPIXELS_TIME_UNIT                    (1000 / TASK_NEOPIXELS_FREQUENCY)
+#define     TASK_NEOPIXELS_FREQUENCY_TICK_COUNT         ((1000/TASK_NEOPIXELS_FREQUENCY) * portTICK_PERIOD_MS)
 
 #define     TASK_SOUNDER_FREQUENCY                      20  // Hz
 #define     TASK_SOUNDER_TIME_UNIT                      (1000 / TASK_SOUNDER_FREQUENCY)
@@ -754,6 +758,7 @@ extern  TaskHandle_t taskhndl_Task_error;
 extern  TaskHandle_t taskhndl_Task_sounder;
 extern  TaskHandle_t taskhndl_Task_serial_output;
 extern  TaskHandle_t taskhndl_Task_blink_LED;
+extern  TaskHandle_t taskhndl_Task_write_neopixels;
 
 extern SemaphoreHandle_t semaphore_LCD_data;            //semaphores
 extern SemaphoreHandle_t semaphore_SSD1306_display;

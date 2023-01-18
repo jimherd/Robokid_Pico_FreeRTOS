@@ -37,7 +37,7 @@ const uint BLINK_PIN = LED_PIN;
 // FreeRTOS components handles
 
 TaskHandle_t taskhndl_Task_Robokid;
-TaskHandle_t taskhndl_Task_RW_sensors;
+TaskHandle_t taskhndl_Task_read_sensors;
 TaskHandle_t taskhndl_Task_read_gamepad;
 TaskHandle_t taskhndl_Task_display_LCD;
 TaskHandle_t taskhndl_Task_drive_motors;
@@ -46,6 +46,7 @@ TaskHandle_t taskhndl_Task_sounder;
 TaskHandle_t taskhndl_Task_serial_output;
 TaskHandle_t taskhndl_Task_log_system;
 TaskHandle_t taskhndl_Task_blink_LED;
+TaskHandle_t taskhndl_Task_write_neopixels;
 
 SemaphoreHandle_t semaphore_LCD_data;
 SemaphoreHandle_t semaphore_SSD1306_display;
@@ -280,6 +281,15 @@ int main()
                 &taskhndl_Task_blink_LED
     );
     system_IO_data.task_data[TASK_BLINK].task_handle = taskhndl_Task_blink_LED;
+
+    xTaskCreate(Task_read_neopixels,
+                "Neopixel_task",
+                configMINIMAL_STACK_SIZE,
+                NULL,
+                TASK_PRIORITYIDLE,
+                &taskhndl_Task_write_neopixels
+    );
+    system_IO_data.task_data[TASK_NEOPIXELS].task_handle = taskhndl_Task_blink_LED;
 
     semaphore_LCD_data          = xSemaphoreCreateMutex();
     semaphore_SSD1306_display   = xSemaphoreCreateMutex();

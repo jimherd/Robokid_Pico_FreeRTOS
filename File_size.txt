@@ -1357,3 +1357,12 @@
 13/01/2023 
       text       data        bss      total filename
      48300      11408      82860     142568 Robokid_Pico_FreeRTOS.elf
+13/01/2023 
+      text       data        bss      total filename
+     48348      11408      82860     142616 Robokid_Pico_FreeRTOS.elf
+13/01/2023 
+      text       data        bss      total filename
+     48348      11408      82860     142616 Robokid_Pico_FreeRTOS.elf
+14/01/2023 
+      text       data        bss      total filename
+     48380      11408      82860     142648 Robokid_Pico_FreeRTOS.elf
