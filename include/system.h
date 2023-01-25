@@ -143,10 +143,16 @@ enum {LED_A, LED_B, LED_C, LED_D};
 
 #define     NEOPIXEL_DATA_RATE      800000      // 800KHz
 #define     NEOPIXEL_BITS_PER_UNIT  24
+
 #define     NOS_NEOPIXELS           4
 
 #define     NEOPIXEL_PIO_UNIT       pio0
 #define     NEOPIXEL_STATE_MACHINE  0
+
+#define     NEOPIXEL_MAX_INTENSITY       25      // percent
+
+typedef enum  { UP, DOWN, NONE} change_mode_et;
+typedef enum  {N_RED, N_ORANGE, N_YELLOW, N_GREEN, N_BLUE, N_INDIGO, N_VIOLET, N_LED_WHITE, N_BLACK} colours_et;
 
 //==============================================================================
 // 3+8 channel analogue input system
@@ -545,13 +551,33 @@ struct vehicle_data_s {
 };
 
 struct LED_data_s {
-    //uint8_t         pin_number;
+    uint8_t         pin_number;
     uint32_t        colour;   // 3 8-bit RGB values
     LED_state_te    state;
     bool            flash;
     uint8_t         flash_time;    // units of 20mS
     uint8_t         flash_counter;
     bool            flash_value;
+} ;
+
+struct Neopixel_data_s {
+    struct {
+        bool    enable;                 // ENABLED/DISABLED
+        bool    LED_state;              // ON/OFF
+        bool    colour_rotation_state;  // ON/OFF
+        bool    flash_state;            // ON/OFF
+        bool    dim_state;
+        bool    monochrome;             // TRUE/FALSE
+    } flags;
+
+    uint8_t         current_intensity;
+    colours_et      current_colour;
+
+    uint8_t         flash_rate;
+    uint8_t         flash_counter;
+
+    int8_t          dim_percent_change;     // +/- % rate
+    uint8_t         dim_rate;               // units og 200mS
 } ;
 
 struct line_sensor_data_s {
@@ -663,7 +689,8 @@ struct system_IO_data_s  {
     struct task_data_s                  task_data[NOS_TASKS];
     uint16_t                            system_voltage;
     struct motor_data_s                 motor_data[NOS_ROBOKID_MOTORS];
-    struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
+ //   struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
+    struct Neopixel_data_s              neopixel_data[NOS_NEOPIXELS];
     struct push_button_data_s           push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
     struct analogue_global_data_s       analogue_global_data[NOS_CD4051_CHANNELS];
     struct line_sensor_data_s           line_sensor_data[NOS_ROBOKID_LINE_SENSORS];

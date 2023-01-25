@@ -25,6 +25,29 @@
 
 #include "ws2812.pio.h"
 
+const struct colour {
+    uint8_t   red;
+    uint8_t   green;
+    uint8_t   blue;
+} rainbow_col[9] = {
+        {255, 0 , 0},     // Red
+        {255, 127, 0},    // Orange
+        {255, 255, 0},    // Yellow
+        {0, 255, 0},      // Green
+        {0, 0, 255},      // Blue
+        {75, 0, 130},     // Indigo
+        {148, 0, 211},    // Violet
+        {255, 255,255},   // White
+        {0, 0 , 0},       // Black
+};
+
+
+
+typedef struct seq_buffer {
+    colours_et   colour;
+    uint8_t     intensity;   // 0->100%
+} seq_buffer;
+
 //==============================================================================
 // function prototypes for local routines
 //==============================================================================
@@ -32,6 +55,9 @@
 //==============================================================================
 // Local globals
 //==============================================================================
+
+seq_buffer seq_buffer_1[NOS_NEOPIXELS];
+
 
 //==============================================================================
 // temp locals
@@ -53,7 +79,6 @@ BaseType_t  xWasDelayed;
 uint8_t     index;
 uint32_t    start_time, end_time;
 
-
     uint offset = pio_add_program(NEOPIXEL_PIO_UNIT, &ws2812_program);
     ws2812_program_init(NEOPIXEL_PIO_UNIT, 
                         NEOPIXEL_STATE_MACHINE, 
@@ -72,12 +97,13 @@ uint32_t    start_time, end_time;
 
 // Process LED data
 
-        put_pixel(urgb_u32(0x3f, 0, 0));  // Red
-        put_pixel(urgb_u32(0, 0x3f, 0));
-        put_pixel(urgb_u32(0, 0, 0x3f));
+        put_pixel(urgb_u32(0x1f, 0, 0));  // Red
+        put_pixel(urgb_u32(0, 0x1f, 0));
+        put_pixel(urgb_u32(0, 0, 0x1f));
+        put_pixel(urgb_u32(0x10, 0x10, 0x10));
 
         for (index = 0 ; index < NOS_ROBOKID_LEDS ; index++) {
-
+            //if ()
         }
         end_time = time_us_32();
         update_task_execution_time(TASK_READ_SENSORS, start_time, end_time);

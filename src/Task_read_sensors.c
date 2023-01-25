@@ -142,7 +142,7 @@ START_PULSE;
     //
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
             memcpy(&temp_push_button_data[0], &system_IO_data.push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
-            memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
+        //    memcpy(&temp_LED_data[0], &system_IO_data.LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
             memcpy(&temp_analogue_global_data[0] , &system_IO_data.analogue_global_data[0], (NOS_CD4051_CHANNELS * sizeof(struct analogue_global_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
     //
@@ -220,7 +220,7 @@ START_PULSE;
 
         xSemaphoreTake(semaphore_system_IO_data, portMAX_DELAY);
            memcpy(&system_IO_data.push_button_data[0], &temp_push_button_data[0], (NOS_ROBOKID_PUSH_BUTTONS *  sizeof(struct push_button_data_s)));
-           memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
+           //memcpy(&system_IO_data.LED_data[0], &temp_LED_data[0], (NOS_ROBOKID_LEDS * sizeof(struct LED_data_s)));
            memcpy(&system_IO_data.analogue_global_data[0], &temp_analogue_global_data[0] , (NOS_CD4051_CHANNELS * sizeof(struct analogue_global_data_s)));
         xSemaphoreGive(semaphore_system_IO_data);
 

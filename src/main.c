@@ -78,6 +78,8 @@ struct font_data_s         font_data[NOS_FONTS] = {
 };
 struct LCD_row_data_s      LCD_row_data[SS1306_NOS_LCD_ROWS];
 
+
+
 // ASCII string buffers
 
 char print_string_buffers[NOS_PRINT_STRING_BUFFERS][STRING_LENGTH];
@@ -134,18 +136,39 @@ uint8_t     index;
             system_IO_data.push_button_data[index].switch_value = false;
             system_IO_data.push_button_data[index].on_time = 0;
         };
+    // Neopixel data
+        for (index=0; index < NOS_NEOPIXELS ; index++ ) {
+            system_IO_data.neopixel_data[index].flags.enable = false;
+            system_IO_data.neopixel_data[index].flags.LED_state = false;
+            system_IO_data.neopixel_data[index].flags.flash_state = false;
+            system_IO_data.neopixel_data[index].flags.monochrome = false;
+            system_IO_data.neopixel_data[index].flags.dim_state = false;
+            system_IO_data.neopixel_data[index].flags.colour_rotation_state = false;
+
+            system_IO_data.neopixel_data[index].current_colour = N_BLACK;
+            system_IO_data.neopixel_data[index].current_intensity = 0;
+            system_IO_data.neopixel_data[index].flash_rate = 0;
+            system_IO_data.neopixel_data[index].flash_counter = 0;
+            system_IO_data.neopixel_data[index].dim_percent_change = 0;
+            system_IO_data.neopixel_data[index].dim_rate = 0;
+        }
+    
+    
+    
     // LED data
-        for (index=0; index < NOS_ROBOKID_LEDS ; index++ ) {
-            system_IO_data.LED_data[index].state         = LED_OFF;
-            system_IO_data.LED_data[index].flash         = false;
-            system_IO_data.LED_data[index].flash_value   = false;
-            system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
-            system_IO_data.LED_data[index].flash_counter = 0;   
-        };
-        system_IO_data.LED_data[0].colour = 0x000000;
-        system_IO_data.LED_data[1].colour = 0x000000;
-        system_IO_data.LED_data[2].colour = 0x000000;
-        system_IO_data.LED_data[3].colour = 0x000000;
+
+
+        // for (index=0; index < NOS_ROBOKID_LEDS ; index++ ) {
+        //     system_IO_data.LED_data[index].state         = LED_OFF;
+        //     system_IO_data.LED_data[index].flash         = false;
+        //     system_IO_data.LED_data[index].flash_value   = false;
+        //     system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
+        //     system_IO_data.LED_data[index].flash_counter = 0;   
+        // };
+        // system_IO_data.LED_data[0].colour = 0x000000;
+        // system_IO_data.LED_data[1].colour = 0x000000;
+        // system_IO_data.LED_data[2].colour = 0x000000;
+        // system_IO_data.LED_data[3].colour = 0x000000;
     // Floor sensor data
         for (index=0; index < NOS_ROBOKID_LINE_SENSORS ; index++ ) {
             system_IO_data.line_sensor_data[index].percent_value = 0;

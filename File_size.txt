@@ -1372,3 +1372,42 @@
 18/01/2023 
       text       data        bss      total filename
      48364      11424      82920     142708 Robokid_Pico_FreeRTOS.elf
+18/01/2023 
+      text       data        bss      total filename
+     48364      11424      82920     142708 Robokid_Pico_FreeRTOS.elf
+18/01/2023 
+      text       data        bss      total filename
+     48380      11424      82920     142724 Robokid_Pico_FreeRTOS.elf
+18/01/2023 
+      text       data        bss      total filename
+     48348      11424      82952     142724 Robokid_Pico_FreeRTOS.elf
+19/01/2023 
+      text       data        bss      total filename
+     48348      11424      82952     142724 Robokid_Pico_FreeRTOS.elf
+19/01/2023 
+      text       data        bss      total filename
+     48348      11424      82952     142724 Robokid_Pico_FreeRTOS.elf
+19/01/2023 
+      text       data        bss      total filename
+     48348      11424      83012     142784 Robokid_Pico_FreeRTOS.elf
+22/01/2023 
+      text       data        bss      total filename
+     48348      11424      83000     142772 Robokid_Pico_FreeRTOS.elf
+23/01/2023 
+      text       data        bss      total filename
+     48348      11424      83000     142772 Robokid_Pico_FreeRTOS.elf
+24/01/2023 
+      text       data        bss      total filename
+     48348      11424      83000     142772 Robokid_Pico_FreeRTOS.elf
+25/01/2023 
+      text       data        bss      total filename
+     48348      11424      83000     142772 Robokid_Pico_FreeRTOS.elf
+25/01/2023 
+      text       data        bss      total filename
+     48124      11424      82872     142420 Robokid_Pico_FreeRTOS.elf
+25/01/2023 
+      text       data        bss      total filename
+     48124      11424      82920     142468 Robokid_Pico_FreeRTOS.elf
+25/01/2023 
+      text       data        bss      total filename
+     48204      11424      82872     142500 Robokid_Pico_FreeRTOS.elf
