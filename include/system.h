@@ -146,6 +146,8 @@ enum {LED_A, LED_B, LED_C, LED_D};
 
 #define     NOS_NEOPIXELS           4
 
+typedef enum {N_LED_A, N_LED_B, N_LED_C, N_LED_D} NEOPIXEL_te;
+
 #define     NEOPIXEL_PIO_UNIT       pio0
 #define     NEOPIXEL_STATE_MACHINE  0
 
@@ -153,6 +155,7 @@ enum {LED_A, LED_B, LED_C, LED_D};
 
 typedef enum  { UP, DOWN, NONE} change_mode_et;
 typedef enum  {N_RED, N_ORANGE, N_YELLOW, N_GREEN, N_BLUE, N_INDIGO, N_VIOLET, N_LED_WHITE, N_BLACK} colours_et;
+typedef enum  {N_ENABLE, N_DISABLE} NEOPIXEL_STATE_et;
 
 //==============================================================================
 // 3+8 channel analogue input system
@@ -560,14 +563,13 @@ struct LED_data_s {
     bool            flash_value;
 } ;
 
-struct Neopixel_data_s {
+struct neopixel_data_s {
     struct {
-        bool    enable;                 // ENABLED/DISABLED
-        bool    LED_state;              // ON/OFF
-        bool    colour_rotation_state;  // ON/OFF
-        bool    flash_state;            // ON/OFF
-        bool    dim_state;
-        bool    monochrome;             // TRUE/FALSE
+        NEOPIXEL_STATE_et   neopixel_state;         // ENABLED/DISABLED
+        NEOPIXEL_STATE_et   colour_rotation_state;  // ON/OFF
+        NEOPIXEL_STATE_et   flash_state;            // ON/OFF
+        NEOPIXEL_STATE_et   dim_state;
+        bool                monochrome;             // TRUE/FALSE
     } flags;
 
     uint8_t         current_intensity;
@@ -690,7 +692,7 @@ struct system_IO_data_s  {
     uint16_t                            system_voltage;
     struct motor_data_s                 motor_data[NOS_ROBOKID_MOTORS];
  //   struct LED_data_s                   LED_data[NOS_ROBOKID_LEDS];
-    struct Neopixel_data_s              neopixel_data[NOS_NEOPIXELS];
+ //   struct Neopixel_data_s              neopixel_data[NOS_NEOPIXELS];
     struct push_button_data_s           push_button_data[NOS_ROBOKID_PUSH_BUTTONS];
     struct analogue_global_data_s       analogue_global_data[NOS_CD4051_CHANNELS];
     struct line_sensor_data_s           line_sensor_data[NOS_ROBOKID_LINE_SENSORS];
@@ -750,6 +752,8 @@ extern struct gamepad_data_s   gamepad_data;
 extern struct system_status_s  system_status;
 extern struct system_IO_data_s system_IO_data;
 extern struct tune_data_s      tune_data;
+extern struct neopixel_data_s  neopixel_data[NOS_NEOPIXELS];
+
 
 extern struct error_data_s      error_data;
 
@@ -795,6 +799,7 @@ extern SemaphoreHandle_t semaphore_system_IO_data;
 extern SemaphoreHandle_t semaphore_system_status;
 extern SemaphoreHandle_t semaphore_gamepad_data;
 extern SemaphoreHandle_t semaphore_tune_data;
+extern SemaphoreHandle_t semaphore_neopixel_data;
 
 extern QueueHandle_t queue_motor_cmds;                  // queues
 extern QueueHandle_t queue_error_messages;

@@ -54,6 +54,7 @@ SemaphoreHandle_t semaphore_system_IO_data;
 SemaphoreHandle_t semaphore_system_status;
 SemaphoreHandle_t semaphore_gamepad_data;
 SemaphoreHandle_t semaphore_tune_data;
+SemaphoreHandle_t semaphore_neopixel_data;
 
 QueueHandle_t queue_motor_cmds;
 QueueHandle_t queue_error_messages;
@@ -65,10 +66,11 @@ EventGroupHandle_t eventgroup_push_buttons;
 //==============================================================================
 // System data structures. Protected with MUTEXES
 
-struct system_IO_data_s    system_IO_data;
-struct gamepad_data_s      gamepad_data;
-struct system_status_s     system_status;
-struct tune_data_s         tune_data;
+struct system_IO_data_s     system_IO_data;
+struct gamepad_data_s       gamepad_data;
+struct system_status_s      system_status;
+struct tune_data_s          tune_data;
+struct neopixel_data_s      neopixel_data[NOS_NEOPIXELS];
 
 struct error_data_s        error_data;
 
@@ -138,37 +140,19 @@ uint8_t     index;
         };
     // Neopixel data
         for (index=0; index < NOS_NEOPIXELS ; index++ ) {
-            system_IO_data.neopixel_data[index].flags.enable = false;
-            system_IO_data.neopixel_data[index].flags.LED_state = false;
-            system_IO_data.neopixel_data[index].flags.flash_state = false;
-            system_IO_data.neopixel_data[index].flags.monochrome = false;
-            system_IO_data.neopixel_data[index].flags.dim_state = false;
-            system_IO_data.neopixel_data[index].flags.colour_rotation_state = false;
+            neopixel_data[index].flags.neopixel_state        = N_DISABLE;
+            neopixel_data[index].flags.flash_state           = N_DISABLE;
+            neopixel_data[index].flags.monochrome            = false;
+            neopixel_data[index].flags.dim_state             = N_DISABLE;
+            neopixel_data[index].flags.colour_rotation_state = N_DISABLE;
 
-            system_IO_data.neopixel_data[index].current_colour = N_BLACK;
-            system_IO_data.neopixel_data[index].current_intensity = 0;
-            system_IO_data.neopixel_data[index].flash_rate = 0;
-            system_IO_data.neopixel_data[index].flash_counter = 0;
-            system_IO_data.neopixel_data[index].dim_percent_change = 0;
-            system_IO_data.neopixel_data[index].dim_rate = 0;
+            neopixel_data[index].current_colour     = N_BLACK;
+            neopixel_data[index].current_intensity  = 0;
+            neopixel_data[index].flash_rate         = 0;
+            neopixel_data[index].flash_counter      = 0;
+            neopixel_data[index].dim_percent_change = 0;
+            neopixel_data[index].dim_rate           = 0;
         }
-    
-    
-    
-    // LED data
-
-
-        // for (index=0; index < NOS_ROBOKID_LEDS ; index++ ) {
-        //     system_IO_data.LED_data[index].state         = LED_OFF;
-        //     system_IO_data.LED_data[index].flash         = false;
-        //     system_IO_data.LED_data[index].flash_value   = false;
-        //     system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
-        //     system_IO_data.LED_data[index].flash_counter = 0;   
-        // };
-        // system_IO_data.LED_data[0].colour = 0x000000;
-        // system_IO_data.LED_data[1].colour = 0x000000;
-        // system_IO_data.LED_data[2].colour = 0x000000;
-        // system_IO_data.LED_data[3].colour = 0x000000;
     // Floor sensor data
         for (index=0; index < NOS_ROBOKID_LINE_SENSORS ; index++ ) {
             system_IO_data.line_sensor_data[index].percent_value = 0;
@@ -320,6 +304,7 @@ int main()
     semaphore_system_status     = xSemaphoreCreateMutex();
     semaphore_gamepad_data      = xSemaphoreCreateMutex();
     semaphore_tune_data         = xSemaphoreCreateMutex();
+    semaphore_neopixel_data     = xSemaphoreCreateMutex();
 
     queue_motor_cmds     = xQueueCreate(MOTOR_CMD_QUEUE_LENGTH, sizeof(struct motor_cmd_packet_s));   
     queue_error_messages = xQueueCreate(ERROR_MESSAGE_QUEUE_LENGTH, sizeof(struct error_message_s));
@@ -336,4 +321,18 @@ int main()
 
     return 0;
 }
+
+// temp archive code
+    // LED data
+        // for (index=0; index < NOS_ROBOKID_LEDS ; index++ ) {
+        //     system_IO_data.LED_data[index].state         = LED_OFF;
+        //     system_IO_data.LED_data[index].flash         = false;
+        //     system_IO_data.LED_data[index].flash_value   = false;
+        //     system_IO_data.LED_data[index].flash_time    = DEFAULT_FLASH_TIME;
+        //     system_IO_data.LED_data[index].flash_counter = 0;   
+        // };
+        // system_IO_data.LED_data[0].colour = 0x000000;
+        // system_IO_data.LED_data[1].colour = 0x000000;
+        // system_IO_data.LED_data[2].colour = 0x000000;
+        // system_IO_data.LED_data[3].colour = 0x000000;
 
